@@ -40,7 +40,123 @@ class CataloniaMap {
     
     init() {
         this.render();
+        this.loadCatalunyaMap();
         this.loadData();
+    }
+    
+    async loadCatalunyaMap() {
+        try {
+            console.log('Loading Catalunya map...');
+            const response = await fetch('./data/catalunya-map.svg');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const svgText = await response.text();
+            console.log('SVG loaded, length:', svgText.length);
+            
+            const container = document.getElementById('catalunya-svg-container');
+            if (!container) {
+                console.error('Container not found!');
+                return;
+            }
+            
+            container.innerHTML = svgText;
+            console.log('SVG inserted into container');
+            
+            // Get the SVG element and apply our styles
+            const svg = container.querySelector('svg');
+            if (svg) {
+                console.log('SVG element found');
+                svg.id = 'catalonia-svg';
+                svg.style.width = '100%';
+                svg.style.maxWidth = '900px';
+                svg.style.height = 'auto';
+                
+                // Create a wrapper for zoom/pan functionality
+                const mainGroup = svg.querySelector('g[id="layer1"]') || svg.querySelector('g');
+                if (mainGroup) {
+                    mainGroup.id = 'main-map-group';
+                    this.currentZoom = 1;
+                    this.currentX = 0;
+                    this.currentY = 0;
+                }
+                
+                // Style all paths - comarca borders are thicker, municipi are thinner
+                const paths = svg.querySelectorAll('path');
+                console.log('Found', paths.length, 'paths');
+                
+                paths.forEach(path => {
+                    const strokeWidth = path.getAttribute('stroke-width');
+                    const isComarcaBorder = !strokeWidth || parseFloat(strokeWidth) < 0.2;
+                    
+                    path.classList.add('comarca-path');
+                    path.style.fill = 'rgba(56, 189, 248, 0.08)';
+                    
+                    if (isComarcaBorder) {
+                        // Comarca borders - white and thicker
+                        path.style.stroke = 'rgba(255, 255, 255, 0.5)';
+                        path.style.strokeWidth = '1.5';
+                    } else {
+                        // Municipi borders - gray and very thin (hide them)
+                        path.style.stroke = 'rgba(153, 153, 153, 0.1)';
+                        path.style.strokeWidth = '0.1';
+                    }
+                    path.style.transition = 'all 0.3s ease';
+                });
+                
+                // Add hover effects
+                paths.forEach(path => {
+                    path.addEventListener('mouseenter', () => {
+                        path.style.fill = 'rgba(56, 189, 248, 0.15)';
+                    });
+                    path.addEventListener('mouseleave', () => {
+                        path.style.fill = 'rgba(56, 189, 248, 0.08)';
+                    });
+                });
+                
+                // Style all text elements (comarca names) to white with consistent font
+                const textElements = svg.querySelectorAll('text, tspan');
+                console.log('Found', textElements.length, 'text elements');
+                textElements.forEach(text => {
+                    text.style.fill = 'rgba(255, 255, 255, 0.9)';
+                    text.style.fontFamily = 'var(--font-sans)';
+                    text.style.fontWeight = '600';
+                    text.style.fontSize = '10px';
+                    text.style.pointerEvents = 'none';
+                });
+                
+                // Add markers group
+                const markersGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                markersGroup.id = 'markers-group';
+                svg.appendChild(markersGroup);
+                
+                // Add Mediterranean Sea label
+                const seaLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                seaLabel.setAttribute('x', '550');
+                seaLabel.setAttribute('y', '700');
+                seaLabel.setAttribute('class', 'sea-label');
+                seaLabel.setAttribute('font-size', '16');
+                seaLabel.setAttribute('font-style', 'italic');
+                seaLabel.textContent = 'Mar Mediterrani';
+                svg.appendChild(seaLabel);
+                
+                // Add zoom controls
+                this.addZoomControls(container);
+                
+                console.log('Map loaded successfully!');
+            } else {
+                console.error('SVG element not found after insertion');
+            }
+        } catch (error) {
+            console.error('Error loading Catalunya map:', error);
+            // Show a fallback message
+            const container = document.getElementById('catalunya-svg-container');
+            if (container) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.6); text-align: center; padding: 40px;">Error loading map. Please refresh the page.</p>';
+            }
+        }
     }
     
     // Format number with comma as decimal separator (European format)
@@ -100,72 +216,7 @@ class CataloniaMap {
                 </div>
                 
                 <div class="map-container">
-                    <svg id="catalonia-svg" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet">
-                        <defs>
-                            <filter id="markerShadow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
-                            </filter>
-                            <linearGradient id="catGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:rgba(56,189,248,0.15);stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:rgba(99,102,241,0.15);stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        
-                        <!-- Catalunya - Accurate geographic outline based on real coordinates -->
-                        <g id="catalunya-shape" transform="translate(20, 20) scale(0.9)">
-                            <!-- Main shape of Catalunya -->
-                            <path class="catalunya-outline" d="
-                                M 180,30 
-                                L 200,25 L 220,22 L 240,20 L 260,20 L 280,22 L 300,25 
-                                L 320,30 L 340,38 L 358,48 L 375,60 L 390,75 L 403,92 
-                                L 415,110 L 425,130 L 433,150 L 440,172 L 445,195 
-                                L 448,220 L 450,245 L 450,270 L 448,295 L 445,318
-                                L 440,340 L 432,362 L 422,382 L 410,400 L 395,418 
-                                L 378,433 L 358,445 L 338,455 L 315,462 L 290,467 
-                                L 265,470 L 240,470 L 215,468 L 190,463 L 168,455 
-                                L 148,445 L 130,432 L 115,417 L 102,400 L 90,380 
-                                L 80,358 L 72,335 L 65,310 L 60,285 L 58,260 
-                                L 57,235 L 58,210 L 62,185 L 68,162 L 77,140 
-                                L 88,120 L 102,102 L 118,86 L 136,72 L 156,60 
-                                L 168,50 L 180,42 
-                                Z
-                            " fill="url(#catGradient)"/>
-                            
-                            <!-- Comarques divisions (internal regions) -->
-                            <g class="comarques-lines">
-                                <path class="comarca-line" d="M 57,260 Q 150,250 250,245 T 450,270" />
-                                <path class="comarca-line" d="M 77,140 Q 180,150 280,160 T 433,150" />
-                                <path class="comarca-line" d="M 90,380 Q 200,370 300,365 T 410,400" />
-                                <path class="comarca-line" d="M 180,30 Q 175,150 170,280 T 168,455" />
-                                <path class="comarca-line" d="M 300,25 Q 295,150 290,280 T 290,467" />
-                                <path class="comarca-line" d="M 400,75 Q 380,200 360,320 T 358,445" />
-                            </g>
-                            
-                            <!-- Border outline -->
-                            <path class="catalunya-border" d="
-                                M 180,30 
-                                L 200,25 L 220,22 L 240,20 L 260,20 L 280,22 L 300,25 
-                                L 320,30 L 340,38 L 358,48 L 375,60 L 390,75 L 403,92 
-                                L 415,110 L 425,130 L 433,150 L 440,172 L 445,195 
-                                L 448,220 L 450,245 L 450,270 L 448,295 L 445,318
-                                L 440,340 L 432,362 L 422,382 L 410,400 L 395,418 
-                                L 378,433 L 358,445 L 338,455 L 315,462 L 290,467 
-                                L 265,470 L 240,470 L 215,468 L 190,463 L 168,455 
-                                L 148,445 L 130,432 L 115,417 L 102,400 L 90,380 
-                                L 80,358 L 72,335 L 65,310 L 60,285 L 58,260 
-                                L 57,235 L 58,210 L 62,185 L 68,162 L 77,140 
-                                L 88,120 L 102,102 L 118,86 L 136,72 L 156,60 
-                                L 168,50 L 180,42 
-                                Z
-                            " fill="none"/>
-                        </g>
-                        
-                        <!-- Mediterranean Sea label -->
-                        <text x="380" y="485" class="sea-label" font-size="13" font-style="italic">Mar Mediterrani</text>
-                        
-                        <!-- School markers will be added here -->
-                        <g id="markers-group"></g>
-                    </svg>
+                    <div id="catalunya-svg-container"></div>
                     
                     <div class="map-legend" id="map-legend">
                         <div class="legend-title">ESCALA</div>
@@ -241,12 +292,103 @@ class CataloniaMap {
         this.updateMarkers();
     }
     
+    addZoomControls(container) {
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'map-zoom-controls';
+        controlsDiv.style.cssText = `
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        `;
+        
+        const zoomInBtn = this.createZoomButton('+', 'Zoom In');
+        const zoomOutBtn = this.createZoomButton('−', 'Zoom Out');
+        const resetBtn = this.createZoomButton('⟲', 'Reset');
+        
+        zoomInBtn.onclick = () => this.zoom(1.2);
+        zoomOutBtn.onclick = () => this.zoom(0.8);
+        resetBtn.onclick = () => this.resetZoom();
+        
+        controlsDiv.appendChild(zoomInBtn);
+        controlsDiv.appendChild(zoomOutBtn);
+        controlsDiv.appendChild(resetBtn);
+        
+        const mapContainer = container.querySelector('.map-container') || container;
+        if (mapContainer.style.position !== 'absolute' && mapContainer.style.position !== 'relative') {
+            mapContainer.style.position = 'relative';
+        }
+        mapContainer.appendChild(controlsDiv);
+    }
+    
+    createZoomButton(text, title) {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.title = title;
+        btn.style.cssText = `
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        `;
+        
+        btn.onmouseenter = () => {
+            btn.style.background = 'rgba(30, 41, 59, 0.95)';
+            btn.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            btn.style.transform = 'scale(1.05)';
+        };
+        
+        btn.onmouseleave = () => {
+            btn.style.background = 'rgba(15, 23, 42, 0.9)';
+            btn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            btn.style.transform = 'scale(1)';
+        };
+        
+        return btn;
+    }
+    
+    zoom(factor) {
+        this.currentZoom *= factor;
+        this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+        this.applyTransform();
+    }
+    
+    resetZoom() {
+        this.currentZoom = 1;
+        this.currentX = 0;
+        this.currentY = 0;
+        this.applyTransform();
+    }
+    
+    applyTransform() {
+        const mainGroup = document.getElementById('main-map-group');
+        if (mainGroup) {
+            mainGroup.setAttribute('transform', 
+                `translate(${this.currentX}, ${this.currentY}) scale(${this.currentZoom})`);
+        }
+    }
+    
     latLngToXY(lat, lng) {
         // Convert real coordinates to SVG coordinates
         // Catalunya bounds: lat 40.5-42.9, lng 0.15-3.35
-        // SVG map area after transform: approximately x: 57-450, y: 20-470
-        const x = ((lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng)) * 380 + 70;
-        const y = 450 - ((lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat)) * 420 + 30;
+        // Real Catalunya map SVG: width 791, height 764
+        // Map transform: translate(-175.76, -181.95), scale(2)
+        // So actual coordinate space is roughly: x: -176 to 616, y: -182 to 582
+        const x = ((lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng)) * 750 + 20;
+        const y = 730 - ((lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat)) * 680;
         return { x, y };
     }
     
@@ -270,14 +412,14 @@ class CataloniaMap {
             
             // Marker with value, label below
             marker.innerHTML = `
-                <circle class="marker-pulse" r="22" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
-                    <animate attributeName="r" values="18;28;18" dur="2s" repeatCount="indefinite"/>
+                <circle class="marker-pulse" r="18" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
+                    <animate attributeName="r" values="14;22;14" dur="2s" repeatCount="indefinite"/>
                     <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/>
                 </circle>
-                <circle class="marker-bg" r="20" fill="currentColor" filter="url(#markerShadow)"/>
-                <circle class="marker-inner" r="16" fill="white"/>
-                <text class="marker-value" y="5" text-anchor="middle" font-size="11" font-weight="700" fill="#333">--</text>
-                <text class="marker-label" y="40" text-anchor="middle" font-size="10" font-weight="600">${shortName}</text>
+                <circle class="marker-bg" r="16" fill="currentColor" filter="url(#markerShadow)"/>
+                <circle class="marker-inner" r="13" fill="white"/>
+                <text class="marker-value" y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#333">--</text>
+                <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${shortName}</text>
             `;
             
             marker.addEventListener('click', () => this.showSchoolInfo(schoolId));
