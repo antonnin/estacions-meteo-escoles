@@ -525,7 +525,7 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 12px;
-    color: var(--white);
+    color: #FFFFFF !important;
     transition: color var(--transition);
     letter-spacing: -0.01em;
 }
