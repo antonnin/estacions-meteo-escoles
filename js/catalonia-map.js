@@ -99,26 +99,22 @@ class CataloniaMap {
                 const paths = svg.querySelectorAll('path');
                 console.log('Found', paths.length, 'paths');
                 
-                // Force uniform background color by removing any existing fill styles
+                // Force uniform background color by completely replacing inline styles
                 paths.forEach(path => {
                     path.classList.add('comarca-path');
-                    // Remove any existing fill attributes
+                    // Remove both fill attribute AND any inline style fill
                     path.removeAttribute('fill');
-                    path.style.setProperty('fill', 'rgba(30, 58, 95, 0.6)', 'important');
-                    path.style.setProperty('fill-opacity', '1', 'important');
-                    // All municipi borders - thin dark lines
-                    path.style.stroke = 'rgba(0, 0, 0, 0.4)';
-                    path.style.strokeWidth = '0.3';
-                    path.style.transition = 'fill 0.3s ease';
+                    // Clear existing inline style and set new one
+                    path.setAttribute('style', 'fill: rgba(30, 58, 95, 0.6) !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.3; transition: fill 0.3s ease;');
                 });
                 
                 // Add hover effects
                 paths.forEach(path => {
                     path.addEventListener('mouseenter', () => {
-                        path.style.setProperty('fill', 'rgba(56, 130, 180, 0.7)', 'important');
+                        path.setAttribute('style', 'fill: rgba(56, 130, 180, 0.7) !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.3; transition: fill 0.3s ease;');
                     });
                     path.addEventListener('mouseleave', () => {
-                        path.style.setProperty('fill', 'rgba(30, 58, 95, 0.6)', 'important');
+                        path.setAttribute('style', 'fill: rgba(30, 58, 95, 0.6) !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.3; transition: fill 0.3s ease;');
                     });
                 });
                 
@@ -384,7 +380,6 @@ class CataloniaMap {
         this.currentZoom *= factor;
         this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
         this.applyTransform();
-        this.declutterMarkers();
     }
     
     resetZoom() {
@@ -392,7 +387,6 @@ class CataloniaMap {
         this.currentX = 0;
         this.currentY = 0;
         this.applyTransform();
-        this.resetMarkerPositions();
     }
     
     applyTransform() {
@@ -403,60 +397,7 @@ class CataloniaMap {
         }
     }
     
-    // Declutter overlapping markers when zoomed in
-    declutterMarkers() {
-        if (this.markers.length === 0) return;
-        
-        // Minimum distance between markers in SVG units (adjusts with zoom)
-        const minDistance = 40 / this.currentZoom;
-        
-        // Get all marker positions
-        const positions = this.markers.map(({ element }) => ({
-            element,
-            x: parseFloat(element.dataset.origX),
-            y: parseFloat(element.dataset.origY),
-            newX: parseFloat(element.dataset.origX),
-            newY: parseFloat(element.dataset.origY)
-        }));
-        
-        // Simple collision resolution - push markers apart
-        for (let iteration = 0; iteration < 5; iteration++) {
-            for (let i = 0; i < positions.length; i++) {
-                for (let j = i + 1; j < positions.length; j++) {
-                    const dx = positions[j].newX - positions[i].newX;
-                    const dy = positions[j].newY - positions[i].newY;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < minDistance && distance > 0) {
-                        // Push markers apart
-                        const pushFactor = (minDistance - distance) / 2;
-                        const angle = Math.atan2(dy, dx);
-                        
-                        positions[i].newX -= Math.cos(angle) * pushFactor;
-                        positions[i].newY -= Math.sin(angle) * pushFactor;
-                        positions[j].newX += Math.cos(angle) * pushFactor;
-                        positions[j].newY += Math.sin(angle) * pushFactor;
-                    }
-                }
-            }
-        }
-        
-        // Apply new positions with smooth transition
-        positions.forEach(({ element, newX, newY }) => {
-            element.style.transition = 'transform 0.3s ease';
-            element.setAttribute('transform', `translate(${newX}, ${newY})`);
-        });
-    }
-    
-    // Reset markers to original positions
-    resetMarkerPositions() {
-        this.markers.forEach(({ element }) => {
-            const origX = parseFloat(element.dataset.origX);
-            const origY = parseFloat(element.dataset.origY);
-            element.style.transition = 'transform 0.3s ease';
-            element.setAttribute('transform', `translate(${origX}, ${origY})`);
-        });
-    }
+
     
     addPanControls(svg) {
         let isPanning = false;
@@ -520,33 +461,31 @@ class CataloniaMap {
     }
     
     latLngToXY(lat, lng) {
-        // Convert GPS coordinates to SVG coordinates using precise calibration points
+        // Convert GPS coordinates to SVG coordinates using precise calibration
         // 
-        // Reference points from SVG text positions and Wikipedia GPS coordinates:
-        // - Alt Penedès: SVG (185, 298), GPS (41.365278, 1.681944)
-        // - Garraf: SVG (204, 345), GPS (41.320000, 1.820000)
-        // - Cerdanya: SVG (207, -10), GPS (42.446667, 1.952778)
-        // - Moianès: SVG (273, 186), GPS (41.821990, 2.131000)
+        // Reference points from SVG comarca text labels (center coordinates):
+        // - Tarragonès: SVG (80.24, 369.69), GPS (41.12, 1.24)
+        // - Garraf: SVG (204.24, 344.69), GPS (41.30, 1.82)  
+        // - Barcelonès: SVG (286.24, 302.69), GPS (41.40, 2.16)
+        // - Cerdanya: SVG (207.24, -10.31), GPS (42.45, 1.95)
         //
-        // Using linear regression on these 4 precise points:
-        // For X: using Alt Penedès (1.6819, 185) and Moianès (2.131, 273)
-        //   slope = (273-185)/(2.131-1.6819) = 88/0.4491 = 195.95
-        //   intercept = 185 - 195.95*1.6819 = 185 - 329.5 = -144.5
-        // For Y: using Cerdanya (42.4467, -10) and Garraf (41.32, 345)
-        //   slope = (345-(-10))/(41.32-42.4467) = 355/(-1.1267) = -315.1
-        //   intercept = -10 - (-315.1)*42.4467 = -10 + 13377 = 13367
+        // Linear regression:
+        // X: slope = (286.24-80.24)/(2.16-1.24) = 206/0.92 = 223.91
+        //    intercept = 80.24 - 223.91*1.24 = -197.41
+        // Y: slope = (-10.31-344.69)/(42.45-41.30) = -355/1.15 = -308.70
+        //    intercept = 344.69 - (-308.70)*41.30 = 13093.80
         
-        // Fine-tuned calibration constants
-        const lngScale = 196.0;
-        const lngOffset = -144.5;
+        const lngScale = 223.91304347826087;
+        const lngOffset = -197.41217391304348;
         
-        const latScale = -315.0;
-        const latOffset = 13367.0;
+        const latScale = -308.6956521739130;
+        const latOffset = 13093.800000000001;
         
         const x = lngOffset + lng * lngScale;
         const y = latOffset + lat * latScale;
         
-        return { x, y };
+        // Return exact decimals, no rounding
+        return { x: x, y: y };
     }
     
     createMarkers() {
@@ -591,21 +530,18 @@ class CataloniaMap {
                 </g>
             `;
             
-            // Store original position for decluttering
-            marker.dataset.origX = x;
-            marker.dataset.origY = y;
-            
-            // Add hover animation - scale up marker on hover
+            // Add hover animation - scale up marker on hover (no reappending to avoid trembling)
             const markerContent = marker.querySelector('.marker-content');
+            let isHovered = false;
             marker.addEventListener('mouseenter', () => {
+                if (isHovered) return; // Prevent multiple triggers
+                isHovered = true;
                 markerContent.style.transform = 'scale(1.5)';
-                marker.style.zIndex = '1000';
-                // Bring to front by reappending to parent
-                marker.parentNode.appendChild(marker);
+                markerContent.style.transformOrigin = 'center center';
             });
             marker.addEventListener('mouseleave', () => {
+                isHovered = false;
                 markerContent.style.transform = 'scale(1)';
-                marker.style.zIndex = '';
             });
             
             marker.addEventListener('click', () => this.showSchoolInfo(schoolId));
