@@ -1,13 +1,13 @@
-# 🌤️ Estacions Meteorològiques Escolars
+# 🌤️ MeteoBit - Estacions Meteorològiques Escolars
 
-Dashboard interactiu per visualitzar dades d'estacions meteorològiques construïdes per alumnes de primària utilitzant kits Elecfreaks i ThingSpeak.
+Dashboard interactiu per visualitzar dades d'estacions meteorològiques construïdes per alumnes de primària utilitzant kits micro:bit i ThingSpeak.
 
 ## 📋 Característiques
 
 - 🏫 Suport per a 5 escoles diferents
 - 📊 Gràfics interactius amb Chart.js
 - 📅 Filtratge per rang de dates
-- 🌡️ Visualització de múltiples sensors (temperatura, humitat, pressió, llum, soroll, UV, pluja, vent)
+- 🌡️ Visualització de 4 sensors (temperatura, humitat, pressió, vent)
 - 📱 Disseny responsive per a mòbils i tauletes
 - 🎨 Interfície atractiva en català
 - 💾 Emmagatzematge de dades a GitHub
@@ -220,7 +220,7 @@ MIT License - Lliure per a ús educatiu i personal.
 ## 🙏 Agraïments
 
 - Als alumnes i mestres de les escoles participants
-- [Elecfreaks](https://www.elecfreaks.com/) pels kits de micro:bit
+- [micro:bit](https://microbit.org/) per la plataforma educativa
 - [ThingSpeak](https://thingspeak.com/) per la plataforma IoT
 - [Chart.js](https://www.chartjs.org/) per les gràfiques
 
