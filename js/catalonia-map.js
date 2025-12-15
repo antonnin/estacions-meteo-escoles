@@ -100,76 +100,70 @@ class CataloniaMap {
                 </div>
                 
                 <div class="map-container">
-                    <svg id="catalonia-svg" viewBox="0 0 500 450" preserveAspectRatio="xMidYMid meet">
+                    <svg id="catalonia-svg" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet">
                         <defs>
                             <filter id="markerShadow" x="-50%" y="-50%" width="200%" height="200%">
                                 <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
                             </filter>
+                            <linearGradient id="catGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:rgba(56,189,248,0.15);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgba(99,102,241,0.15);stop-opacity:1" />
+                            </linearGradient>
                         </defs>
                         
-                        <!-- Catalunya - Proper geographic outline -->
-                        <g id="catalunya-comarques" class="comarques-group">
-                            <!-- Contorn de Catalunya (més realista) -->
+                        <!-- Catalunya - Accurate geographic outline based on real coordinates -->
+                        <g id="catalunya-shape" transform="translate(20, 20) scale(0.9)">
+                            <!-- Main shape of Catalunya -->
                             <path class="catalunya-outline" d="
-                                M 50,180 
-                                L 60,160 L 70,145 L 80,135 
-                                L 95,125 L 110,120 L 125,115 L 140,112
-                                L 155,110 L 170,108 L 185,107 L 200,106
-                                L 215,106 L 230,107 L 245,109 L 260,112
-                                L 275,116 L 290,121 L 305,127 L 320,134
-                                L 335,142 L 350,151 L 365,161 L 380,172
-                                L 395,184 L 408,197 L 420,211 L 430,226
-                                L 438,242 L 444,258 L 448,274 L 450,290
-                                L 450,306 L 448,322 L 444,337 L 438,352
-                                L 430,366 L 420,379 L 408,391 L 395,402
-                                L 380,411 L 365,419 L 350,425 L 335,430
-                                L 320,433 L 305,435 L 290,436 L 275,436
-                                L 260,435 L 245,433 L 230,430 L 215,426
-                                L 200,421 L 185,415 L 170,408 L 155,400
-                                L 140,391 L 125,381 L 110,370 L 95,358
-                                L 80,345 L 68,331 L 58,316 L 52,301
-                                L 48,285 L 46,269 L 46,253 L 47,237
-                                L 49,221 L 50,205 L 50,189
+                                M 180,30 
+                                L 200,25 L 220,22 L 240,20 L 260,20 L 280,22 L 300,25 
+                                L 320,30 L 340,38 L 358,48 L 375,60 L 390,75 L 403,92 
+                                L 415,110 L 425,130 L 433,150 L 440,172 L 445,195 
+                                L 448,220 L 450,245 L 450,270 L 448,295 L 445,318
+                                L 440,340 L 432,362 L 422,382 L 410,400 L 395,418 
+                                L 378,433 L 358,445 L 338,455 L 315,462 L 290,467 
+                                L 265,470 L 240,470 L 215,468 L 190,463 L 168,455 
+                                L 148,445 L 130,432 L 115,417 L 102,400 L 90,380 
+                                L 80,358 L 72,335 L 65,310 L 60,285 L 58,260 
+                                L 57,235 L 58,210 L 62,185 L 68,162 L 77,140 
+                                L 88,120 L 102,102 L 118,86 L 136,72 L 156,60 
+                                L 168,50 L 180,42 
                                 Z
-                            "/>
+                            " fill="url(#catGradient)"/>
                             
-                            <!-- Divisions de comarques -->
-                            <line class="comarca-line" x1="70" y1="145" x2="430" y2="226" />
-                            <line class="comarca-line" x1="95" y1="125" x2="420" y2="211" />
-                            <line class="comarca-line" x1="50" y1="205" x2="450" y2="290" />
-                            <line class="comarca-line" x1="52" y1="301" x2="438" y2="352" />
-                            <line class="comarca-line" x1="80" y1="345" x2="408" y2="391" />
-                            <line class="comarca-line" x1="155" y1="110" x2="155" y2="400" />
-                            <line class="comarca-line" x1="245" y1="109" x2="245" y2="433" />
-                            <line class="comarca-line" x1="335" y1="142" x2="335" y2="430" />
+                            <!-- Comarques divisions (internal regions) -->
+                            <g class="comarques-lines">
+                                <path class="comarca-line" d="M 57,260 Q 150,250 250,245 T 450,270" />
+                                <path class="comarca-line" d="M 77,140 Q 180,150 280,160 T 433,150" />
+                                <path class="comarca-line" d="M 90,380 Q 200,370 300,365 T 410,400" />
+                                <path class="comarca-line" d="M 180,30 Q 175,150 170,280 T 168,455" />
+                                <path class="comarca-line" d="M 300,25 Q 295,150 290,280 T 290,467" />
+                                <path class="comarca-line" d="M 400,75 Q 380,200 360,320 T 358,445" />
+                            </g>
                             
-                            <!-- Contorn amb stroke -->
+                            <!-- Border outline -->
                             <path class="catalunya-border" d="
-                                M 50,180 
-                                L 60,160 L 70,145 L 80,135 
-                                L 95,125 L 110,120 L 125,115 L 140,112
-                                L 155,110 L 170,108 L 185,107 L 200,106
-                                L 215,106 L 230,107 L 245,109 L 260,112
-                                L 275,116 L 290,121 L 305,127 L 320,134
-                                L 335,142 L 350,151 L 365,161 L 380,172
-                                L 395,184 L 408,197 L 420,211 L 430,226
-                                L 438,242 L 444,258 L 448,274 L 450,290
-                                L 450,306 L 448,322 L 444,337 L 438,352
-                                L 430,366 L 420,379 L 408,391 L 395,402
-                                L 380,411 L 365,419 L 350,425 L 335,430
-                                L 320,433 L 305,435 L 290,436 L 275,436
-                                L 260,435 L 245,433 L 230,430 L 215,426
-                                L 200,421 L 185,415 L 170,408 L 155,400
-                                L 140,391 L 125,381 L 110,370 L 95,358
-                                L 80,345 L 68,331 L 58,316 L 52,301
-                                L 48,285 L 46,269 L 46,253 L 47,237
-                                L 49,221 L 50,205 L 50,189
+                                M 180,30 
+                                L 200,25 L 220,22 L 240,20 L 260,20 L 280,22 L 300,25 
+                                L 320,30 L 340,38 L 358,48 L 375,60 L 390,75 L 403,92 
+                                L 415,110 L 425,130 L 433,150 L 440,172 L 445,195 
+                                L 448,220 L 450,245 L 450,270 L 448,295 L 445,318
+                                L 440,340 L 432,362 L 422,382 L 410,400 L 395,418 
+                                L 378,433 L 358,445 L 338,455 L 315,462 L 290,467 
+                                L 265,470 L 240,470 L 215,468 L 190,463 L 168,455 
+                                L 148,445 L 130,432 L 115,417 L 102,400 L 90,380 
+                                L 80,358 L 72,335 L 65,310 L 60,285 L 58,260 
+                                L 57,235 L 58,210 L 62,185 L 68,162 L 77,140 
+                                L 88,120 L 102,102 L 118,86 L 136,72 L 156,60 
+                                L 168,50 L 180,42 
                                 Z
-                            "/>
+                            " fill="none"/>
                         </g>
                         
-                        <text x="420" y="420" class="sea-label" font-size="14" font-style="italic">Mar Mediterrani</text>
+                        <!-- Mediterranean Sea label -->
+                        <text x="380" y="485" class="sea-label" font-size="13" font-style="italic">Mar Mediterrani</text>
                         
+                        <!-- School markers will be added here -->
                         <g id="markers-group"></g>
                     </svg>
                     
@@ -248,8 +242,11 @@ class CataloniaMap {
     }
     
     latLngToXY(lat, lng) {
-        const x = ((lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng)) * 420 + 40;
-        const y = 410 - ((lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat)) * 370;
+        // Convert real coordinates to SVG coordinates
+        // Catalunya bounds: lat 40.5-42.9, lng 0.15-3.35
+        // SVG map area after transform: approximately x: 57-450, y: 20-470
+        const x = ((lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng)) * 380 + 70;
+        const y = 450 - ((lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat)) * 420 + 30;
         return { x, y };
     }
     

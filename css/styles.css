@@ -102,13 +102,16 @@ html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #0F172A;
+    color-scheme: dark;
 }
 
 body {
     font-family: var(--font-sans);
-    background: var(--bg-primary);
+    background: #0F172A;
+    background-color: #0F172A;
     min-height: 100vh;
-    color: var(--text-primary);
+    color: #FFFFFF;
     line-height: 1.6;
     font-size: 16px;
     overflow-x: hidden;
@@ -1269,34 +1272,34 @@ body {
 }
 
 /* Catalunya map styling */
-.catalunya-outline,
-.map-fill {
-    fill: var(--map-fill);
+.catalunya-outline {
+    fill: rgba(56, 189, 248, 0.12);
+    stroke: none;
     transition: fill var(--transition);
 }
 
 .catalunya-border {
     fill: none;
-    stroke: var(--map-stroke);
-    stroke-width: 2.5;
+    stroke: rgba(56, 189, 248, 0.5);
+    stroke-width: 2;
     transition: stroke var(--transition);
 }
 
 .comarca-line {
     fill: none;
-    stroke: var(--comarca-stroke);
+    stroke: rgba(255, 255, 255, 0.08);
     stroke-width: 1;
-    stroke-dasharray: 5,3;
+    stroke-dasharray: 8,4;
     transition: stroke var(--transition);
 }
 
 .sea-label {
-    fill: var(--text-muted);
+    fill: rgba(255, 255, 255, 0.3);
     transition: fill var(--transition);
 }
 
 .marker-label {
-    fill: var(--text-secondary);
+    fill: rgba(255, 255, 255, 0.8);
     font-weight: 600;
     transition: fill var(--transition);
 }
