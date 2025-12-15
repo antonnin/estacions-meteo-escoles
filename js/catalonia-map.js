@@ -460,10 +460,12 @@ class CataloniaMap {
         });
     }
     
-    latLngToXY(lat, lng) {
-        // Apply offset to move markers north and east
-        lat = lat + 0.0353;
-        lng = lng + 0.2230;
+    latLngToXY(lat, lng, schoolId = null) {
+        // Apply offset to move markers north and east (except for Santa Coloma and ZER Moianès)
+        if (schoolId !== 'escola3' && schoolId !== 'escola5') {
+            lat = lat + 0.0152;
+            lng = lng + 0.1153;
+        }
         
         // Convert GPS coordinates to SVG coordinates using precise calibration
         // 
@@ -510,19 +512,19 @@ class CataloniaMap {
                 continue;
             }
             
-            const { x, y } = this.latLngToXY(school.coordinates.lat, school.coordinates.lng);
+            const { x, y } = this.latLngToXY(school.coordinates.lat, school.coordinates.lng, schoolId);
             console.log(`${school.name}: lat=${school.coordinates.lat}, lng=${school.coordinates.lng} -> x=${x}, y=${y}`);
             
-            const shortName = school.name.split(' ').slice(-1)[0];
+            const fullName = school.name;
             
             const marker = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             marker.setAttribute('class', 'map-marker');
             marker.setAttribute('data-school', schoolId);
             marker.setAttribute('transform', `translate(${x}, ${y})`);
             
-            // Marker with value, label below - added transition for hover animation
+            // Marker with value, label below
             marker.innerHTML = `
-                <g class="marker-content" style="transition: transform 0.2s ease;">
+                <g class="marker-content">
                     <circle class="marker-pulse" r="18" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
                         <animate attributeName="r" values="14;22;14" dur="2s" repeatCount="indefinite"/>
                         <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/>
@@ -530,7 +532,7 @@ class CataloniaMap {
                     <circle class="marker-bg" r="16" fill="currentColor" filter="url(#markerShadow)"/>
                     <circle class="marker-inner" r="13" fill="white"/>
                     <text class="marker-value" y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#333">--</text>
-                    <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${shortName}</text>
+                    <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${fullName}</text>
                 </g>
             `;
             

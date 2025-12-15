@@ -1331,11 +1331,7 @@ body {
 }
 
 .map-marker {
-    transition: transform var(--transition);
-}
-
-.map-marker:hover {
-    transform: scale(1.15);
+    /* No hover effects to prevent position shift */
 }
 
 .map-legend {
