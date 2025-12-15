@@ -99,22 +99,26 @@ class CataloniaMap {
                 const paths = svg.querySelectorAll('path');
                 console.log('Found', paths.length, 'paths');
                 
+                // Force uniform background color by removing any existing fill styles
                 paths.forEach(path => {
                     path.classList.add('comarca-path');
-                    path.style.fill = 'rgba(56, 189, 248, 0.08)';
-                    // All municipi borders - thin black lines
-                    path.style.stroke = 'rgba(0, 0, 0, 0.3)';
+                    // Remove any existing fill attributes
+                    path.removeAttribute('fill');
+                    path.style.setProperty('fill', 'rgba(30, 58, 95, 0.6)', 'important');
+                    path.style.setProperty('fill-opacity', '1', 'important');
+                    // All municipi borders - thin dark lines
+                    path.style.stroke = 'rgba(0, 0, 0, 0.4)';
                     path.style.strokeWidth = '0.3';
-                    path.style.transition = 'all 0.3s ease';
+                    path.style.transition = 'fill 0.3s ease';
                 });
                 
                 // Add hover effects
                 paths.forEach(path => {
                     path.addEventListener('mouseenter', () => {
-                        path.style.fill = 'rgba(56, 189, 248, 0.15)';
+                        path.style.setProperty('fill', 'rgba(56, 130, 180, 0.7)', 'important');
                     });
                     path.addEventListener('mouseleave', () => {
-                        path.style.fill = 'rgba(56, 189, 248, 0.08)';
+                        path.style.setProperty('fill', 'rgba(30, 58, 95, 0.6)', 'important');
                     });
                 });
                 
@@ -380,6 +384,7 @@ class CataloniaMap {
         this.currentZoom *= factor;
         this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
         this.applyTransform();
+        this.declutterMarkers();
     }
     
     resetZoom() {
@@ -387,6 +392,7 @@ class CataloniaMap {
         this.currentX = 0;
         this.currentY = 0;
         this.applyTransform();
+        this.resetMarkerPositions();
     }
     
     applyTransform() {
@@ -395,6 +401,61 @@ class CataloniaMap {
             transformWrapper.setAttribute('transform', 
                 `translate(${this.currentX}, ${this.currentY}) scale(${this.currentZoom})`);
         }
+    }
+    
+    // Declutter overlapping markers when zoomed in
+    declutterMarkers() {
+        if (this.markers.length === 0) return;
+        
+        // Minimum distance between markers in SVG units (adjusts with zoom)
+        const minDistance = 40 / this.currentZoom;
+        
+        // Get all marker positions
+        const positions = this.markers.map(({ element }) => ({
+            element,
+            x: parseFloat(element.dataset.origX),
+            y: parseFloat(element.dataset.origY),
+            newX: parseFloat(element.dataset.origX),
+            newY: parseFloat(element.dataset.origY)
+        }));
+        
+        // Simple collision resolution - push markers apart
+        for (let iteration = 0; iteration < 5; iteration++) {
+            for (let i = 0; i < positions.length; i++) {
+                for (let j = i + 1; j < positions.length; j++) {
+                    const dx = positions[j].newX - positions[i].newX;
+                    const dy = positions[j].newY - positions[i].newY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < minDistance && distance > 0) {
+                        // Push markers apart
+                        const pushFactor = (minDistance - distance) / 2;
+                        const angle = Math.atan2(dy, dx);
+                        
+                        positions[i].newX -= Math.cos(angle) * pushFactor;
+                        positions[i].newY -= Math.sin(angle) * pushFactor;
+                        positions[j].newX += Math.cos(angle) * pushFactor;
+                        positions[j].newY += Math.sin(angle) * pushFactor;
+                    }
+                }
+            }
+        }
+        
+        // Apply new positions with smooth transition
+        positions.forEach(({ element, newX, newY }) => {
+            element.style.transition = 'transform 0.3s ease';
+            element.setAttribute('transform', `translate(${newX}, ${newY})`);
+        });
+    }
+    
+    // Reset markers to original positions
+    resetMarkerPositions() {
+        this.markers.forEach(({ element }) => {
+            const origX = parseFloat(element.dataset.origX);
+            const origY = parseFloat(element.dataset.origY);
+            element.style.transition = 'transform 0.3s ease';
+            element.setAttribute('transform', `translate(${origX}, ${origY})`);
+        });
     }
     
     addPanControls(svg) {
@@ -459,24 +520,28 @@ class CataloniaMap {
     }
     
     latLngToXY(lat, lng) {
-        // Convert GPS coordinates to SVG coordinates using calibration points
+        // Convert GPS coordinates to SVG coordinates using precise calibration points
         // 
-        // Calibration based on known comarca text positions in SVG and their Wikipedia GPS coordinates:
+        // Reference points from SVG text positions and Wikipedia GPS coordinates:
+        // - Alt Penedès: SVG (185, 298), GPS (41.365278, 1.681944)
+        // - Garraf: SVG (204, 345), GPS (41.320000, 1.820000)
         // - Cerdanya: SVG (207, -10), GPS (42.446667, 1.952778)
         // - Moianès: SVG (273, 186), GPS (41.821990, 2.131000)
-        // - Alt Penedès: SVG (120, 295), GPS (41.365278, 1.681944)
-        // - Garraf: SVG (204, 345), GPS (41.320000, 1.820000)
         //
-        // Linear regression from these points gives:
-        // X = 228.0 * lng - 237.5
-        // Y = -315.0 * lat + 13335.0
+        // Using linear regression on these 4 precise points:
+        // For X: using Alt Penedès (1.6819, 185) and Moianès (2.131, 273)
+        //   slope = (273-185)/(2.131-1.6819) = 88/0.4491 = 195.95
+        //   intercept = 185 - 195.95*1.6819 = 185 - 329.5 = -144.5
+        // For Y: using Cerdanya (42.4467, -10) and Garraf (41.32, 345)
+        //   slope = (345-(-10))/(41.32-42.4467) = 355/(-1.1267) = -315.1
+        //   intercept = -10 - (-315.1)*42.4467 = -10 + 13377 = 13367
         
-        // Calibrated scale factors
-        const lngScale = 228.0;
-        const lngOffset = -237.5;
+        // Fine-tuned calibration constants
+        const lngScale = 196.0;
+        const lngOffset = -144.5;
         
         const latScale = -315.0;
-        const latOffset = 13335.0;
+        const latOffset = 13367.0;
         
         const x = lngOffset + lng * lngScale;
         const y = latOffset + lat * latScale;
@@ -512,17 +577,36 @@ class CataloniaMap {
             marker.setAttribute('data-school', schoolId);
             marker.setAttribute('transform', `translate(${x}, ${y})`);
             
-            // Marker with value, label below
+            // Marker with value, label below - added transition for hover animation
             marker.innerHTML = `
-                <circle class="marker-pulse" r="18" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
-                    <animate attributeName="r" values="14;22;14" dur="2s" repeatCount="indefinite"/>
-                    <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/>
-                </circle>
-                <circle class="marker-bg" r="16" fill="currentColor" filter="url(#markerShadow)"/>
-                <circle class="marker-inner" r="13" fill="white"/>
-                <text class="marker-value" y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#333">--</text>
-                <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${shortName}</text>
+                <g class="marker-content" style="transition: transform 0.2s ease;">
+                    <circle class="marker-pulse" r="18" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
+                        <animate attributeName="r" values="14;22;14" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle class="marker-bg" r="16" fill="currentColor" filter="url(#markerShadow)"/>
+                    <circle class="marker-inner" r="13" fill="white"/>
+                    <text class="marker-value" y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#333">--</text>
+                    <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${shortName}</text>
+                </g>
             `;
+            
+            // Store original position for decluttering
+            marker.dataset.origX = x;
+            marker.dataset.origY = y;
+            
+            // Add hover animation - scale up marker on hover
+            const markerContent = marker.querySelector('.marker-content');
+            marker.addEventListener('mouseenter', () => {
+                markerContent.style.transform = 'scale(1.5)';
+                marker.style.zIndex = '1000';
+                // Bring to front by reappending to parent
+                marker.parentNode.appendChild(marker);
+            });
+            marker.addEventListener('mouseleave', () => {
+                markerContent.style.transform = 'scale(1)';
+                marker.style.zIndex = '';
+            });
             
             marker.addEventListener('click', () => this.showSchoolInfo(schoolId));
             marker.style.cursor = 'pointer';
