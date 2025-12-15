@@ -83,26 +83,16 @@ class CataloniaMap {
                     this.currentY = 0;
                 }
                 
-                // Style all paths - comarca borders are thicker, municipi are thinner
+                // Style all paths - all are municipi borders, make them thin and black
                 const paths = svg.querySelectorAll('path');
                 console.log('Found', paths.length, 'paths');
                 
                 paths.forEach(path => {
-                    const strokeWidth = path.getAttribute('stroke-width');
-                    const isComarcaBorder = !strokeWidth || parseFloat(strokeWidth) < 0.2;
-                    
                     path.classList.add('comarca-path');
                     path.style.fill = 'rgba(56, 189, 248, 0.08)';
-                    
-                    if (isComarcaBorder) {
-                        // Comarca borders - white and thicker
-                        path.style.stroke = 'rgba(255, 255, 255, 0.5)';
-                        path.style.strokeWidth = '1.5';
-                    } else {
-                        // Municipi borders - gray and very thin (hide them)
-                        path.style.stroke = 'rgba(153, 153, 153, 0.1)';
-                        path.style.strokeWidth = '0.1';
-                    }
+                    // All municipi borders - thin black lines
+                    path.style.stroke = 'rgba(0, 0, 0, 0.3)';
+                    path.style.strokeWidth = '0.3';
                     path.style.transition = 'all 0.3s ease';
                 });
                 
@@ -144,6 +134,9 @@ class CataloniaMap {
                 
                 // Add zoom controls
                 this.addZoomControls(container);
+                
+                // Add mouse pan/drag functionality
+                this.addPanControls(svg);
                 
                 console.log('Map loaded successfully!');
             } else {
@@ -381,28 +374,110 @@ class CataloniaMap {
         }
     }
     
+    addPanControls(svg) {
+        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
+        
+        svg.style.cursor = 'grab';
+        
+        svg.addEventListener('mousedown', (e) => {
+            isPanning = true;
+            startX = e.clientX - this.currentX;
+            startY = e.clientY - this.currentY;
+            svg.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+        
+        svg.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            
+            this.currentX = e.clientX - startX;
+            this.currentY = e.clientY - startY;
+            this.applyTransform();
+            e.preventDefault();
+        });
+        
+        const endPan = () => {
+            if (isPanning) {
+                isPanning = false;
+                svg.style.cursor = 'grab';
+            }
+        };
+        
+        svg.addEventListener('mouseup', endPan);
+        svg.addEventListener('mouseleave', endPan);
+        
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        svg.addEventListener('touchstart', (e) => {
+            isPanning = true;
+            const touch = e.touches[0];
+            touchStartX = touch.clientX - this.currentX;
+            touchStartY = touch.clientY - this.currentY;
+            e.preventDefault();
+        });
+        
+        svg.addEventListener('touchmove', (e) => {
+            if (!isPanning) return;
+            
+            const touch = e.touches[0];
+            this.currentX = touch.clientX - touchStartX;
+            this.currentY = touch.clientY - touchStartY;
+            this.applyTransform();
+            e.preventDefault();
+        });
+        
+        svg.addEventListener('touchend', () => {
+            isPanning = false;
+        });
+    }
+    
     latLngToXY(lat, lng) {
         // Convert real coordinates to SVG coordinates
         // Catalunya bounds: lat 40.5-42.9, lng 0.15-3.35
         // Real Catalunya map SVG: width 791, height 764
-        // Map transform: translate(-175.76, -181.95), scale(2)
-        // So actual coordinate space is roughly: x: -176 to 616, y: -182 to 582
-        const x = ((lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng)) * 750 + 20;
-        const y = 730 - ((lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat)) * 680;
+        // The SVG has transform="translate(175.75862,181.94646)" on the main group
+        // So we need to account for this offset
+        
+        // Normalize coordinates to 0-1 range
+        const normX = (lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng);
+        const normY = (lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat);
+        
+        // Map dimensions in the coordinate space
+        const mapWidth = 590;
+        const mapHeight = 565;
+        
+        // Calculate position in the original coordinate space (before transform)
+        const x = normX * mapWidth - 175;
+        const y = (1 - normY) * mapHeight - 180;
+        
         return { x, y };
     }
     
     createMarkers() {
         const markersGroup = document.getElementById('markers-group');
-        if (!markersGroup) return;
+        if (!markersGroup) {
+            console.error('Markers group not found!');
+            return;
+        }
         
         markersGroup.innerHTML = '';
         const schools = CONFIG.schools;
         
+        console.log('Creating markers for schools...');
+        
         for (const [schoolId, school] of Object.entries(schools)) {
-            if (!school.active || !school.coordinates) continue;
+            if (!school.active || !school.coordinates) {
+                console.log(`Skipping ${schoolId} - active: ${school.active}, has coords: ${!!school.coordinates}`);
+                continue;
+            }
             
             const { x, y } = this.latLngToXY(school.coordinates.lat, school.coordinates.lng);
+            console.log(`${school.name}: lat=${school.coordinates.lat}, lng=${school.coordinates.lng} -> x=${x}, y=${y}`);
+            
             const shortName = school.name.split(' ').slice(-1)[0];
             
             const marker = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -428,6 +503,8 @@ class CataloniaMap {
             markersGroup.appendChild(marker);
             this.markers.push({ element: marker, schoolId });
         }
+        
+        console.log(`Created ${this.markers.length} markers`);
     }
     
     updateMarkers() {
