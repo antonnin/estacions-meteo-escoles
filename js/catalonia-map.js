@@ -108,15 +108,7 @@ class CataloniaMap {
                     path.setAttribute('style', 'fill: rgba(30, 58, 95, 0.6) !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.3; transition: fill 0.3s ease;');
                 });
                 
-                // Add hover effects
-                paths.forEach(path => {
-                    path.addEventListener('mouseenter', () => {
-                        path.setAttribute('style', 'fill: rgba(56, 130, 180, 0.7) !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.3; transition: fill 0.3s ease;');
-                    });
-                    path.addEventListener('mouseleave', () => {
-                        path.setAttribute('style', 'fill: rgba(30, 58, 95, 0.6) !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.3; transition: fill 0.3s ease;');
-                    });
-                });
+                // No hover effects for map paths (landing page)
                 
                 // Style all text elements (comarca names) to white with consistent font
                 const textElements = svg.querySelectorAll('text, tspan');

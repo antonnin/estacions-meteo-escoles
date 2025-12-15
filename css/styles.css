@@ -1330,9 +1330,7 @@ body {
     transition: fill var(--transition);
 }
 
-.map-marker {
-    /* No hover effects to prevent position shift */
-}
+
 
 .map-legend {
     position: absolute;
