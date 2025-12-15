@@ -68,7 +68,7 @@ const CONFIG = {
             color: '#FF6B6B',
             gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
             // GPS coordinates for map positioning
-            coordinates: { lat: 41.3469, lng: 1.6971 },
+            coordinates: { lat: 41.3465, lng: 1.6994 },
             
             // CONFIGURACIÓ THINGSPEAK - MODIFICA AQUÍ
             thingspeak: {
@@ -99,7 +99,7 @@ const CONFIG = {
             icon: '💡',
             color: '#4ECDC4',
             gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
-            coordinates: { lat: 41.4035, lng: 1.5894 },
+            coordinates: { lat: 41.3145, lng: 1.6420 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_2',
@@ -127,7 +127,7 @@ const CONFIG = {
             icon: '⭐',
             color: '#667eea',
             gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            coordinates: { lat: 42.4145, lng: 1.8352 },
+            coordinates: { lat: 42.3915, lng: 1.9185 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_3',
@@ -155,7 +155,7 @@ const CONFIG = {
             icon: '🍃',
             color: '#f093fb',
             gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            coordinates: { lat: 41.2067, lng: 1.6724 },
+            coordinates: { lat: 41.2123, lng: 1.6690 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_4',
@@ -183,7 +183,7 @@ const CONFIG = {
             icon: '🌊',
             color: '#4facfe',
             gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            coordinates: { lat: 41.8159, lng: 2.0944 },
+            coordinates: { lat: 41.8120, lng: 2.0994 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_5',
@@ -211,7 +211,7 @@ const CONFIG = {
             icon: '🏰',
             color: '#ff9ff3',
             gradient: 'linear-gradient(135deg, #ff9ff3 0%, #feca57 100%)',
-            coordinates: { lat: 41.3598, lng: 1.6315 },
+            coordinates: { lat: 41.3266, lng: 1.6156 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_6',
