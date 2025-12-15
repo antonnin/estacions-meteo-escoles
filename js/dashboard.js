@@ -85,6 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Configurar dates per defecte (avui)
     setQuickDate('today');
+    // Ensure the 'today' button is visually active
+    setTimeout(() => {
+        document.querySelectorAll('.quick-date-btn').forEach(btn => {
+            if (btn.textContent.trim().toLowerCase().includes('avui')) {
+                btn.classList.add('active');
+            }
+        });
+    }, 0);
     
     // Carregar dades
     loadData();

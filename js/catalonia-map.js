@@ -706,6 +706,17 @@ class CataloniaMap {
         
         if (!school || !data || !infoBox) return;
         
+        // Generate friendly school URL
+        let schoolUrl = '';
+        switch (schoolId) {
+            case 'escola1': schoolUrl = 'escola-mas-i-perera.html'; break;
+            case 'escola2': schoolUrl = 'escola-jaume-balmes.html'; break;
+            case 'escola3': schoolUrl = 'escola-santa-coloma.html'; break;
+            case 'escola4': schoolUrl = 'escola-mar-i-cel.html'; break;
+            case 'escola5': schoolUrl = 'zer-moianes.html'; break;
+            case 'escola6': schoolUrl = 'escola-el-castellot.html'; break;
+            default: schoolUrl = 'escola.html?id=' + schoolId;
+        }
         infoBox.innerHTML = `
             <div class="school-info-card">
                 <div class="school-info-header">
@@ -733,7 +744,7 @@ class CataloniaMap {
                         <span>${this.formatNumber(data.field4, 1)} m/s</span>
                     </div>
                 </div>
-                <a href="escola.html?id=${schoolId}" class="view-data-btn" style="margin-top: 16px; display: inline-flex; text-align: center; justify-content: center; width: 100%;">
+                <a href="${schoolUrl}" class="view-data-btn" style="margin-top: 16px; display: inline-flex; text-align: center; justify-content: center; width: 100%;">
                     Veure Dades Completes →
                 </a>
             </div>
