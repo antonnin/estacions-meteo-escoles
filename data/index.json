@@ -1,11 +1,4 @@
 {
-    "lastUpdate": null,
-    "schools": {
-        "escola1": { "hasData": false },
-        "escola2": { "hasData": false },
-        "escola3": { "hasData": false },
-        "escola4": { "hasData": false },
-        "escola5": { "hasData": false }
-    },
-    "note": "Aquest fitxer s'actualitza automàticament cada hora via GitHub Actions"
+  "lastUpdate": "2025-12-15T12:10:51.824Z",
+  "schools": {}
 }
