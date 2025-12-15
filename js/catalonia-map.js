@@ -461,6 +461,10 @@ class CataloniaMap {
     }
     
     latLngToXY(lat, lng) {
+        // Apply offset to move markers north and east
+        lat = lat + 0.0152;
+        lng = lng + 0.1153;
+        
         // Convert GPS coordinates to SVG coordinates using precise calibration
         // 
         // Reference points from SVG comarca text labels (center coordinates):
@@ -530,20 +534,7 @@ class CataloniaMap {
                 </g>
             `;
             
-            // Add hover animation - scale up marker on hover (no reappending to avoid trembling)
-            const markerContent = marker.querySelector('.marker-content');
-            let isHovered = false;
-            marker.addEventListener('mouseenter', () => {
-                if (isHovered) return; // Prevent multiple triggers
-                isHovered = true;
-                markerContent.style.transform = 'scale(1.5)';
-                markerContent.style.transformOrigin = 'center center';
-            });
-            marker.addEventListener('mouseleave', () => {
-                isHovered = false;
-                markerContent.style.transform = 'scale(1)';
-            });
-            
+            // Click handler to show school info
             marker.addEventListener('click', () => this.showSchoolInfo(schoolId));
             marker.style.cursor = 'pointer';
             
