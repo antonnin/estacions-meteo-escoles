@@ -149,6 +149,9 @@ class CataloniaMap {
                 
                 // Add mouse pan/drag functionality
                 this.addPanControls(svg);
+
+                // Add keyboard and advanced wheel controls
+                this.addKeyboardAndWheelControls(svg);
                 
                 console.log('Map loaded successfully!');
                 
@@ -368,10 +371,50 @@ class CataloniaMap {
         return btn;
     }
     
-    zoom(factor) {
-        this.currentZoom *= factor;
-        this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+    zoom(factor, mouse = null) {
+        // If mouse is provided, zoom around that SVG point
+        if (mouse) {
+            const svg = document.getElementById('catalonia-svg');
+            if (svg && svg.createSVGPoint) {
+                const pt = svg.createSVGPoint();
+                pt.x = mouse.x;
+                pt.y = mouse.y;
+                const ctm = svg.getScreenCTM();
+                if (ctm) {
+                    const inv = ctm.inverse();
+                    const svgPt = pt.matrixTransform(inv);
+                    const oldZoom = this.currentZoom;
+                    this.currentZoom *= factor;
+                    this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+                    // Adjust pan so the zoom is centered on mouse
+                    this.currentX -= (svgPt.x * (this.currentZoom - oldZoom));
+                    this.currentY -= (svgPt.y * (this.currentZoom - oldZoom));
+                } else {
+                    this.currentZoom *= factor;
+                    this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+                }
+            } else {
+                this.currentZoom *= factor;
+                this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+            }
+        } else {
+            this.currentZoom *= factor;
+            this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+        }
         this.applyTransform();
+        this.updateMarkerScales();
+    }
+
+    updateMarkerScales() {
+        // Keep marker size constant regardless of zoom
+        const markersGroup = document.getElementById('markers-group');
+        if (!markersGroup) return;
+        const scale = 1 / this.currentZoom;
+        markersGroup.childNodes.forEach(marker => {
+            if (marker.nodeType === 1 && marker.hasAttribute('data-base-transform')) {
+                marker.setAttribute('transform', marker.getAttribute('data-base-transform') + ` scale(${scale})`);
+            }
+        });
     }
     
     resetZoom() {
@@ -503,18 +546,14 @@ class CataloniaMap {
                 console.log(`Skipping ${schoolId} - active: ${school.active}, has coords: ${!!school.coordinates}`);
                 continue;
             }
-            
             const { x, y } = this.latLngToXY(school.coordinates.lat, school.coordinates.lng, schoolId);
             console.log(`${school.name}: lat=${school.coordinates.lat}, lng=${school.coordinates.lng} -> x=${x}, y=${y}`);
-            
             const fullName = school.name;
-            
             const marker = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             marker.setAttribute('class', 'map-marker');
             marker.setAttribute('data-school', schoolId);
             marker.setAttribute('transform', `translate(${x}, ${y})`);
-            
-            // Marker with value, label below
+            marker.setAttribute('data-base-transform', `translate(${x}, ${y})`);
             marker.innerHTML = `
                 <g class="marker-content">
                     <circle class="marker-pulse" r="18" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
@@ -527,14 +566,12 @@ class CataloniaMap {
                     <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${fullName}</text>
                 </g>
             `;
-            
-            // Click handler to show school info
             marker.addEventListener('click', () => this.showSchoolInfo(schoolId));
             marker.style.cursor = 'pointer';
-            
             markersGroup.appendChild(marker);
             this.markers.push({ element: marker, schoolId });
         }
+        this.updateMarkerScales();
         
         console.log(`Created ${this.markers.length} markers`);
     }
