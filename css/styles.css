@@ -404,54 +404,63 @@ body {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Schools Grid */
+/* Sections */
 .schools-section {
-    padding: 4rem 0;
+    padding: 80px 0;
 }
 
 .section-title {
     text-align: center;
-    margin-bottom: 3rem;
-    color: var(--white);
+    margin-bottom: 60px;
 }
 
 .section-title h2 {
     font-family: var(--font-display);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
 }
 
 .section-title p {
-    font-size: 1.1rem;
-    opacity: 0.8;
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
+/* Schools Grid - Masonry-like layout */
 .schools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 32px;
 }
 
-/* School Card */
+/* School Cards - Modern glass-morphism */
 .school-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    transition: var(--transition);
-    text-decoration: none;
-    color: inherit;
+    transition: all var(--transition);
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .school-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(102, 126, 234, 0.2);
 }
 
 .school-card-header {
-    height: 140px;
+    height: 180px;
     position: relative;
     display: flex;
     align-items: center;
@@ -462,10 +471,7 @@ body {
 .school-card-header::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: inherit;
     filter: brightness(0.9);
 }
@@ -473,85 +479,115 @@ body {
 .school-icon {
     position: relative;
     z-index: 1;
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     background: rgba(255, 255, 255, 0.95);
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
-    box-shadow: var(--shadow-md);
+    font-size: 3.5rem;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(255, 255, 255, 0.1);
+    transition: transform var(--transition-bounce);
+}
+
+.school-card:hover .school-icon {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .school-card-body {
-    padding: 1.5rem;
+    padding: 28px;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
 .school-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: var(--gray-800);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--white);
+    transition: color var(--transition);
+    letter-spacing: -0.01em;
+}
+
+.school-card h3:hover {
+    color: var(--sky-primary);
 }
 
 .school-card p {
-    color: var(--gray-500);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    margin-bottom: 24px;
     flex: 1;
+    line-height: 1.6;
 }
 
 .school-card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 1rem;
-    border-top: 1px solid var(--gray-200);
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .school-status {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     background: #22C55E;
-    animation: pulse 2s infinite;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+    animation: pulse 2s ease-in-out infinite;
 }
 
 .status-dot.offline {
     background: var(--gray-400);
+    box-shadow: none;
     animation: none;
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
 }
 
 .view-data-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--sky-primary) 0%, var(--sky-deep) 100%);
     color: var(--white);
     border-radius: var(--radius-full);
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    transition: var(--transition);
+    transition: all var(--transition);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
-.school-card:hover .view-data-btn {
+.view-data-btn:hover {
     transform: translateX(4px);
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
 }
 
 /* School color themes */
@@ -570,241 +606,309 @@ body {
 .school-card[data-school="5"] .school-card-header {
     background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
+.school-card[data-school="6"] .school-card-header {
+    background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%);
+}
 
-/* Dashboard Layout */
+/* Dashboard Specific */
 .dashboard {
-    padding: 2rem 0;
-    min-height: calc(100vh - 80px);
+    padding: 40px 0 80px;
+    min-height: 100vh;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 32px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-full);
+    transition: all var(--transition);
+}
+
+.back-link:hover {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-4px);
 }
 
 .dashboard-header {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-xl);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow-lg);
+    padding: 32px;
+    margin-bottom: 40px;
 }
 
 .dashboard-title {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 20px;
+    margin-bottom: 32px;
 }
 
-.dashboard-title .school-badge {
-    width: 60px;
-    height: 60px;
+.school-badge {
+    width: 80px;
+    height: 80px;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .dashboard-title h1 {
-    font-size: 1.75rem;
-    color: var(--gray-800);
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
 }
 
 .dashboard-title h1 span {
     display: block;
-    font-size: 0.9rem;
-    font-weight: 400;
-    color: var(--gray-500);
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 8px;
 }
 
-/* Date Picker Controls */
+/* Date Controls */
 .date-controls {
     display: flex;
+    gap: 16px;
     flex-wrap: wrap;
-    gap: 1rem;
-    align-items: flex-end;
+    margin-bottom: 24px;
 }
 
 .date-input-group {
-    flex: 1;
-    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .date-input-group label {
-    display: block;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    color: var(--gray-600);
-    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .date-input-group input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--gray-200);
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius);
-    font-size: 1rem;
-    font-family: inherit;
-    transition: var(--transition);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    transition: all var(--transition);
 }
 
 .date-input-group input:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.2);
+    border-color: var(--sky-primary);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
 .btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 1rem;
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
     font-weight: 600;
-    font-family: inherit;
+    font-size: 0.95rem;
+    border: none;
     cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    transition: all var(--transition);
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, var(--sky-primary) 0%, var(--sky-deep) 100%);
     color: var(--white);
-    box-shadow: var(--shadow);
 }
 
 .btn-primary:hover {
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-    background: var(--gray-100);
-    color: var(--gray-700);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary:hover {
-    background: var(--gray-200);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* Quick Date Buttons */
 .quick-dates {
     display: flex;
+    gap: 12px;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    margin-bottom: 24px;
 }
 
 .quick-date-btn {
-    padding: 0.5rem 1rem;
-    background: var(--gray-100);
-    border: none;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-full);
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--gray-600);
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all var(--transition);
 }
 
-.quick-date-btn:hover, .quick-date-btn.active {
-    background: var(--primary);
+.quick-date-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.quick-date-btn.active {
+    background: linear-gradient(135deg, var(--sky-primary) 0%, var(--sky-deep) 100%);
+    border-color: transparent;
     color: var(--white);
 }
 
-/* Current Weather Cards */
+/* Weather Cards - Dashboard */
 .current-weather {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 24px;
+    margin-bottom: 48px;
 }
 
 .weather-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow);
+    padding: 24px;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    transition: var(--transition);
+    gap: 20px;
+    transition: all var(--transition);
 }
 
 .weather-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
 .weather-card-icon {
-    width: 60px;
-    height: 60px;
+    font-size: 3rem;
+    width: 70px;
+    height: 70px;
     border-radius: var(--radius);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.75rem;
+    flex-shrink: 0;
 }
 
-.weather-card-icon.temp { background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%); }
-.weather-card-icon.humidity { background: linear-gradient(135deg, #54a0ff 0%, #5f27cd 100%); }
-.weather-card-icon.pressure { background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%); }
-.weather-card-icon.light { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
-.weather-card-icon.wind { background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); }
-.weather-card-icon.rain { background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); }
-.weather-card-icon.uv { background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); }
-.weather-card-icon.noise { background: linear-gradient(135deg, #00cec9 0%, #00b894 100%); }
+.weather-card-icon.temp {
+    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+}
+
+.weather-card-icon.humidity {
+    background: linear-gradient(135deg, #54A0FF 0%, #6BB6FF 100%);
+    box-shadow: 0 8px 20px rgba(84, 160, 255, 0.3);
+}
+
+.weather-card-icon.pressure {
+    background: linear-gradient(135deg, #1DD1A1 0%, #2EE1AF 100%);
+    box-shadow: 0 8px 20px rgba(29, 209, 161, 0.3);
+}
+
+.weather-card-icon.wind {
+    background: linear-gradient(135deg, #A29BFE 0%, #B5AEFF 100%);
+    box-shadow: 0 8px 20px rgba(162, 155, 254, 0.3);
+}
 
 .weather-card-content h3 {
-    font-size: 0.85rem;
-    color: var(--gray-500);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: var(--white);
+    margin-bottom: 4px;
 }
 
 .weather-card-value {
-    font-size: 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 2rem;
     font-weight: 700;
-    color: var(--gray-800);
+    color: var(--white);
+    line-height: 1;
 }
 
-.weather-card-value span {
+.weather-card-value small {
     font-size: 1rem;
-    font-weight: 400;
-    color: var(--gray-500);
+    opacity: 0.7;
+    margin-left: 4px;
 }
 
 /* Charts Grid */
 .charts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-    gap: 1.5rem;
+    gap: 32px;
 }
 
 .chart-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-xl);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-lg);
+    padding: 32px;
+    transition: all var(--transition);
 }
 
-.chart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
+.chart-card:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
 }
 
-.chart-header h3 {
-    font-size: 1.1rem;
-    color: var(--gray-800);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.chart-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+.chart-card p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    margin-bottom: 24px;
 }
 
 .chart-container {
     position: relative;
     height: 300px;
+}
+
+/* Last Update */
+.last-update {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+}
+
+.update-time {
+    font-family: var(--font-mono);
+    color: var(--white);
 }
 
 /* Loading State */
@@ -813,245 +917,211 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
-    color: var(--gray-500);
+    padding: 80px 20px;
 }
 
 .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--gray-200);
-    border-top-color: var(--primary);
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--sky-primary);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
+    animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
 
+.loading p {
+    margin-top: 24px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
 /* Error State */
 .error-message {
-    background: #FEE2E2;
-    color: #DC2626;
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    color: #FCA5A5;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 16px;
+    margin: 32px 0;
+}
+
+.error-message span:first-child {
+    font-size: 2rem;
+}
+
+/* No Data State */
+.no-data {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.no-data-icon {
+    font-size: 5rem;
+    margin-bottom: 24px;
+    opacity: 0.5;
+}
+
+.no-data h3 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    color: var(--white);
+    margin-bottom: 12px;
+}
+
+.no-data p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
 }
 
 /* Footer */
 .footer {
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    color: var(--white);
-    padding: 2rem 0;
-    margin-top: 4rem;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 48px 0;
+    margin-top: 80px;
 }
 
-.footer-content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+.footer img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
 }
 
-.footer p {
-    opacity: 0.8;
-    font-size: 0.9rem;
-}
-
-.footer-links {
-    display: flex;
-    gap: 1.5rem;
-}
-
-.footer-links a {
-    color: var(--white);
-    text-decoration: none;
-    opacity: 0.8;
-    transition: var(--transition);
-}
-
-.footer-links a:hover {
-    opacity: 1;
-}
-
-/* Responsive Design */
+/* Responsive Adjustments */
 @media (max-width: 1024px) {
-    .charts-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .chart-card {
-        min-width: 0;
+    .schools-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
 }
 
 @media (max-width: 768px) {
-    .header-content {
-        flex-wrap: wrap;
-    }
-    
-    .nav {
-        display: none;
-        width: 100%;
-        flex-direction: column;
-        gap: 0.25rem;
-        padding-top: 1rem;
-    }
-    
-    .nav.open {
-        display: flex;
-    }
-    
     .mobile-menu-btn {
         display: block;
     }
     
-    .hero {
-        padding: 2rem 0;
+    .nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 20px;
+        gap: 12px;
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+        transition: all var(--transition);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    .hero h1 {
-        font-size: 2rem;
+    .nav.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+    
+    .nav-link {
+        padding: 14px 20px;
+        border-radius: var(--radius);
+    }
+    
+    .hero {
+        padding: 60px 0 40px;
     }
     
     .hero-stats {
-        gap: 1.5rem;
+        gap: 32px;
     }
     
     .stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .section-title h2 {
         font-size: 2rem;
     }
     
-    .schools-grid {
-        grid-template-columns: 1fr;
+    .dashboard-header {
+        padding: 24px;
+    }
+    
+    .dashboard-title {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .dashboard-title h1 {
+        font-size: 1.75rem;
     }
     
     .date-controls {
         flex-direction: column;
     }
     
-    .date-input-group {
-        width: 100%;
-    }
-    
     .current-weather {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
     }
     
     .chart-container {
         height: 250px;
     }
-}
-
-@media (max-width: 480px) {
-    .current-weather {
+    
+    .charts-grid {
         grid-template-columns: 1fr;
     }
     
-    .weather-card {
-        padding: 1rem;
+    .schools-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animations & Micro-interactions */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.1) 20%,
+        rgba(255, 255, 255, 0.05) 40%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    background-size: 1000px 100%;
+}
+
+/* Accessibility */
+:focus-visible {
+    outline: 2px solid var(--sky-primary);
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .header, .footer, .back-link, .date-controls, .quick-dates {
+        display: none;
     }
     
-    .dashboard-header {
-        padding: 1rem;
+    .animated-bg, .clouds {
+        display: none;
     }
     
-    .chart-card {
-        padding: 1rem;
+    body {
+        background: white;
+        color: black;
     }
-}
-
-/* Utilities */
-.text-center { text-align: center; }
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mt-3 { margin-top: 1.5rem; }
-.mt-4 { margin-top: 2rem; }
-.mb-1 { margin-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 1rem; }
-.mb-3 { margin-bottom: 1.5rem; }
-.mb-4 { margin-bottom: 2rem; }
-
-/* Back to Home Link */
-.back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--white);
-    text-decoration: none;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    opacity: 0.9;
-    transition: var(--transition);
-}
-
-.back-link:hover {
-    opacity: 1;
-    transform: translateX(-4px);
-}
-
-/* No Data State */
-.no-data {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    color: var(--gray-500);
-    text-align: center;
-}
-
-.no-data-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-}
-
-/* Last Update Time */
-.last-update {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--gray-500);
-    margin-top: 0.5rem;
-}
-
-.last-update .update-time {
-    color: var(--primary);
-    font-weight: 600;
-}
-
-/* Tooltip */
-.tooltip {
-    position: relative;
-}
-
-.tooltip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--gray-800);
-    color: var(--white);
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--radius);
-    font-size: 0.8rem;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: var(--transition);
-}
-
-.tooltip:hover::after {
-    opacity: 1;
-    visibility: visible;
 }
