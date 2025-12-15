@@ -67,8 +67,8 @@ const CONFIG = {
             icon: '🌻',
             color: '#FF6B6B',
             gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
-            // GPS coordinates for map positioning
-            coordinates: { lat: 41.3465, lng: 1.6994 },
+            // GPS coordinates for map positioning (from Wikipedia: 41°20′53.75″N 1°41′34.60″E)
+            coordinates: { lat: 41.3482, lng: 1.6929 },
             
             // CONFIGURACIÓ THINGSPEAK - MODIFICA AQUÍ
             thingspeak: {
@@ -99,7 +99,8 @@ const CONFIG = {
             icon: '💡',
             color: '#4ECDC4',
             gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
-            coordinates: { lat: 41.3145, lng: 1.6420 },
+            // GPS coordinates for map positioning (Sant Martí Sarroca: 41°18′36″N 1°36′37″E)
+            coordinates: { lat: 41.3100, lng: 1.6103 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_2',
@@ -155,7 +156,8 @@ const CONFIG = {
             icon: '🍃',
             color: '#f093fb',
             gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            coordinates: { lat: 41.2123, lng: 1.6690 },
+            // GPS coordinates for map positioning (from Wikipedia: 41°12′26″N 1°40′26.4″E)
+            coordinates: { lat: 41.2072, lng: 1.6740 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_4',
