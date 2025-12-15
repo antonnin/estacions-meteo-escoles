@@ -4,7 +4,7 @@ Dashboard interactiu per visualitzar dades d'estacions meteorològiques constru�
 
 ## 📋 Característiques
 
-- 🏫 Suport per a 5 escoles diferents
+- 🏫 Suport per a 6 escoles diferents
 - 📊 Gràfics interactius amb Chart.js
 - 📅 Filtratge per rang de dates
 - 🌡️ Visualització de 4 sensors (temperatura, humitat, pressió, vent)
