@@ -75,13 +75,25 @@ class CataloniaMap {
                 svg.style.height = 'auto';
                 
                 // Create a wrapper for zoom/pan functionality
-                const mainGroup = svg.querySelector('g[id="layer1"]') || svg.querySelector('g');
-                if (mainGroup) {
-                    mainGroup.id = 'main-map-group';
-                    this.currentZoom = 1;
-                    this.currentX = 0;
-                    this.currentY = 0;
+                // We need to wrap the existing layer1 group to not interfere with its original transform
+                const originalGroup = svg.querySelector('g[id="layer1"]') || svg.querySelector('g');
+                
+                // Create a transform wrapper group
+                const transformWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                transformWrapper.id = 'transform-wrapper';
+                
+                // Store reference to the original group
+                this.originalGroup = originalGroup;
+                
+                // Insert the wrapper before the original group, then move the original group inside
+                if (originalGroup && originalGroup.parentNode) {
+                    originalGroup.parentNode.insertBefore(transformWrapper, originalGroup);
+                    transformWrapper.appendChild(originalGroup);
                 }
+                
+                this.currentZoom = 1;
+                this.currentX = 0;
+                this.currentY = 0;
                 
                 // Style all paths - all are municipi borders, make them thin and black
                 const paths = svg.querySelectorAll('path');
@@ -117,11 +129,11 @@ class CataloniaMap {
                     text.style.pointerEvents = 'none';
                 });
                 
-                // Add markers group INSIDE main-map-group so it transforms with the map
+                // Add markers group INSIDE the original group so it uses the same coordinate system
                 const markersGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 markersGroup.id = 'markers-group';
-                if (mainGroup) {
-                    mainGroup.appendChild(markersGroup);
+                if (originalGroup) {
+                    originalGroup.appendChild(markersGroup);
                 } else {
                     svg.appendChild(markersGroup);
                 }
@@ -134,8 +146,8 @@ class CataloniaMap {
                 seaLabel.setAttribute('font-size', '16');
                 seaLabel.setAttribute('font-style', 'italic');
                 seaLabel.textContent = 'Mar Mediterrani';
-                if (mainGroup) {
-                    mainGroup.appendChild(seaLabel);
+                if (originalGroup) {
+                    originalGroup.appendChild(seaLabel);
                 } else {
                     svg.appendChild(seaLabel);
                 }
@@ -378,9 +390,9 @@ class CataloniaMap {
     }
     
     applyTransform() {
-        const mainGroup = document.getElementById('main-map-group');
-        if (mainGroup) {
-            mainGroup.setAttribute('transform', 
+        const transformWrapper = document.getElementById('transform-wrapper');
+        if (transformWrapper) {
+            transformWrapper.setAttribute('transform', 
                 `translate(${this.currentX}, ${this.currentY}) scale(${this.currentZoom})`);
         }
     }
@@ -449,23 +461,23 @@ class CataloniaMap {
     latLngToXY(lat, lng) {
         // Convert real coordinates to SVG coordinates
         // Catalunya bounds: lat 40.5-42.9, lng 0.15-3.35
-        // The SVG viewBox and transform need to be accounted for
-        // The main group has transform="translate(175.75862,181.94646)"
-        // This means the coordinate system is shifted
+        // The original group has transform="translate(175.75862,181.94646)" 
+        // which is preserved, so we work in the INTERNAL coordinate system
         
         // Normalize coordinates to 0-1 range
         const normX = (lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng);
         const normY = (lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat);
         
-        // The map in its own coordinate system (before the transform)
-        // has approximate bounds from (-175, -180) to (415, 385)
-        const mapWidth = 590;
-        const mapHeight = 565;
+        // The internal coordinate system of the SVG (before the translate transform)
+        // The map paths use coordinates roughly from (-175, -180) to (415, 385)
+        // Width ~590, Height ~565
+        const minX = -175;
+        const maxX = 415;
+        const minY = -180;
+        const maxY = 385;
         
-        // Calculate position in the coordinate space BEFORE the transform is applied
-        // (the transform will be applied by the main-map-group)
-        const x = normX * mapWidth - 175;
-        const y = (1 - normY) * mapHeight - 182;
+        const x = minX + normX * (maxX - minX);
+        const y = maxY - normY * (maxY - minY);  // Flip Y axis (lat increases up, SVG y increases down)
         
         return { x, y };
     }
