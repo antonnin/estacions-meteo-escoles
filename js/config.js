@@ -1,0 +1,342 @@
+/**
+ * ============================================
+ * CONFIGURACIÓ DE LES ESTACIONS METEOROLÒGIQUES
+ * ============================================
+ * 
+ * INSTRUCCIONS PER AL PROGRAMADOR:
+ * 
+ * Per afegir o modificar una estació meteorològica:
+ * 1. Afegeix una nova entrada a l'objecte SCHOOLS
+ * 2. Configura el channelId de ThingSpeak
+ * 3. Afegeix la readApiKey del canal
+ * 4. Personalitza els camps (fields) segons els sensors connectats
+ * 
+ * Per obtenir les claus de ThingSpeak:
+ * 1. Inicia sessió a https://thingspeak.com
+ * 2. Vés al teu canal
+ * 3. A "API Keys", copia la "Read API Key"
+ * 4. El "Channel ID" es troba a la configuració del canal
+ * 
+ * CONFIGURACIÓ GITHUB PAGES:
+ * 1. Puja aquest projecte a un repositori GitHub
+ * 2. Activa GitHub Pages a Settings > Pages > Source: main branch
+ * 3. Actualitza GITHUB_USERNAME i GITHUB_REPO a sota
+ */
+
+const CONFIG = {
+    // ==========================================
+    // CONFIGURACIÓ GITHUB - ACTUALITZA AIXÒ!
+    // ==========================================
+    github: {
+        username: 'antonnin',           // ← Canvia pel teu usuari de GitHub
+        repository: 'estacions-meteo-escoles', // ← Canvia pel nom del teu repositori
+        branch: 'main'
+    },
+
+    // ==========================================
+    // MODE DEMO - Activa per provar sense API keys
+    // ==========================================
+    // Posa a true per veure dades simulades, o afegeix ?demo=true a la URL
+    demoMode: true,  // ← Canvia a false quan tinguis les API keys reals
+
+    // ==========================================
+    // CONFIGURACIÓ GLOBAL DE THINGSPEAK
+    // ==========================================
+    thingspeak: {
+        baseUrl: 'https://api.thingspeak.com',
+        resultsPerRequest: 8000, // Màxim 8000 resultats per petició
+        updateInterval: 60000,  // Actualització cada 60 segons (en milisegons)
+    },
+
+    // ==========================================
+    // CONFIGURACIÓ DE LES ESCOLES
+    // ==========================================
+    // 
+    // IMPORTANT: Modifica aquesta secció amb les dades reals de cada escola
+    // 
+    schools: {
+        // ------------------------------------------
+        // ESCOLA 1
+        // ------------------------------------------
+        escola1: {
+            id: 'escola1',
+            name: 'Escola El Sol',
+            description: 'Estació meteorològica instal·lada al pati de l\'escola, amb sensors de temperatura, humitat i pressió.',
+            location: 'Barcelona',
+            icon: '🌻',
+            color: '#FF6B6B',
+            gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
+            
+            // CONFIGURACIÓ THINGSPEAK - MODIFICA AQUÍ
+            thingspeak: {
+                channelId: 'YOUR_CHANNEL_ID_1',      // ← Substitueix pel Channel ID real
+                readApiKey: 'YOUR_READ_API_KEY_1',   // ← Substitueix per la Read API Key real
+            },
+            
+            // CONFIGURACIÓ DELS CAMPS/SENSORS
+            // Cada field correspon a un sensor connectat al kit Elecfreaks
+            fields: {
+                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
+                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
+                field3: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
+                field4: { name: 'Llum', unit: 'lux', icon: '☀️', color: '#ffeaa7', type: 'light' },
+                field5: { name: 'Soroll', unit: 'dB', icon: '🔊', color: '#00cec9', type: 'noise' },
+                field6: { name: 'UV Index', unit: '', icon: '🌞', color: '#fd79a8', type: 'uv' },
+                field7: { name: 'Pluja', unit: 'mm', icon: '🌧️', color: '#74b9ff', type: 'rain' },
+                field8: { name: 'Vent', unit: 'm/s', icon: '💨', color: '#a29bfe', type: 'wind' },
+            },
+            active: true, // Posa a false si l'estació està inactiva
+        },
+
+        // ------------------------------------------
+        // ESCOLA 2
+        // ------------------------------------------
+        escola2: {
+            id: 'escola2',
+            name: 'Institut La Llum',
+            description: 'Sensors instal·lats a la terrassa de l\'edifici principal amb vista panoràmica.',
+            location: 'Terrassa',
+            icon: '💡',
+            color: '#4ECDC4',
+            gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+            
+            thingspeak: {
+                channelId: 'YOUR_CHANNEL_ID_2',
+                readApiKey: 'YOUR_READ_API_KEY_2',
+            },
+            
+            fields: {
+                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
+                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
+                field3: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
+                field4: { name: 'Llum', unit: 'lux', icon: '☀️', color: '#ffeaa7', type: 'light' },
+                field5: { name: 'Soroll', unit: 'dB', icon: '🔊', color: '#00cec9', type: 'noise' },
+                field6: { name: 'UV Index', unit: '', icon: '🌞', color: '#fd79a8', type: 'uv' },
+                field7: { name: 'Pluja', unit: 'mm', icon: '🌧️', color: '#74b9ff', type: 'rain' },
+                field8: { name: 'Vent', unit: 'm/s', icon: '💨', color: '#a29bfe', type: 'wind' },
+            },
+            active: true,
+        },
+
+        // ------------------------------------------
+        // ESCOLA 3
+        // ------------------------------------------
+        escola3: {
+            id: 'escola3',
+            name: 'CEIP Les Estrelles',
+            description: 'Projecte de ciències amb mesures meteorològiques diàries dels alumnes de 5è.',
+            location: 'Sabadell',
+            icon: '⭐',
+            color: '#667eea',
+            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            
+            thingspeak: {
+                channelId: 'YOUR_CHANNEL_ID_3',
+                readApiKey: 'YOUR_READ_API_KEY_3',
+            },
+            
+            fields: {
+                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
+                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
+                field3: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
+                field4: { name: 'Llum', unit: 'lux', icon: '☀️', color: '#ffeaa7', type: 'light' },
+                field5: { name: 'Soroll', unit: 'dB', icon: '🔊', color: '#00cec9', type: 'noise' },
+                field6: { name: 'UV Index', unit: '', icon: '🌞', color: '#fd79a8', type: 'uv' },
+                field7: { name: 'Pluja', unit: 'mm', icon: '🌧️', color: '#74b9ff', type: 'rain' },
+                field8: { name: 'Vent', unit: 'm/s', icon: '💨', color: '#a29bfe', type: 'wind' },
+            },
+            active: true,
+        },
+
+        // ------------------------------------------
+        // ESCOLA 4
+        // ------------------------------------------
+        escola4: {
+            id: 'escola4',
+            name: 'Escola El Vent',
+            description: 'Estació ubicada al jardí de l\'escola amb especial atenció a les mesures de vent.',
+            location: 'Badalona',
+            icon: '🍃',
+            color: '#f093fb',
+            gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            
+            thingspeak: {
+                channelId: 'YOUR_CHANNEL_ID_4',
+                readApiKey: 'YOUR_READ_API_KEY_4',
+            },
+            
+            fields: {
+                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
+                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
+                field3: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
+                field4: { name: 'Llum', unit: 'lux', icon: '☀️', color: '#ffeaa7', type: 'light' },
+                field5: { name: 'Soroll', unit: 'dB', icon: '🔊', color: '#00cec9', type: 'noise' },
+                field6: { name: 'UV Index', unit: '', icon: '🌞', color: '#fd79a8', type: 'uv' },
+                field7: { name: 'Pluja', unit: 'mm', icon: '🌧️', color: '#74b9ff', type: 'rain' },
+                field8: { name: 'Vent', unit: 'm/s', icon: '💨', color: '#a29bfe', type: 'wind' },
+            },
+            active: true,
+        },
+
+        // ------------------------------------------
+        // ESCOLA 5
+        // ------------------------------------------
+        escola5: {
+            id: 'escola5',
+            name: 'Institut Mar i Cel',
+            description: 'Estació costanera amb sensors especialitzats per mesurar condicions marítimes.',
+            location: 'Mataró',
+            icon: '🌊',
+            color: '#4facfe',
+            gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            
+            thingspeak: {
+                channelId: 'YOUR_CHANNEL_ID_5',
+                readApiKey: 'YOUR_READ_API_KEY_5',
+            },
+            
+            fields: {
+                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
+                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
+                field3: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
+                field4: { name: 'Llum', unit: 'lux', icon: '☀️', color: '#ffeaa7', type: 'light' },
+                field5: { name: 'Soroll', unit: 'dB', icon: '🔊', color: '#00cec9', type: 'noise' },
+                field6: { name: 'UV Index', unit: '', icon: '🌞', color: '#fd79a8', type: 'uv' },
+                field7: { name: 'Pluja', unit: 'mm', icon: '🌧️', color: '#74b9ff', type: 'rain' },
+                field8: { name: 'Vent', unit: 'm/s', icon: '💨', color: '#a29bfe', type: 'wind' },
+            },
+            active: true,
+        },
+    },
+
+    // ==========================================
+    // CONFIGURACIÓ DE L'EMMAGATZEMATGE DE DADES
+    // ==========================================
+    storage: {
+        // Ruta base per als arxius JSON de dades (relatiu a GitHub Pages)
+        dataPath: 'data/',
+        // Format del nom dels arxius: {schoolId}_{date}.json
+        fileNameFormat: '{schoolId}_{date}.json',
+        // Utilitza emmagatzematge local del navegador com a cache
+        useLocalStorage: true,
+        // Temps màxim de cache (en milisegons) - 5 minuts
+        cacheExpiry: 300000,
+    },
+
+    // ==========================================
+    // FUNCIONS AUXILIARS
+    // ==========================================
+    getDataUrl: function() {
+        // Retorna la URL base de les dades segons l'entorn
+        if (this.github.username !== 'EL_TEU_USUARI') {
+            return `https://${this.github.username}.github.io/${this.github.repository}/data/`;
+        }
+        // En desenvolupament local, usa ruta relativa
+        return 'data/';
+    },
+    
+    isGitHubConfigured: function() {
+        return this.github.username !== 'EL_TEU_USUARI';
+    },
+
+    // ==========================================
+    // CONFIGURACIÓ DE LES GRÀFIQUES
+    // ==========================================
+    charts: {
+        // Colors per defecte de les gràfiques
+        defaultColors: [
+            '#FF6B6B', '#54a0ff', '#1dd1a1', '#ffeaa7',
+            '#00cec9', '#fd79a8', '#74b9ff', '#a29bfe'
+        ],
+        // Opcions globals de Chart.js
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 750,
+                easing: 'easeInOutQuart'
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        displayFormats: {
+                            hour: 'HH:mm',
+                            day: 'dd MMM',
+                            week: 'dd MMM',
+                            month: 'MMM yyyy'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxTicksLimit: 8
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    },
+
+    // ==========================================
+    // TEXTOS EN CATALÀ
+    // ==========================================
+    i18n: {
+        title: 'Estació Meteorològica Escolar',
+        subtitle: 'Projecte STEM amb kits Elecfreaks',
+        schools: 'Escoles',
+        viewData: 'Veure Dades',
+        temperature: 'Temperatura',
+        humidity: 'Humitat',
+        pressure: 'Pressió',
+        light: 'Lluminositat',
+        noise: 'Soroll',
+        uv: 'Índex UV',
+        rain: 'Pluja',
+        wind: 'Vent',
+        startDate: 'Data d\'inici',
+        endDate: 'Data de fi',
+        update: 'Actualitzar',
+        loading: 'Carregant dades...',
+        noData: 'No hi ha dades disponibles per aquest període',
+        error: 'Error en carregar les dades',
+        lastUpdate: 'Última actualització',
+        online: 'En línia',
+        offline: 'Fora de línia',
+        today: 'Avui',
+        yesterday: 'Ahir',
+        last7days: 'Últims 7 dies',
+        last30days: 'Últims 30 dies',
+        thisMonth: 'Aquest mes',
+        backToHome: '← Tornar a l\'inici',
+    }
+};
+
+// Exportar per ús en altres mòduls
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = CONFIG;
+}
+

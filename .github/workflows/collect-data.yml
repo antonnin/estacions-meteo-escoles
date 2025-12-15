@@ -1,0 +1,52 @@
+name: Collect Weather Data
+
+on:
+  schedule:
+    # Executa cada hora
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # Permet execució manual
+
+permissions:
+  contents: write
+
+jobs:
+  collect-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install node-fetch
+
+      - name: Collect ThingSpeak Data
+        env:
+          ESCOLA1_CHANNEL_ID: ${{ secrets.ESCOLA1_CHANNEL_ID }}
+          ESCOLA1_API_KEY: ${{ secrets.ESCOLA1_API_KEY }}
+          ESCOLA2_CHANNEL_ID: ${{ secrets.ESCOLA2_CHANNEL_ID }}
+          ESCOLA2_API_KEY: ${{ secrets.ESCOLA2_API_KEY }}
+          ESCOLA3_CHANNEL_ID: ${{ secrets.ESCOLA3_CHANNEL_ID }}
+          ESCOLA3_API_KEY: ${{ secrets.ESCOLA3_API_KEY }}
+          ESCOLA4_CHANNEL_ID: ${{ secrets.ESCOLA4_CHANNEL_ID }}
+          ESCOLA4_API_KEY: ${{ secrets.ESCOLA4_API_KEY }}
+          ESCOLA5_CHANNEL_ID: ${{ secrets.ESCOLA5_CHANNEL_ID }}
+          ESCOLA5_API_KEY: ${{ secrets.ESCOLA5_API_KEY }}
+        run: node scripts/collect-data.js
+
+      - name: Update data index
+        run: node scripts/update-index.js
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/
+          git diff --staged --quiet || git commit -m "📊 Actualització automàtica de dades meteorològiques"
+          git push

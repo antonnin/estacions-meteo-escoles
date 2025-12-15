@@ -1,0 +1,25 @@
+{
+  "name": "estacions-meteo-escoles",
+  "version": "1.0.0",
+  "description": "Dashboard d'estacions meteorològiques escolars",
+  "private": true,
+  "scripts": {
+    "collect-data": "node scripts/collect-data.js",
+    "update-index": "node scripts/update-index.js",
+    "serve": "npx serve -l 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EL_TEU_USUARI/estacions-meteo-escoles.git"
+  },
+  "keywords": [
+    "weather",
+    "station",
+    "school",
+    "education",
+    "thingspeak",
+    "elecfreaks"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,104 @@
+name: Fetch Weather Data from ThingSpeak
+
+on:
+  schedule:
+    # Executa cada hora
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # Permet executar manualment
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Create data directory
+        run: mkdir -p data
+      
+      - name: Fetch data from ThingSpeak
+        env:
+          # API Keys - Configura com a secrets del repositori
+          ESCOLA1_CHANNEL_ID: ${{ secrets.ESCOLA1_CHANNEL_ID }}
+          ESCOLA1_API_KEY: ${{ secrets.ESCOLA1_API_KEY }}
+          ESCOLA2_CHANNEL_ID: ${{ secrets.ESCOLA2_CHANNEL_ID }}
+          ESCOLA2_API_KEY: ${{ secrets.ESCOLA2_API_KEY }}
+          ESCOLA3_CHANNEL_ID: ${{ secrets.ESCOLA3_CHANNEL_ID }}
+          ESCOLA3_API_KEY: ${{ secrets.ESCOLA3_API_KEY }}
+          ESCOLA4_CHANNEL_ID: ${{ secrets.ESCOLA4_CHANNEL_ID }}
+          ESCOLA4_API_KEY: ${{ secrets.ESCOLA4_API_KEY }}
+          ESCOLA5_CHANNEL_ID: ${{ secrets.ESCOLA5_CHANNEL_ID }}
+          ESCOLA5_API_KEY: ${{ secrets.ESCOLA5_API_KEY }}
+        run: |
+          # Script per obtenir dades de cada escola
+          
+          fetch_school_data() {
+            SCHOOL_ID=$1
+            CHANNEL_ID=$2
+            API_KEY=$3
+            
+            if [ -n "$CHANNEL_ID" ] && [ -n "$API_KEY" ]; then
+              echo "📥 Obtenint dades de $SCHOOL_ID (Channel: $CHANNEL_ID)..."
+              
+              # Obtenir últimes 8000 entrades
+              curl -s "https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=${API_KEY}&results=8000" \
+                -o "data/${SCHOOL_ID}_latest.json"
+              
+              # Obtenir només l'última entrada
+              curl -s "https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds/last.json?api_key=${API_KEY}" \
+                -o "data/${SCHOOL_ID}_last.json"
+              
+              echo "✅ Dades de $SCHOOL_ID desades"
+            else
+              echo "⚠️ Saltant $SCHOOL_ID (no configurat)"
+            fi
+          }
+          
+          # Obtenir dades de cada escola
+          fetch_school_data "escola1" "$ESCOLA1_CHANNEL_ID" "$ESCOLA1_API_KEY"
+          fetch_school_data "escola2" "$ESCOLA2_CHANNEL_ID" "$ESCOLA2_API_KEY"
+          fetch_school_data "escola3" "$ESCOLA3_CHANNEL_ID" "$ESCOLA3_API_KEY"
+          fetch_school_data "escola4" "$ESCOLA4_CHANNEL_ID" "$ESCOLA4_API_KEY"
+          fetch_school_data "escola5" "$ESCOLA5_CHANNEL_ID" "$ESCOLA5_API_KEY"
+          
+          # Crear índex de dades
+          echo "📋 Creant índex..."
+          cat > data/index.json << EOF
+          {
+            "lastUpdate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "schools": {
+              "escola1": { "hasData": $([ -f "data/escola1_latest.json" ] && echo "true" || echo "false") },
+              "escola2": { "hasData": $([ -f "data/escola2_latest.json" ] && echo "true" || echo "false") },
+              "escola3": { "hasData": $([ -f "data/escola3_latest.json" ] && echo "true" || echo "false") },
+              "escola4": { "hasData": $([ -f "data/escola4_latest.json" ] && echo "true" || echo "false") },
+              "escola5": { "hasData": $([ -f "data/escola5_latest.json" ] && echo "true" || echo "false") }
+            }
+          }
+          EOF
+          
+          echo "✅ Índex creat"
+      
+      - name: Commit and push data
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add data/
+          
+          if git diff --staged --quiet; then
+            echo "No hi ha canvis per cometre"
+          else
+            git commit -m "🌦️ Actualització de dades meteorològiques - $(date -u +"%Y-%m-%d %H:%M UTC")"
+            git push
+            echo "✅ Dades actualitzades al repositori"
+          fi

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Estació Meteorològica Escolar - Projecte STEM amb kits Elecfreaks. 5 escoles mesurant el temps en temps real.">
+    <title>Estació Meteorològica Escolar | Projecte STEM</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌦️</text></svg>">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">🌦️</div>
+                    <div class="logo-text">
+                        MeteoEscola
+                        <span>Projecte STEM</span>
+                    </div>
+                </a>
+                
+                <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Menú">
+                    ☰
+                </button>
+                
+                <nav class="nav" id="mainNav">
+                    <a href="index.html" class="nav-link active">Inici</a>
+                    <a href="#escoles" class="nav-link">Escoles</a>
+                    <a href="#projecte" class="nav-link">El Projecte</a>
+                    <a href="#contacte" class="nav-link">Contacte</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>🔬</span>
+                    <span>Projecte Educatiu STEM</span>
+                </div>
+                <h1>Estacions Meteorològiques Escolars</h1>
+                <p>
+                    Alumnes d'11 anys de 5 escoles diferents han construït les seves pròpies 
+                    estacions meteorològiques utilitzant kits <strong>Elecfreaks</strong>. 
+                    Descobreix les dades del temps en temps real recollides pels nostres joves científics!
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Escoles</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">8</span>
+                        <span class="stat-label">Sensors</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Dades en Temps Real</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Schools Section -->
+    <section class="schools-section" id="escoles">
+        <div class="container">
+            <div class="section-title">
+                <h2>🏫 Les Nostres Escoles</h2>
+                <p>Fes clic a una escola per veure les dades meteorològiques en temps real</p>
+            </div>
+            
+            <div class="schools-grid" id="schoolsGrid">
+                <!-- Les targetes es generen dinàmicament -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Info Section -->
+    <section class="schools-section" id="projecte">
+        <div class="container">
+            <div class="section-title">
+                <h2>📚 Sobre el Projecte</h2>
+                <p>Aprenentatge basat en projectes reals</p>
+            </div>
+            
+            <div class="schools-grid">
+                <div class="school-card" style="cursor: default;">
+                    <div class="school-card-header" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                        <div class="school-icon">🔧</div>
+                    </div>
+                    <div class="school-card-body">
+                        <h3>Construcció</h3>
+                        <p>Els alumnes han muntat les estacions meteorològiques utilitzant kits Elecfreaks micro:bit, aprenent electrònica bàsica i programació.</p>
+                    </div>
+                </div>
+                
+                <div class="school-card" style="cursor: default;">
+                    <div class="school-card-header" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);">
+                        <div class="school-icon">💻</div>
+                    </div>
+                    <div class="school-card-body">
+                        <h3>Programació</h3>
+                        <p>Amb MakeCode i Python, els estudiants han programat els sensors per enviar dades automàticament a la plataforma ThingSpeak.</p>
+                    </div>
+                </div>
+                
+                <div class="school-card" style="cursor: default;">
+                    <div class="school-card-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
+                        <div class="school-icon">📊</div>
+                    </div>
+                    <div class="school-card-body">
+                        <h3>Anàlisi de Dades</h3>
+                        <p>Les dades recollides permeten als alumnes analitzar patrons meteorològics i comparar resultats entre escoles.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sensors Section -->
+    <section class="schools-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>🛠️ Els Nostres Sensors</h2>
+                <p>Què mesurem a cada estació</p>
+            </div>
+            
+            <div class="current-weather" style="max-width: 1200px; margin: 0 auto;">
+                <div class="weather-card">
+                    <div class="weather-card-icon temp">🌡️</div>
+                    <div class="weather-card-content">
+                        <h3>Temperatura</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Graus Celsius</p>
+                    </div>
+                </div>
+                <div class="weather-card">
+                    <div class="weather-card-icon humidity">💧</div>
+                    <div class="weather-card-content">
+                        <h3>Humitat</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Percentatge</p>
+                    </div>
+                </div>
+                <div class="weather-card">
+                    <div class="weather-card-icon pressure">📊</div>
+                    <div class="weather-card-content">
+                        <h3>Pressió</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Hectopascals</p>
+                    </div>
+                </div>
+                <div class="weather-card">
+                    <div class="weather-card-icon light">☀️</div>
+                    <div class="weather-card-content">
+                        <h3>Lluminositat</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Lux</p>
+                    </div>
+                </div>
+                <div class="weather-card">
+                    <div class="weather-card-icon noise">🔊</div>
+                    <div class="weather-card-content">
+                        <h3>Soroll</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Decibels</p>
+                    </div>
+                </div>
+                <div class="weather-card">
+                    <div class="weather-card-icon uv">🌞</div>
+                    <div class="weather-card-content">
+                        <h3>Índex UV</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Ultraviolat</p>
+                    </div>
+                </div>
+                <div class="weather-card">
+                    <div class="weather-card-icon rain">🌧️</div>
+                    <div class="weather-card-content">
+                        <h3>Pluja</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Mil·límetres</p>
+                    </div>
+                </div>
+                <div class="weather-card">
+                    <div class="weather-card-icon wind">💨</div>
+                    <div class="weather-card-content">
+                        <h3>Vent</h3>
+                        <p style="color: var(--gray-500); font-size: 0.9rem;">Metres/segon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contacte">
+        <div class="container">
+            <div class="footer-content">
+                <p>
+                    🌦️ MeteoEscola © 2025 - Projecte STEM amb <a href="https://www.elecfreaks.com/" target="_blank" rel="noopener">Elecfreaks</a>
+                </p>
+                <div class="footer-links">
+                    <a href="https://thingspeak.com/" target="_blank" rel="noopener">ThingSpeak</a>
+                    <a href="https://microbit.org/" target="_blank" rel="noopener">micro:bit</a>
+                    <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script>
+        // Mobile menu toggle
+        function toggleMenu() {
+            document.getElementById('mainNav').classList.toggle('open');
+        }
+
+        // Generate school cards dynamically
+        function generateSchoolCards() {
+            const grid = document.getElementById('schoolsGrid');
+            const schools = CONFIG.schools;
+            
+            let html = '';
+            let index = 1;
+            
+            for (const [schoolId, school] of Object.entries(schools)) {
+                html += `
+                    <a href="escola.html?id=${schoolId}" class="school-card" data-school="${index}">
+                        <div class="school-card-header">
+                            <div class="school-icon">${school.icon}</div>
+                        </div>
+                        <div class="school-card-body">
+                            <h3>${school.name}</h3>
+                            <p>${school.description}</p>
+                            <div class="school-card-footer">
+                                <div class="school-status">
+                                    <span class="status-dot ${school.active ? '' : 'offline'}"></span>
+                                    <span>${school.active ? 'En línia' : 'Fora de línia'}</span>
+                                </div>
+                                <span class="view-data-btn">
+                                    Veure Dades →
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                `;
+                index++;
+            }
+            
+            grid.innerHTML = html;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSchoolCards();
+            
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    // Close mobile menu
+                    document.getElementById('mainNav').classList.remove('open');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

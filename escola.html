@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dades meteorològiques en temps real - Estació Meteorològica Escolar">
+    <title>Dashboard | Estació Meteorològica Escolar</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌦️</text></svg>">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">🌦️</div>
+                    <div class="logo-text">
+                        MeteoEscola
+                        <span>Projecte STEM</span>
+                    </div>
+                </a>
+                
+                <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Menú">
+                    ☰
+                </button>
+                
+                <nav class="nav" id="mainNav">
+                    <a href="index.html" class="nav-link">Inici</a>
+                    <a href="index.html#escoles" class="nav-link">Escoles</a>
+                    <a href="index.html#projecte" class="nav-link">El Projecte</a>
+                    <a href="index.html#contacte" class="nav-link">Contacte</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard">
+        <div class="container">
+            <!-- Back Link -->
+            <a href="index.html" class="back-link">
+                ← Tornar a l'inici
+            </a>
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <div class="school-badge" id="schoolBadge">🏫</div>
+                    <h1>
+                        <span id="schoolName">Carregant...</span>
+                        <span id="schoolLocation"></span>
+                    </h1>
+                </div>
+                
+                <!-- Date Controls -->
+                <div class="date-controls">
+                    <div class="date-input-group">
+                        <label for="startDate">📅 Data d'inici</label>
+                        <input type="datetime-local" id="startDate">
+                    </div>
+                    <div class="date-input-group">
+                        <label for="endDate">📅 Data de fi</label>
+                        <input type="datetime-local" id="endDate">
+                    </div>
+                    <button class="btn btn-primary" onclick="updateData()">
+                        🔄 Actualitzar
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData('csv')">
+                        📥 Exportar CSV
+                    </button>
+                </div>
+                
+                <!-- Quick Date Buttons -->
+                <div class="quick-dates">
+                    <button class="quick-date-btn active" onclick="setQuickDate('today')">Avui</button>
+                    <button class="quick-date-btn" onclick="setQuickDate('yesterday')">Ahir</button>
+                    <button class="quick-date-btn" onclick="setQuickDate('7days')">Últims 7 dies</button>
+                    <button class="quick-date-btn" onclick="setQuickDate('30days')">Últims 30 dies</button>
+                    <button class="quick-date-btn" onclick="setQuickDate('month')">Aquest mes</button>
+                </div>
+                
+                <!-- Last Update -->
+                <div class="last-update" id="lastUpdate">
+                    <span>Última actualització:</span>
+                    <span class="update-time" id="updateTime">--</span>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading" id="loadingState">
+                <div class="loading-spinner"></div>
+                <p>Carregant dades...</p>
+            </div>
+
+            <!-- Error State -->
+            <div class="error-message" id="errorState" style="display: none;">
+                <span>⚠️</span>
+                <span id="errorMessage">Error en carregar les dades</span>
+            </div>
+
+            <!-- Current Weather Cards -->
+            <div class="current-weather" id="currentWeather" style="display: none;">
+                <!-- Generated dynamically -->
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid" id="chartsGrid" style="display: none;">
+                <!-- Generated dynamically -->
+            </div>
+
+            <!-- No Data State -->
+            <div class="no-data" id="noDataState" style="display: none;">
+                <div class="no-data-icon">📭</div>
+                <h3>No hi ha dades disponibles</h3>
+                <p>No s'han trobat dades per al període seleccionat.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>
+                    🌦️ MeteoEscola © 2025 - Projecte STEM amb <a href="https://www.elecfreaks.com/" target="_blank" rel="noopener">Elecfreaks</a>
+                </p>
+                <div class="footer-links">
+                    <a href="https://thingspeak.com/" target="_blank" rel="noopener">ThingSpeak</a>
+                    <a href="https://microbit.org/" target="_blank" rel="noopener">micro:bit</a>
+                    <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/thingspeak-service.js"></script>
+    <script src="js/data-storage.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/demo-data.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
