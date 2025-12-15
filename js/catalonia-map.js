@@ -109,7 +109,7 @@ class CataloniaMap {
                         
                         <!-- Catalunya amb comarques -->
                         <g id="catalunya-comarques" class="comarques-group">
-                            <!-- Contorn principal de Catalunya -->
+                            <!-- Contorn principal de Catalunya amb farcit -->
                             <path class="catalunya-outline" d="
                                 M 85,45 
                                 C 100,35 130,28 160,25
@@ -126,7 +126,7 @@ class CataloniaMap {
                                 C 30,140 45,105 65,75
                                 C 75,60 85,50 85,45
                                 Z
-                            " class="map-fill"/>
+                            "/>
                             
                             <!-- Divisions de comarques (simplificades) -->
                             <path class="comarca-line" d="M 85,45 C 150,80 220,85 290,70 L 385,55" />
@@ -155,7 +155,7 @@ class CataloniaMap {
                                 C 30,140 45,105 65,75
                                 C 75,60 85,50 85,45
                                 Z
-                            " fill="none"/>
+                            "/>
                         </g>
                         
                         <text x="420" y="420" class="sea-label" font-size="14" font-style="italic">Mar Mediterrani</text>
