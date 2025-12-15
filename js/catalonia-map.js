@@ -419,21 +419,21 @@ class CataloniaMap {
                     const svgPt = pt.matrixTransform(inv);
                     const oldZoom = this.currentZoom;
                     this.currentZoom *= factor;
-                    this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+                    this.currentZoom = Math.max(0.5, Math.min(8, this.currentZoom));
                     // Adjust pan so the zoom is centered on mouse
                     this.currentX -= (svgPt.x * (this.currentZoom - oldZoom));
                     this.currentY -= (svgPt.y * (this.currentZoom - oldZoom));
                 } else {
                     this.currentZoom *= factor;
-                    this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+                    this.currentZoom = Math.max(0.5, Math.min(8, this.currentZoom));
                 }
             } else {
                 this.currentZoom *= factor;
-                this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+                this.currentZoom = Math.max(0.5, Math.min(8, this.currentZoom));
             }
         } else {
             this.currentZoom *= factor;
-            this.currentZoom = Math.max(0.5, Math.min(3, this.currentZoom));
+            this.currentZoom = Math.max(0.5, Math.min(8, this.currentZoom));
         }
         this.applyTransform();
         this.updateMarkerScales();

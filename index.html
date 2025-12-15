@@ -222,6 +222,17 @@
             let index = 1;
             
             for (const [schoolId, school] of Object.entries(schools)) {
+                // Generate friendly URL based on school name
+                let schoolUrl = '';
+                switch (schoolId) {
+                    case 'escola1': schoolUrl = 'escola-mas-i-perera.html'; break;
+                    case 'escola2': schoolUrl = 'escola-jaume-balmes.html'; break;
+                    case 'escola3': schoolUrl = 'escola-santa-coloma.html'; break;
+                    case 'escola4': schoolUrl = 'escola-mar-i-cel.html'; break;
+                    case 'escola5': schoolUrl = 'zer-moianes.html'; break;
+                    case 'escola6': schoolUrl = 'escola-el-castellot.html'; break;
+                    default: schoolUrl = 'escola.html?id=' + schoolId;
+                }
                 html += `
                     <div class="school-card" data-school="${index}">
                         <div class="school-card-header">
@@ -237,7 +248,7 @@
                                     <span class="status-dot ${school.active ? '' : 'offline'}"></span>
                                     <span>${school.active ? 'En línia' : 'Fora de línia'}</span>
                                 </div>
-                                <a href="escola.html?id=${schoolId}" class="view-data-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s;">
+                                <a href="${schoolUrl}" class="view-data-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s;">
                                     Veure Dades →
                                 </a>
                             </div>

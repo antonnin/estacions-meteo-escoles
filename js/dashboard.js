@@ -52,9 +52,22 @@ const elements = {
  * Inicialització
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Obtenir ID de l'escola de la URL
+    // Obtenir ID de l'escola de la URL o deduir-lo del nom del fitxer HTML
     const urlParams = new URLSearchParams(window.location.search);
-    currentSchoolId = urlParams.get('id') || 'escola1';
+    currentSchoolId = urlParams.get('id');
+    if (!currentSchoolId) {
+        // Detectar per nom de fitxer (friendly URL)
+        const file = window.location.pathname.split('/').pop();
+        switch (file) {
+            case 'escola-mas-i-perera.html': currentSchoolId = 'escola1'; break;
+            case 'escola-jaume-balmes.html': currentSchoolId = 'escola2'; break;
+            case 'escola-santa-coloma.html': currentSchoolId = 'escola3'; break;
+            case 'escola-mar-i-cel.html': currentSchoolId = 'escola4'; break;
+            case 'zer-moianes.html': currentSchoolId = 'escola5'; break;
+            case 'escola-el-castellot.html': currentSchoolId = 'escola6'; break;
+            default: currentSchoolId = 'escola1';
+        }
+    }
     
     // Verificar que l'escola existeix
     currentSchool = CONFIG.schools[currentSchoolId];
