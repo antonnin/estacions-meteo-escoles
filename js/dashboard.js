@@ -78,25 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Actualitzar títol de la pàgina
-    document.title = `${currentSchool.name} | MeteoEscola`;
+    document.title = `${currentSchool.name} | MeteoBit`;
     
     // Inicialitzar UI
     initializeUI();
     
-    // Configurar dates per defecte (avui)
+    // Configurar dates per defecte (avui) i carregar dades d'avui per defecte
     setQuickDate('today');
-    // Ensure the 'today' button is visually active
-    setTimeout(() => {
-        document.querySelectorAll('.quick-date-btn').forEach(btn => {
-            if (btn.textContent.trim().toLowerCase().includes('avui')) {
-                btn.classList.add('active');
-            }
-        });
-    }, 0);
-    
-    // Carregar dades
-    loadData();
-    
+    // No need to call loadData() here, setQuickDate already sets the date inputs and loads data
     // Iniciar actualització automàtica
     startAutoUpdate();
 });
@@ -433,7 +422,16 @@ function setQuickDate(period) {
     
     // Actualitzar botons actius
     document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
-    event?.target?.classList.add('active');
+    // If called programmatically (not from a button click), select the 'avui' button
+    if (!event || !event.target) {
+        document.querySelectorAll('.quick-date-btn').forEach(btn => {
+            if (btn.textContent.trim().toLowerCase().includes('avui')) {
+                btn.classList.add('active');
+            }
+        });
+    } else {
+        event.target.classList.add('active');
+    }
     
     switch (period) {
         case 'today':
