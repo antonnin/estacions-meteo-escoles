@@ -84,8 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeUI();
     
     // Configurar dates per defecte (avui) i carregar dades d'avui per defecte
-    setQuickDate('today');
-    // No need to call loadData() here, setQuickDate already sets the date inputs and loads data
+    // Força la selecció de dates d'avui i carrega dades, independentment de l'estat dels inputs
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    const end = now;
+    elements.startDate.value = formatDateTimeLocal(start);
+    elements.endDate.value = formatDateTimeLocal(end);
+    // Visualment marca el botó 'Avui' com actiu
+    document.querySelectorAll('.quick-date-btn').forEach(btn => {
+        if (btn.textContent.trim().toLowerCase().includes('avui')) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    loadData();
+    // Iniciar actualització automàtica
     // Iniciar actualització automàtica
     startAutoUpdate();
 });
@@ -422,15 +436,10 @@ function setQuickDate(period) {
     
     // Actualitzar botons actius
     document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
-    // If called programmatically (not from a button click), select the 'avui' button
-    if (!event || !event.target) {
-        document.querySelectorAll('.quick-date-btn').forEach(btn => {
-            if (btn.textContent.trim().toLowerCase().includes('avui')) {
-                btn.classList.add('active');
-            }
-        });
-    } else {
+    if (event && event.target) {
         event.target.classList.add('active');
+    } else {
+        // No event: do not touch button state (handled on DOMContentLoaded)
     }
     
     switch (period) {
