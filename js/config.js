@@ -68,7 +68,7 @@ const CONFIG = {
             color: '#FF6B6B',
             gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
             // GPS coordinates for map positioning (from Wikipedia: 41°20′53.75″N 1°41′34.60″E)
-            coordinates: { lat: 41.3482, lng: 1.6929 },
+            coordinates: { lat: 41.3632, lng: 1.7129 },
             
             // CONFIGURACIÓ THINGSPEAK - MODIFICA AQUÍ
             thingspeak: {
@@ -100,7 +100,7 @@ const CONFIG = {
             color: '#4ECDC4',
             gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
             // GPS coordinates for map positioning (Sant Martí Sarroca: 41°18′36″N 1°36′37″E)
-            coordinates: { lat: 41.3100, lng: 1.6103 },
+            coordinates: { lat: 41.3250, lng: 1.6303 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_2',
@@ -128,7 +128,7 @@ const CONFIG = {
             icon: '⭐',
             color: '#667eea',
             gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            coordinates: { lat: 42.3915, lng: 1.9185 },
+            coordinates: { lat: 42.4065, lng: 1.9385 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_3',
@@ -157,7 +157,7 @@ const CONFIG = {
             color: '#f093fb',
             gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
             // GPS coordinates for map positioning (from Wikipedia: 41°12′26″N 1°40′26.4″E)
-            coordinates: { lat: 41.2072, lng: 1.6740 },
+            coordinates: { lat: 41.2222, lng: 1.6940 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_4',
@@ -185,7 +185,7 @@ const CONFIG = {
             icon: '🌊',
             color: '#4facfe',
             gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            coordinates: { lat: 41.8120, lng: 2.0994 },
+            coordinates: { lat: 41.8270, lng: 2.1194 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_5',
@@ -213,7 +213,7 @@ const CONFIG = {
             icon: '🏰',
             color: '#ff9ff3',
             gradient: 'linear-gradient(135deg, #ff9ff3 0%, #feca57 100%)',
-            coordinates: { lat: 41.3266, lng: 1.6156 },
+            coordinates: { lat: 41.3416, lng: 1.6356 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_6',
