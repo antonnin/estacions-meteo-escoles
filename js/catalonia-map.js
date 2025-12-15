@@ -41,7 +41,7 @@ class CataloniaMap {
     init() {
         this.render();
         this.loadCatalunyaMap();
-        this.loadData();
+        // loadData() will be called after map loads
     }
     
     async loadCatalunyaMap() {
@@ -117,10 +117,14 @@ class CataloniaMap {
                     text.style.pointerEvents = 'none';
                 });
                 
-                // Add markers group
+                // Add markers group INSIDE main-map-group so it transforms with the map
                 const markersGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 markersGroup.id = 'markers-group';
-                svg.appendChild(markersGroup);
+                if (mainGroup) {
+                    mainGroup.appendChild(markersGroup);
+                } else {
+                    svg.appendChild(markersGroup);
+                }
                 
                 // Add Mediterranean Sea label
                 const seaLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -130,7 +134,11 @@ class CataloniaMap {
                 seaLabel.setAttribute('font-size', '16');
                 seaLabel.setAttribute('font-style', 'italic');
                 seaLabel.textContent = 'Mar Mediterrani';
-                svg.appendChild(seaLabel);
+                if (mainGroup) {
+                    mainGroup.appendChild(seaLabel);
+                } else {
+                    svg.appendChild(seaLabel);
+                }
                 
                 // Add zoom controls
                 this.addZoomControls(container);
@@ -139,6 +147,9 @@ class CataloniaMap {
                 this.addPanControls(svg);
                 
                 console.log('Map loaded successfully!');
+                
+                // Now that SVG is loaded, load data and create markers
+                this.loadData();
             } else {
                 console.error('SVG element not found after insertion');
             }
@@ -438,21 +449,23 @@ class CataloniaMap {
     latLngToXY(lat, lng) {
         // Convert real coordinates to SVG coordinates
         // Catalunya bounds: lat 40.5-42.9, lng 0.15-3.35
-        // Real Catalunya map SVG: width 791, height 764
-        // The SVG has transform="translate(175.75862,181.94646)" on the main group
-        // So we need to account for this offset
+        // The SVG viewBox and transform need to be accounted for
+        // The main group has transform="translate(175.75862,181.94646)"
+        // This means the coordinate system is shifted
         
         // Normalize coordinates to 0-1 range
         const normX = (lng - this.bounds.minLng) / (this.bounds.maxLng - this.bounds.minLng);
         const normY = (lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat);
         
-        // Map dimensions in the coordinate space
+        // The map in its own coordinate system (before the transform)
+        // has approximate bounds from (-175, -180) to (415, 385)
         const mapWidth = 590;
         const mapHeight = 565;
         
-        // Calculate position in the original coordinate space (before transform)
+        // Calculate position in the coordinate space BEFORE the transform is applied
+        // (the transform will be applied by the main-map-group)
         const x = normX * mapWidth - 175;
-        const y = (1 - normY) * mapHeight - 180;
+        const y = (1 - normY) * mapHeight - 182;
         
         return { x, y };
     }
