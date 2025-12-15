@@ -9,7 +9,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Styles -->
     <link rel="stylesheet" href="css/styles.css">
@@ -80,6 +80,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Catalonia Map Section -->
+    <section class="schools-section" id="mapa">
+        <div class="container">
+            <div id="catalonia-map"></div>
         </div>
     </section>
 
@@ -189,8 +196,15 @@
         </div>
     </footer>
 
+    <!-- Demo Mode Toggle -->
+    <button class="demo-toggle" id="demoToggle" onclick="toggleDemoMode()" title="Activa/Desactiva Mode Demo">
+        <span class="demo-toggle-icon">🔬</span>
+        <span class="demo-toggle-text">Demo</span>
+    </button>
+
     <!-- Scripts -->
     <script src="js/config.js"></script>
+    <script src="js/catalonia-map.js"></script>
     <script>
         // Mobile menu toggle
         function toggleMenu() {
@@ -237,6 +251,8 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             generateSchoolCards();
+            initCataloniaMap();
+            initDemoToggle();
             
             // Smooth scroll for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -251,6 +267,46 @@
                 });
             });
         });
+        
+        // Demo mode functions
+        function initDemoToggle() {
+            const toggle = document.getElementById('demoToggle');
+            if (toggle) {
+                updateDemoToggleState();
+            }
+        }
+        
+        function toggleDemoMode() {
+            CONFIG.demoMode = !CONFIG.demoMode;
+            updateDemoToggleState();
+            
+            // Update URL with demo parameter
+            const url = new URL(window.location.href);
+            if (CONFIG.demoMode) {
+                url.searchParams.set('demo', 'true');
+            } else {
+                url.searchParams.delete('demo');
+            }
+            window.history.replaceState({}, '', url);
+            
+            // Reload map data
+            if (typeof cataloniaMap !== 'undefined' && cataloniaMap) {
+                cataloniaMap.loadData();
+            }
+        }
+        
+        function updateDemoToggleState() {
+            const toggle = document.getElementById('demoToggle');
+            if (toggle) {
+                if (CONFIG.demoMode) {
+                    toggle.classList.add('active');
+                    toggle.title = 'Mode Demo activat - Fes clic per desactivar';
+                } else {
+                    toggle.classList.remove('active');
+                    toggle.title = 'Mode Demo desactivat - Fes clic per activar';
+                }
+            }
+        }
     </script>
 </body>
 </html>

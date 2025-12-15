@@ -1,6 +1,7 @@
 /* ===================================
    METEOBIT - MODERN WEATHER DASHBOARD
    Trendy Educational Design 2025
+   With Light/Dark Mode Support
    =================================== */
 
 /* CSS Variables - Modern Design System */
@@ -68,9 +69,47 @@
     --transition-bounce: 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
     
     /* Typography - Modern font stack */
-    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-display: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
-    --font-mono: 'Outfit', 'SF Mono', 'Fira Code', monospace;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'Inter', 'SF Mono', 'Fira Code', monospace;
+    
+    /* Theme colors - Dark mode default */
+    --bg-primary: #0F172A;
+    --bg-secondary: #1E293B;
+    --bg-tertiary: #334155;
+    --bg-card: rgba(255, 255, 255, 0.08);
+    --bg-card-hover: rgba(255, 255, 255, 0.12);
+    --border-color: rgba(255, 255, 255, 0.15);
+    --border-color-hover: rgba(255, 255, 255, 0.3);
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --text-tertiary: rgba(255, 255, 255, 0.6);
+    --text-muted: rgba(255, 255, 255, 0.4);
+    --header-bg: rgba(15, 23, 42, 0.8);
+    --map-fill: rgba(255, 255, 255, 0.08);
+    --map-stroke: rgba(255, 255, 255, 0.3);
+    --comarca-stroke: rgba(255, 255, 255, 0.1);
+}
+
+/* Light Mode */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-primary: #F8FAFC;
+        --bg-secondary: #E2E8F0;
+        --bg-tertiary: #CBD5E1;
+        --bg-card: rgba(255, 255, 255, 0.9);
+        --bg-card-hover: rgba(255, 255, 255, 1);
+        --border-color: rgba(0, 0, 0, 0.1);
+        --border-color-hover: rgba(0, 0, 0, 0.2);
+        --text-primary: #0F172A;
+        --text-secondary: #334155;
+        --text-tertiary: #64748B;
+        --text-muted: #94A3B8;
+        --header-bg: rgba(248, 250, 252, 0.9);
+        --map-fill: rgba(0, 0, 0, 0.05);
+        --map-stroke: rgba(0, 0, 0, 0.2);
+        --comarca-stroke: rgba(0, 0, 0, 0.08);
+    }
 }
 
 /* Reset & Base */
@@ -88,12 +127,13 @@ html {
 
 body {
     font-family: var(--font-sans);
-    background: #0F172A;
+    background: var(--bg-primary);
     min-height: 100vh;
-    color: var(--gray-900);
+    color: var(--text-primary);
     line-height: 1.6;
     font-size: 16px;
     overflow-x: hidden;
+    transition: background-color var(--transition), color var(--transition);
 }
 
 /* Animated Background - Aurora Effect */
@@ -104,8 +144,9 @@ body {
     width: 100%;
     height: 100%;
     z-index: -2;
-    background: linear-gradient(125deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+    background: linear-gradient(125deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
     overflow: hidden;
+    transition: background var(--transition);
 }
 
 .animated-bg::before {
@@ -198,10 +239,10 @@ body {
 
 /* Header - Glass-morphism effect */
 .header {
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--header-bg);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-color);
     padding: 20px 0;
     position: sticky;
     top: 0;
@@ -239,10 +280,7 @@ body {
     font-size: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #FFFFFF 0%, #E0F2FE 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text-primary);
 }
 
 .logo-text span {
@@ -251,7 +289,7 @@ body {
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    opacity: 0.7;
+    color: var(--text-tertiary);
     margin-top: 2px;
 }
 
@@ -263,7 +301,7 @@ body {
 
 .nav-link {
     padding: 10px 20px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.95rem;
@@ -273,21 +311,21 @@ body {
 }
 
 .nav-link:hover {
-    color: var(--white);
-    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    background: var(--bg-card);
 }
 
 .nav-link.active {
-    color: var(--white);
-    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    background: var(--bg-card-hover);
 }
 
 /* Mobile Menu Button */
 .mobile-menu-btn {
     display: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-card);
     border: none;
-    color: var(--white);
+    color: var(--text-primary);
     font-size: 1.5rem;
     padding: 10px 16px;
     border-radius: var(--radius);
@@ -296,7 +334,7 @@ body {
 }
 
 .mobile-menu-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--bg-card-hover);
 }
 
 /* Hero Section - Bold & Engaging */
@@ -401,7 +439,7 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-tertiary);
 }
 
 /* Sections */
@@ -418,14 +456,14 @@ body {
     font-family: var(--font-display);
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
-    color: var(--white);
+    color: var(--text-primary);
     margin-bottom: 16px;
     letter-spacing: -0.02em;
 }
 
 .section-title p {
     font-size: 1.15rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-tertiary);
     max-width: 600px;
     margin: 0 auto;
 }
@@ -439,10 +477,10 @@ body {
 
 /* School Cards - Modern glass-morphism */
 .school-card {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-card);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     overflow: hidden;
     transition: all var(--transition);
@@ -453,10 +491,8 @@ body {
 
 .school-card:hover {
     transform: translateY(-8px) scale(1.02);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 0 60px rgba(102, 126, 234, 0.2);
+    border-color: var(--border-color-hover);
+    box-shadow: var(--shadow-xl);
 }
 
 .school-card-header {
@@ -509,7 +545,7 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 12px;
-    color: var(--white);
+    color: var(--text-primary);
     transition: color var(--transition);
     letter-spacing: -0.01em;
 }
@@ -519,7 +555,7 @@ body {
 }
 
 .school-card p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-tertiary);
     font-size: 1rem;
     margin-bottom: 24px;
     flex: 1;
@@ -531,7 +567,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-color);
 }
 
 .school-status {
@@ -539,7 +575,7 @@ body {
     align-items: center;
     gap: 10px;
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
@@ -856,6 +892,196 @@ body {
     margin-left: 4px;
 }
 
+/* ===================================
+   WEATHER SUMMARY HERO
+   =================================== */
+
+.weather-summary-hero {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    margin-bottom: 40px;
+}
+
+.summary-main {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.summary-temp-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.summary-temp-display {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.temp-value {
+    font-family: var(--font-display);
+    font-size: 6rem;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, #FFFFFF 0%, #E0F2FE 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.temp-unit {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 12px;
+    margin-left: 4px;
+}
+
+.summary-condition {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.condition-icon {
+    font-size: 2rem;
+}
+
+.condition-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.summary-location {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.summary-chart-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-chart-section h4 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 12px;
+}
+
+.mini-chart-container {
+    flex: 1;
+    min-height: 150px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius);
+    padding: 16px;
+}
+
+.summary-indicators {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.indicator-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    text-align: center;
+    transition: all var(--transition);
+}
+
+.indicator-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+}
+
+.indicator-gauge {
+    position: relative;
+    width: 100%;
+    max-width: 120px;
+    margin: 0 auto 12px;
+}
+
+.gauge-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.gauge-value {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.indicator-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.indicator-icon {
+    font-size: 1.25rem;
+}
+
+/* Responsive for summary hero */
+@media (max-width: 900px) {
+    .summary-main {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-temp-section {
+        align-items: center;
+        text-align: center;
+    }
+    
+    .temp-value {
+        font-size: 4.5rem;
+    }
+    
+    .mini-chart-container {
+        min-height: 120px;
+    }
+}
+
+@media (max-width: 600px) {
+    .summary-indicators {
+        grid-template-columns: 1fr;
+    }
+    
+    .temp-value {
+        font-size: 3.5rem;
+    }
+    
+    .temp-unit {
+        font-size: 1.5rem;
+    }
+}
+
 /* Charts Grid */
 .charts-grid {
     display: grid;
@@ -971,20 +1197,257 @@ body {
 .no-data h3 {
     font-family: var(--font-display);
     font-size: 1.75rem;
-    color: var(--white);
+    color: var(--text-primary);
     margin-bottom: 12px;
 }
 
 .no-data p {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-tertiary);
     font-size: 1.1rem;
+}
+
+/* ===================================
+   CATALONIA MAP COMPONENT
+   =================================== */
+
+.catalonia-map-wrapper {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    margin-bottom: 48px;
+}
+
+.map-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.map-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.map-header p {
+    color: var(--text-tertiary);
+    font-size: 1rem;
+}
+
+.sensor-selector {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.sensor-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.sensor-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-color-hover);
+}
+
+.sensor-btn.active {
+    background: linear-gradient(135deg, var(--sky-primary) 0%, var(--sky-deep) 100%);
+    border-color: transparent;
+    color: var(--white);
+}
+
+.sensor-btn span:first-child {
+    font-size: 1.25rem;
+}
+
+.map-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+#catalonia-svg {
+    width: 100%;
+    max-width: 550px;
+    height: auto;
+}
+
+/* Catalunya map styling */
+.map-fill {
+    fill: var(--map-fill);
+    transition: fill var(--transition);
+}
+
+.catalunya-border {
+    stroke: var(--map-stroke);
+    stroke-width: 2.5;
+    transition: stroke var(--transition);
+}
+
+.comarca-line {
+    fill: none;
+    stroke: var(--comarca-stroke);
+    stroke-width: 1;
+    stroke-dasharray: none;
+    transition: stroke var(--transition);
+}
+
+.sea-label {
+    fill: var(--text-muted);
+    transition: fill var(--transition);
+}
+
+.marker-label {
+    fill: var(--text-secondary);
+    transition: fill var(--transition);
+}
+
+.map-marker {
+    transition: transform var(--transition);
+}
+
+.map-marker:hover {
+    transform: scale(1.15);
+}
+
+.map-legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    min-width: 150px;
+}
+
+.legend-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.legend-gradient {
+    height: 10px;
+    border-radius: 5px;
+    margin-bottom: 6px;
+    background: linear-gradient(to right, #3B82F6, #10B981, #FBBF24, #F97316, #EF4444);
+}
+
+.legend-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+
+.map-info {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.map-info > p {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+}
+
+.school-info-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.school-info-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.school-info-header .school-icon {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    background: var(--bg-card-hover);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.school-info-header h4 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.school-info-header p {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    margin: 4px 0 0 0;
+}
+
+.school-info-values {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.info-value {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-card-hover);
+    border-radius: var(--radius-sm);
+}
+
+.info-value span:first-child {
+    font-size: 1.25rem;
+}
+
+.info-value span:last-child {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
 }
 
 /* Footer */
 .footer {
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--header-bg);
     backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-color);
     padding: 48px 0;
     margin-top: 80px;
 }
@@ -994,6 +1457,53 @@ body {
     height: auto;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
+}
+
+/* ===================================
+   DEMO MODE TOGGLE
+   =================================== */
+
+.demo-toggle {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+}
+
+.demo-toggle:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+}
+
+.demo-toggle.active {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    border-color: transparent;
+    color: white;
+}
+
+.demo-toggle-icon {
+    font-size: 1.25rem;
+}
+
+.demo-toggle-text {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 /* Responsive Adjustments */
@@ -1013,7 +1523,7 @@ body {
         top: 100%;
         left: 0;
         right: 0;
-        background: rgba(15, 23, 42, 0.95);
+        background: var(--header-bg);
         backdrop-filter: blur(20px);
         flex-direction: column;
         padding: 20px;
@@ -1022,7 +1532,7 @@ body {
         opacity: 0;
         pointer-events: none;
         transition: all var(--transition);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: 1px solid var(--border-color);
     }
     
     .nav.open {
@@ -1096,12 +1606,25 @@ body {
     animation: shimmer 2s infinite;
     background: linear-gradient(
         to right,
-        rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.1) 20%,
-        rgba(255, 255, 255, 0.05) 40%,
-        rgba(255, 255, 255, 0.05) 100%
+        var(--bg-card) 0%,
+        var(--bg-card-hover) 20%,
+        var(--bg-card) 40%,
+        var(--bg-card) 100%
     );
     background-size: 1000px 100%;
+}
+
+@media (max-width: 600px) {
+    .demo-toggle {
+        bottom: 16px;
+        left: 16px;
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .demo-toggle-text {
+        display: none;
+    }
 }
 
 /* Accessibility */

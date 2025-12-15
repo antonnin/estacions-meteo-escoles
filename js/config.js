@@ -67,6 +67,8 @@ const CONFIG = {
             icon: '🌻',
             color: '#FF6B6B',
             gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
+            // GPS coordinates for map positioning
+            coordinates: { lat: 41.3469, lng: 1.6971 },
             
             // CONFIGURACIÓ THINGSPEAK - MODIFICA AQUÍ
             thingspeak: {
@@ -97,6 +99,7 @@ const CONFIG = {
             icon: '💡',
             color: '#4ECDC4',
             gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+            coordinates: { lat: 41.4035, lng: 1.5894 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_2',
@@ -124,6 +127,7 @@ const CONFIG = {
             icon: '⭐',
             color: '#667eea',
             gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            coordinates: { lat: 42.4145, lng: 1.8352 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_3',
@@ -151,6 +155,7 @@ const CONFIG = {
             icon: '🍃',
             color: '#f093fb',
             gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            coordinates: { lat: 41.2067, lng: 1.6724 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_4',
@@ -178,6 +183,7 @@ const CONFIG = {
             icon: '🌊',
             color: '#4facfe',
             gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            coordinates: { lat: 41.8159, lng: 2.0944 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_5',
@@ -205,33 +211,7 @@ const CONFIG = {
             icon: '🏰',
             color: '#ff9ff3',
             gradient: 'linear-gradient(135deg, #ff9ff3 0%, #feca57 100%)',
-            
-            thingspeak: {
-                channelId: 'YOUR_CHANNEL_ID_6',
-                readApiKey: 'YOUR_READ_API_KEY_6',
-            },
-            
-            fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-                field4: { name: 'Vent', unit: 'm/s', icon: '💨', color: '#a29bfe', type: 'wind' },
-            },
-            active: true,
-        },
-
-        // ------------------------------------------
-        // ESCOLA 6
-        // ------------------------------------------
-        escola6: {
-            id: 'escola6',
-            name: 'Escola El Castellot',
-            description: 'Castellví de la Marca (Alt Penedès)',
-            location: 'Castellví de la Marca',
-            website: 'https://agora.xtec.cat/ceipelcastellot/',
-            icon: '🏰',
-            color: '#ff9ff3',
-            gradient: 'linear-gradient(135deg, #ff9ff3 0%, #feca57 100%)',
+            coordinates: { lat: 41.3598, lng: 1.6315 },
             
             thingspeak: {
                 channelId: 'YOUR_CHANNEL_ID_6',

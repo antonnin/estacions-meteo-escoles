@@ -9,7 +9,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Styles -->
     <link rel="stylesheet" href="css/styles.css">
@@ -119,6 +119,72 @@
                 <span id="errorMessage">Error en carregar les dades</span>
             </div>
 
+            <!-- Weather Summary Hero -->
+            <div class="weather-summary-hero" id="weatherSummary" style="display: none;">
+                <div class="summary-main">
+                    <div class="summary-temp-section">
+                        <div class="summary-temp-display">
+                            <span class="temp-value" id="summaryTemp">--</span>
+                            <span class="temp-unit">°C</span>
+                        </div>
+                        <div class="summary-condition">
+                            <span class="condition-icon" id="conditionIcon">🌤️</span>
+                            <span class="condition-text" id="conditionText">Carregant...</span>
+                        </div>
+                        <div class="summary-location">
+                            <span id="summaryLocation">--</span>
+                        </div>
+                    </div>
+                    <div class="summary-chart-section">
+                        <h4>Temperatura (últimes 24h)</h4>
+                        <div class="mini-chart-container">
+                            <canvas id="miniTempChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-indicators">
+                    <div class="indicator-card" data-type="humidity">
+                        <div class="indicator-gauge">
+                            <svg viewBox="0 0 100 50" class="gauge-svg">
+                                <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8" stroke-linecap="round"/>
+                                <path id="humidityGauge" d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="#54a0ff" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 110"/>
+                            </svg>
+                            <span class="gauge-value" id="humidityValue">--%</span>
+                        </div>
+                        <div class="indicator-label">
+                            <span class="indicator-icon">💧</span>
+                            <span>Humitat</span>
+                        </div>
+                    </div>
+                    <div class="indicator-card" data-type="pressure">
+                        <div class="indicator-gauge">
+                            <svg viewBox="0 0 100 50" class="gauge-svg">
+                                <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8" stroke-linecap="round"/>
+                                <path id="pressureGauge" d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="#1dd1a1" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 110"/>
+                            </svg>
+                            <span class="gauge-value" id="pressureValue">-- hPa</span>
+                        </div>
+                        <div class="indicator-label">
+                            <span class="indicator-icon">📊</span>
+                            <span>Pressió</span>
+                        </div>
+                    </div>
+                    <div class="indicator-card" data-type="wind">
+                        <div class="indicator-gauge">
+                            <svg viewBox="0 0 100 50" class="gauge-svg">
+                                <path d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8" stroke-linecap="round"/>
+                                <path id="windGauge" d="M 10 45 A 35 35 0 0 1 90 45" fill="none" stroke="#a29bfe" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 110"/>
+                            </svg>
+                            <span class="gauge-value" id="windValue">-- m/s</span>
+                        </div>
+                        <div class="indicator-label">
+                            <span class="indicator-icon">💨</span>
+                            <span>Vent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Current Weather Cards -->
             <div class="current-weather" id="currentWeather" style="display: none;">
                 <!-- Generated dynamically -->
@@ -146,6 +212,12 @@
             </div>
         </div>
     </footer>
+
+    <!-- Demo Mode Toggle -->
+    <button class="demo-toggle" id="demoToggle" onclick="toggleDemoMode()" title="Activa/Desactiva Mode Demo">
+        <span class="demo-toggle-icon">🔬</span>
+        <span class="demo-toggle-text">Demo</span>
+    </button>
 
     <!-- Scripts -->
     <script src="js/config.js"></script>

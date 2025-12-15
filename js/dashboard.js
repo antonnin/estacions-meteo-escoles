@@ -12,6 +12,14 @@ let currentSchool = null;
 let currentData = null;
 let autoUpdateInterval = null;
 
+/**
+ * Format number with comma as decimal separator (European format)
+ */
+function formatNumber(value, decimals = 1) {
+    if (value === null || value === undefined || isNaN(value)) return '--';
+    return value.toFixed(decimals).replace('.', ',');
+}
+
 // Elements DOM
 const elements = {
     schoolName: document.getElementById('schoolName'),
@@ -25,7 +33,19 @@ const elements = {
     currentWeather: document.getElementById('currentWeather'),
     chartsGrid: document.getElementById('chartsGrid'),
     noDataState: document.getElementById('noDataState'),
-    updateTime: document.getElementById('updateTime')
+    updateTime: document.getElementById('updateTime'),
+    // Weather summary hero elements
+    weatherSummary: document.getElementById('weatherSummary'),
+    summaryTemp: document.getElementById('summaryTemp'),
+    conditionIcon: document.getElementById('conditionIcon'),
+    conditionText: document.getElementById('conditionText'),
+    summaryLocation: document.getElementById('summaryLocation'),
+    humidityValue: document.getElementById('humidityValue'),
+    pressureValue: document.getElementById('pressureValue'),
+    windValue: document.getElementById('windValue'),
+    humidityGauge: document.getElementById('humidityGauge'),
+    pressureGauge: document.getElementById('pressureGauge'),
+    windGauge: document.getElementById('windGauge')
 };
 
 /**
@@ -177,10 +197,176 @@ function updateCurrentWeather(data) {
         const element = document.getElementById(`current_${fieldKey}`);
         if (element && stat) {
             const field = currentSchool.fields[fieldKey];
-            const value = stat.current !== null ? stat.current.toFixed(1) : '--';
+            const value = formatNumber(stat.current, 1);
             element.innerHTML = `${value} <span>${field.unit}</span>`;
         }
     }
+    
+    // Update weather summary hero
+    updateWeatherSummary(data);
+}
+
+/**
+ * Actualitza el panell de resum del temps
+ */
+function updateWeatherSummary(data) {
+    const stats = data.stats;
+    
+    // Update temperature
+    if (stats.field1 && elements.summaryTemp) {
+        const temp = stats.field1.current;
+        elements.summaryTemp.textContent = formatNumber(temp, 1);
+        
+        // Set condition based on temperature
+        if (temp !== null) {
+            if (temp < 10) {
+                elements.conditionIcon.textContent = '❄️';
+                elements.conditionText.textContent = 'Fred';
+            } else if (temp < 18) {
+                elements.conditionIcon.textContent = '🌤️';
+                elements.conditionText.textContent = 'Fresc';
+            } else if (temp < 25) {
+                elements.conditionIcon.textContent = '☀️';
+                elements.conditionText.textContent = 'Agradable';
+            } else if (temp < 30) {
+                elements.conditionIcon.textContent = '🌡️';
+                elements.conditionText.textContent = 'Càlid';
+            } else {
+                elements.conditionIcon.textContent = '🔥';
+                elements.conditionText.textContent = 'Calor';
+            }
+        }
+    }
+    
+    // Update location
+    if (elements.summaryLocation) {
+        elements.summaryLocation.textContent = currentSchool.location;
+    }
+    
+    // Update humidity gauge
+    if (stats.field2 && elements.humidityValue) {
+        const humidity = stats.field2.current;
+        elements.humidityValue.textContent = `${formatNumber(humidity, 0)}%`;
+        updateGauge(elements.humidityGauge, humidity, 0, 100);
+    }
+    
+    // Update pressure gauge
+    if (stats.field3 && elements.pressureValue) {
+        const pressure = stats.field3.current;
+        elements.pressureValue.textContent = `${formatNumber(pressure, 0)} hPa`;
+        updateGauge(elements.pressureGauge, pressure, 970, 1050);
+    }
+    
+    // Update wind gauge
+    if (stats.field4 && elements.windValue) {
+        const wind = stats.field4.current;
+        elements.windValue.textContent = `${formatNumber(wind, 1)} m/s`;
+        updateGauge(elements.windGauge, wind, 0, 20);
+    }
+    
+    // Show weather summary
+    if (elements.weatherSummary) {
+        elements.weatherSummary.style.display = '';
+    }
+    
+    // Create mini temperature chart
+    createMiniTempChart(data);
+}
+
+/**
+ * Actualitza un gauge SVG
+ */
+function updateGauge(gaugeElement, value, min, max) {
+    if (!gaugeElement || value === null) return;
+    
+    const percentage = Math.min(Math.max((value - min) / (max - min), 0), 1);
+    const arcLength = 110; // Total arc length
+    const dashLength = percentage * arcLength;
+    
+    gaugeElement.setAttribute('stroke-dasharray', `${dashLength} ${arcLength}`);
+}
+
+/**
+ * Crea el mini gràfic de temperatura
+ */
+let miniTempChart = null;
+
+function createMiniTempChart(data) {
+    const canvas = document.getElementById('miniTempChart');
+    if (!canvas) return;
+    
+    const tempData = data.fieldData?.field1?.data;
+    if (!tempData || tempData.length === 0) return;
+    
+    // Destroy existing chart
+    if (miniTempChart) {
+        miniTempChart.destroy();
+    }
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Get last 24 hours of data (or whatever is available)
+    const last24h = tempData.slice(-48);
+    
+    miniTempChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: last24h.map(d => new Date(d.timestamp)),
+            datasets: [{
+                data: last24h.map(d => d.value),
+                borderColor: '#FF6B6B',
+                backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 8,
+                    cornerRadius: 6,
+                    titleFont: { size: 11 },
+                    bodyFont: { size: 12 },
+                    callbacks: {
+                        label: (context) => `${formatNumber(context.parsed.y, 1)}°C`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        displayFormats: {
+                            hour: 'HH:mm'
+                        }
+                    },
+                    grid: { display: false },
+                    ticks: {
+                        maxTicksLimit: 6,
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        font: { size: 10 }
+                    }
+                },
+                y: {
+                    grid: { 
+                        color: 'rgba(255, 255, 255, 0.05)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        font: { size: 10 },
+                        callback: (value) => `${value}°`
+                    }
+                }
+            }
+        }
+    });
 }
 
 /**
@@ -206,9 +392,9 @@ function updateCharts(data) {
                     const unit = currentSchool.fields[fieldKey].unit;
                     statsElement.innerHTML = `
                         <span style="color: var(--gray-500); font-size: 0.8rem;">
-                            Mín: ${stats.min.toFixed(1)}${unit} | 
-                            Màx: ${stats.max.toFixed(1)}${unit} | 
-                            Mitjana: ${stats.avg.toFixed(1)}${unit}
+                            Mín: ${formatNumber(stats.min, 1)}${unit} | 
+                            Màx: ${formatNumber(stats.max, 1)}${unit} | 
+                            Mitjana: ${formatNumber(stats.avg, 1)}${unit}
                         </span>
                     `;
                 }
@@ -365,4 +551,50 @@ function toggleMenu() {
 window.addEventListener('beforeunload', () => {
     stopAutoUpdate();
     chartManager.destroyAll();
+});
+
+/**
+ * Demo mode toggle functions
+ */
+function initDemoToggle() {
+    const toggle = document.getElementById('demoToggle');
+    if (toggle) {
+        updateDemoToggleState();
+    }
+}
+
+function toggleDemoMode() {
+    CONFIG.demoMode = !CONFIG.demoMode;
+    updateDemoToggleState();
+    
+    // Update URL with demo parameter
+    const url = new URL(window.location.href);
+    if (CONFIG.demoMode) {
+        url.searchParams.set('demo', 'true');
+    } else {
+        url.searchParams.delete('demo');
+    }
+    window.history.replaceState({}, '', url);
+    
+    // Reload data
+    loadData();
+}
+
+function updateDemoToggleState() {
+    const toggle = document.getElementById('demoToggle');
+    if (toggle) {
+        if (CONFIG.demoMode) {
+            toggle.classList.add('active');
+            toggle.title = 'Mode Demo activat - Fes clic per desactivar';
+        } else {
+            toggle.classList.remove('active');
+            toggle.title = 'Mode Demo desactivat - Fes clic per activar';
+        }
+    }
+}
+
+// Initialize demo toggle when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure elements are ready
+    setTimeout(initDemoToggle, 100);
 });
