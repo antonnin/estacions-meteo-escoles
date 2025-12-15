@@ -9,41 +9,40 @@
  */
 
 class CataloniaMap {
-
-        addKeyboardAndWheelControls(svg) {
-            // Keyboard zoom: Ctrl + '+' or '-' (on main keyboard or numpad)
-            window.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && !e.shiftKey && !e.altKey) {
-                    if (e.key === '+' || e.key === '=' || e.key === 'Add') {
-                        this.zoom(1.2);
-                        e.preventDefault();
-                    } else if (e.key === '-' || e.key === '_' || e.key === 'Subtract') {
-                        this.zoom(0.8);
-                        e.preventDefault();
-                    }
-                }
-            });
-
-            // Shift + mouse wheel for horizontal pan
-            svg.addEventListener('wheel', (e) => {
-                if (e.shiftKey) {
-                    // Horizontal pan: left/right
-                    this.currentX += e.deltaY > 0 ? -40 : 40;
-                    this.applyTransform();
+    addKeyboardAndWheelControls(svg) {
+        // Keyboard zoom: Ctrl + '+' or '-' (on main keyboard or numpad)
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && !e.shiftKey && !e.altKey) {
+                if (e.key === '+' || e.key === '=' || e.key === 'Add') {
+                    this.zoom(1.2);
                     e.preventDefault();
-                } else if (e.ctrlKey) {
-                    // Ctrl + wheel for zoom (like Google Maps)
-                    const rect = svg.getBoundingClientRect();
-                    const mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-                    if (e.deltaY < 0) {
-                        this.zoom(1.2, mouse);
-                    } else if (e.deltaY > 0) {
-                        this.zoom(0.8, mouse);
-                    }
+                } else if (e.key === '-' || e.key === '_' || e.key === 'Subtract') {
+                    this.zoom(0.8);
                     e.preventDefault();
                 }
-            }, { passive: false });
-        }
+            }
+        });
+
+        // Shift + mouse wheel for horizontal pan
+        svg.addEventListener('wheel', (e) => {
+            if (e.shiftKey) {
+                // Horizontal pan: left/right
+                this.currentX += e.deltaY > 0 ? -40 : 40;
+                this.applyTransform();
+                e.preventDefault();
+            } else if (e.ctrlKey) {
+                // Ctrl + wheel for zoom (like Google Maps)
+                const rect = svg.getBoundingClientRect();
+                const mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                if (e.deltaY < 0) {
+                    this.zoom(1.2, mouse);
+                } else if (e.deltaY > 0) {
+                    this.zoom(0.8, mouse);
+                }
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         if (!this.container) {
