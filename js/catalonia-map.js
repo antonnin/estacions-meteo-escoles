@@ -461,9 +461,9 @@ class CataloniaMap {
     }
     
     latLngToXY(lat, lng) {
-        // Apply offset to move markers north and east
-        lat = lat + 0.0152;
-        lng = lng + 0.1153;
+        // Apply substantial offset to move markers north and east
+        lat = lat + 0.15;
+        lng = lng + 0.35;
         
         // Convert GPS coordinates to SVG coordinates using precise calibration
         // 
