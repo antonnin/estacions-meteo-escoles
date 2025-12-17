@@ -1,4 +1,10 @@
 {
-  "lastUpdate": "2025-12-17T06:08:43.316Z",
-  "schools": {}
+  "lastUpdate": "2025-12-17T07:04:58Z",
+  "schools": {
+    "escola1": { "hasData": false },
+    "escola2": { "hasData": false },
+    "escola3": { "hasData": false },
+    "escola4": { "hasData": false },
+    "escola5": { "hasData": false }
+  }
 }
