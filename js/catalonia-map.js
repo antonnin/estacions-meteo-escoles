@@ -9,6 +9,64 @@
  */
 
 class CataloniaMap {
+        // --- Pinch-to-zoom support for trackpads and touchscreens ---
+        addPinchZoomSupport(svg) {
+            let lastTouchDist = null;
+            let lastMidpoint = null;
+            svg.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    lastTouchDist = Math.sqrt(dx * dx + dy * dy);
+                    lastMidpoint = {
+                        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                        y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                    };
+                }
+            }, { passive: false });
+            svg.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && lastTouchDist !== null) {
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    const newDist = Math.sqrt(dx * dx + dy * dy);
+                    const scale = newDist / lastTouchDist;
+                    if (Math.abs(scale - 1) > 0.01) {
+                        // Pinch midpoint in SVG coordinates
+                        const svgRect = svg.getBoundingClientRect();
+                        const midX = lastMidpoint.x - svgRect.left;
+                        const midY = lastMidpoint.y - svgRect.top;
+                        this.zoom(scale, { x: midX, y: midY, svg });
+                        lastTouchDist = newDist;
+                        lastMidpoint = {
+                            x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                            y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                        };
+                    }
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            svg.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) {
+                    lastTouchDist = null;
+                    lastMidpoint = null;
+                }
+            });
+            // Trackpad pinch-zoom (gesture events, non-standard, but supported in some browsers)
+            svg.addEventListener('gesturestart', (e) => {
+                e.preventDefault();
+            });
+            svg.addEventListener('gesturechange', (e) => {
+                // e.scale > 1: zoom in, < 1: zoom out
+                const svgRect = svg.getBoundingClientRect();
+                const mouseX = e.clientX - svgRect.left;
+                const mouseY = e.clientY - svgRect.top;
+                this.zoom(e.scale, { x: mouseX, y: mouseY, svg });
+                e.preventDefault();
+            });
+            svg.addEventListener('gestureend', (e) => {
+                e.preventDefault();
+            });
+        }
     addKeyboardAndWheelControls(svg) {
         // Keyboard zoom: Ctrl + '+' or '-' (on main keyboard or numpad)
         window.addEventListener('keydown', (e) => {
@@ -189,6 +247,9 @@ class CataloniaMap {
 
                 // Add keyboard and advanced wheel controls
                 this.addKeyboardAndWheelControls(svg);
+
+                // Add pinch-to-zoom for trackpad/touchscreen
+                this.addPinchZoomSupport(svg);
                 
                 console.log('Map loaded successfully!');
                 
@@ -424,9 +485,10 @@ class CataloniaMap {
                     // Calculate new zoom, clamp
                     let newZoom = this.currentZoom * factor;
                     newZoom = Math.max(0.5, Math.min(8, newZoom));
-                    // Adjust pan so the zoom is centered on mouse
-                    this.currentX -= (svgPt.x * (newZoom - oldZoom));
-                    this.currentY -= (svgPt.y * (newZoom - oldZoom));
+                    // The mouse position in SVG coordinates should remain under the mouse after zoom
+                    // So, adjust pan so that the SVG point under the mouse stays under the mouse
+                    this.currentX = (this.currentX - svgPt.x) * (newZoom / oldZoom) + svgPt.x;
+                    this.currentY = (this.currentY - svgPt.y) * (newZoom / oldZoom) + svgPt.y;
                     this.currentZoom = newZoom;
                 } else {
                     this.currentZoom *= factor;
