@@ -260,26 +260,44 @@
         // Helper to check ThingSpeak status for a school
         async function checkThingSpeakStatus(schoolId) {
             // If demo mode, always return 'demo'
-            if (CONFIG.demoMode) return 'demo';
-            // Try to fetch recent data from ThingSpeak
-            try {
-                const channelId = CONFIG.schools[schoolId].thingspeakChannelId;
-                if (!channelId) return 'offline';
-                const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json?results=1`;
-                const resp = await fetch(url, { cache: 'no-store' });
-                if (!resp.ok) return 'offline';
-                const data = await resp.json();
-                if (data && data.feeds && data.feeds.length > 0) {
-                    // Check if the last entry is recent (last 2 hours)
-                    const last = data.feeds[0];
-                    const lastDate = new Date(last.created_at);
-                    if (Date.now() - lastDate.getTime() < 2 * 60 * 60 * 1000) {
+            if (typeof CONFIG !== 'undefined' && CONFIG.demoMode) return 'demo';
+            // Use thingSpeakService if available
+            if (typeof thingSpeakService !== 'undefined' && thingSpeakService.fetchChannelData) {
+                try {
+                    const channelId = CONFIG.schools[schoolId].thingspeakChannelId;
+                    if (!channelId) return 'offline';
+                    // Try to fetch the latest data (1 result, last 2 hours)
+                    const now = new Date();
+                    const start = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+                    const data = await thingSpeakService.fetchChannelData(schoolId, start, now);
+                    if (data && data.feeds && data.feeds.length > 0) {
                         return 'online';
                     }
+                    return 'offline';
+                } catch (e) {
+                    return 'offline';
                 }
-                return 'offline';
-            } catch (e) {
-                return 'offline';
+            } else {
+                // Fallback: fetch from ThingSpeak API directly
+                try {
+                    const channelId = CONFIG.schools[schoolId].thingspeakChannelId;
+                    if (!channelId) return 'offline';
+                    const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json?results=1`;
+                    const resp = await fetch(url, { cache: 'no-store' });
+                    if (!resp.ok) return 'offline';
+                    const data = await resp.json();
+                    if (data && data.feeds && data.feeds.length > 0) {
+                        // Check if the last entry is recent (last 2 hours)
+                        const last = data.feeds[0];
+                        const lastDate = new Date(last.created_at);
+                        if (Date.now() - lastDate.getTime() < 2 * 60 * 60 * 1000) {
+                            return 'online';
+                        }
+                    }
+                    return 'offline';
+                } catch (e) {
+                    return 'offline';
+                }
             }
         }
 
