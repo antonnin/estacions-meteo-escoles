@@ -257,81 +257,39 @@
             updateSchoolStatusIndicators();
         }
 
-        // Helper to check ThingSpeak status for a school
-        async function checkThingSpeakStatus(schoolId) {
-            // If demo mode, always return 'demo'
-            if (typeof CONFIG !== 'undefined' && CONFIG.demoMode) return 'demo';
-            // Use thingSpeakService if available
-            if (typeof thingSpeakService !== 'undefined' && thingSpeakService.fetchChannelData) {
-                try {
-                    const channelId = CONFIG.schools[schoolId].thingspeakChannelId;
-                    if (!channelId) return 'offline';
-                    // Try to fetch the latest data (1 result, last 2 hours)
-                    const now = new Date();
-                    const start = new Date(now.getTime() - 2 * 60 * 60 * 1000);
-                    const data = await thingSpeakService.fetchChannelData(schoolId, start, now);
-                    if (data && data.feeds && data.feeds.length > 0) {
-                        return 'online';
-                    }
-                    return 'offline';
-                } catch (e) {
-                    return 'offline';
-                }
-            } else {
-                // Fallback: fetch from ThingSpeak API directly
-                try {
-                    const channelId = CONFIG.schools[schoolId].thingspeakChannelId;
-                    if (!channelId) return 'offline';
-                    const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json?results=1`;
-                    const resp = await fetch(url, { cache: 'no-store' });
-                    if (!resp.ok) return 'offline';
-                    const data = await resp.json();
-                    if (data && data.feeds && data.feeds.length > 0) {
-                        // Check if the last entry is recent (last 2 hours)
-                        const last = data.feeds[0];
-                        const lastDate = new Date(last.created_at);
-                        if (Date.now() - lastDate.getTime() < 2 * 60 * 60 * 1000) {
-                            return 'online';
-                        }
-                    }
-                    return 'offline';
-                } catch (e) {
-                    return 'offline';
-                }
-            }
-        }
-
         // Update all school status indicators using data/index.json for true/false status
         async function updateSchoolStatusIndicators() {
+            if (CONFIG.demoMode) {
+                for (const schoolId of Object.keys(CONFIG.schools)) {
+                    const statusElem = document.getElementById(`school-status-${schoolId}`);
+                    if (!statusElem) continue;
+                    const dot = statusElem.querySelector('.status-dot');
+                    const text = statusElem.querySelector('.status-text');
+                    dot.style.background = '#facc15';
+                    text.textContent = 'Mode demo';
+                    text.style.color = '#facc15';
+                }
+                return;
+            }
+
             let indexData = null;
             try {
-                const resp = await fetch('data/index.json', { cache: 'no-store' });
-                if (resp.ok) {
-                    indexData = await resp.json();
-                }
-            } catch (e) {
-                indexData = null;
-            }
+                const resp = await fetch('data/index.json?t=' + Date.now(), { cache: 'no-store' });
+                if (resp.ok) indexData = await resp.json();
+            } catch (e) {}
+
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
-                if (typeof CONFIG !== 'undefined' && CONFIG.demoMode) {
-                    dot.style.background = '#facc15'; // yellow
-                    text.textContent = 'Mode demo';
-                    text.style.color = '#facc15';
-                } else if (
-                    indexData &&
-                    indexData.schools &&
-                    indexData.schools[schoolId] &&
-                    indexData.schools[schoolId].hasData === true
-                ) {
-                    dot.style.background = '#22c55e'; // green
+
+                if (indexData?.schools?.[schoolId]?.hasData === true) {
+                    dot.style.background = '#22c55e';
                     text.textContent = 'En línia';
                     text.style.color = '#22c55e';
                 } else {
-                    dot.style.background = '#ef4444'; // red
+                    dot.style.background = '#ef4444';
                     text.textContent = 'Fora de servei';
                     text.style.color = '#ef4444';
                 }
@@ -378,6 +336,8 @@
                 url.searchParams.delete('demo');
             }
             window.history.replaceState({}, '', url);
+            
+            updateSchoolStatusIndicators();
             
             // Reload map data
             if (typeof cataloniaMap !== 'undefined' && cataloniaMap) {
