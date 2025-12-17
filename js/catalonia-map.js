@@ -26,9 +26,12 @@ class CataloniaMap {
         // Shift + mouse wheel for horizontal pan
         svg.addEventListener('wheel', (e) => {
             if (e.shiftKey) {
-                // Horizontal pan: left/right
-                this.currentX += e.deltaY > 0 ? -40 : 40;
-                this.applyTransform();
+                // Zoom in/out around mouse position
+                const svgRect = svg.getBoundingClientRect();
+                const mouseX = e.clientX - svgRect.left;
+                const mouseY = e.clientY - svgRect.top;
+                const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
+                this.zoom(zoomFactor, { x: mouseX, y: mouseY, svg });
                 e.preventDefault();
             } else if (e.ctrlKey) {
                 // Ctrl + wheel for zoom (like Google Maps)
@@ -406,7 +409,7 @@ class CataloniaMap {
     }
     
     zoom(factor, mouse = null) {
-        // If mouse is provided, zoom around that SVG point
+        // If mouse is provided, zoom around that SVG point (works for both in and out)
         if (mouse) {
             const svg = document.getElementById('catalonia-svg');
             if (svg && svg.createSVGPoint) {
@@ -418,11 +421,13 @@ class CataloniaMap {
                     const inv = ctm.inverse();
                     const svgPt = pt.matrixTransform(inv);
                     const oldZoom = this.currentZoom;
-                    this.currentZoom *= factor;
-                    this.currentZoom = Math.max(0.5, Math.min(8, this.currentZoom));
+                    // Calculate new zoom, clamp
+                    let newZoom = this.currentZoom * factor;
+                    newZoom = Math.max(0.5, Math.min(8, newZoom));
                     // Adjust pan so the zoom is centered on mouse
-                    this.currentX -= (svgPt.x * (this.currentZoom - oldZoom));
-                    this.currentY -= (svgPt.y * (this.currentZoom - oldZoom));
+                    this.currentX -= (svgPt.x * (newZoom - oldZoom));
+                    this.currentY -= (svgPt.y * (newZoom - oldZoom));
+                    this.currentZoom = newZoom;
                 } else {
                     this.currentZoom *= factor;
                     this.currentZoom = Math.max(0.5, Math.min(8, this.currentZoom));
