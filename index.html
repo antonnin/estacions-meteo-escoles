@@ -217,10 +217,8 @@
         function generateSchoolCards() {
             const grid = document.getElementById('schoolsGrid');
             const schools = CONFIG.schools;
-            
             let html = '';
             let index = 1;
-            
             for (const [schoolId, school] of Object.entries(schools)) {
                 // Generate friendly URL based on school name
                 let schoolUrl = '';
@@ -235,18 +233,15 @@
                 }
                 html += `
                     <div class="school-card" data-school="${index}">
-                        <div class="school-card-header">
-                            <div class="school-icon">${school.icon}</div>
-                        </div>
                         <div class="school-card-body">
                             <a href="${school.website}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
                                 <h3 style="cursor: pointer; transition: color 0.3s; margin-bottom: 0.5rem; color: #1f2937;">${school.name}</h3>
                             </a>
-                            <p>${school.description}</p>
+                            <div style="color: var(--gray-500); font-size: 0.95rem; margin-bottom: 0.5rem;">${school.location}</div>
                             <div class="school-card-footer">
-                                <div class="school-status">
-                                    <span class="status-dot ${school.active ? '' : 'offline'}"></span>
-                                    <span>${school.active ? 'En línia' : 'Fora de línia'}</span>
+                                <div class="school-status" id="school-status-${schoolId}">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text"></span>
                                 </div>
                                 <a href="${schoolUrl}" class="view-data-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s;">
                                     Veure Dades →
@@ -257,8 +252,59 @@
                 `;
                 index++;
             }
-            
             grid.innerHTML = html;
+            // After rendering, update status indicators
+            updateSchoolStatusIndicators();
+        }
+
+        // Helper to check ThingSpeak status for a school
+        async function checkThingSpeakStatus(schoolId) {
+            // If demo mode, always return 'demo'
+            if (CONFIG.demoMode) return 'demo';
+            // Try to fetch recent data from ThingSpeak
+            try {
+                const channelId = CONFIG.schools[schoolId].thingspeakChannelId;
+                if (!channelId) return 'offline';
+                const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json?results=1`;
+                const resp = await fetch(url, { cache: 'no-store' });
+                if (!resp.ok) return 'offline';
+                const data = await resp.json();
+                if (data && data.feeds && data.feeds.length > 0) {
+                    // Check if the last entry is recent (last 2 hours)
+                    const last = data.feeds[0];
+                    const lastDate = new Date(last.created_at);
+                    if (Date.now() - lastDate.getTime() < 2 * 60 * 60 * 1000) {
+                        return 'online';
+                    }
+                }
+                return 'offline';
+            } catch (e) {
+                return 'offline';
+            }
+        }
+
+        // Update all school status indicators
+        async function updateSchoolStatusIndicators() {
+            for (const schoolId of Object.keys(CONFIG.schools)) {
+                const statusElem = document.getElementById(`school-status-${schoolId}`);
+                if (!statusElem) continue;
+                let status = await checkThingSpeakStatus(schoolId);
+                const dot = statusElem.querySelector('.status-dot');
+                const text = statusElem.querySelector('.status-text');
+                if (status === 'online') {
+                    dot.style.background = '#22c55e'; // green
+                    text.textContent = 'En línia';
+                    text.style.color = '#22c55e';
+                } else if (status === 'demo') {
+                    dot.style.background = '#facc15'; // yellow
+                    text.textContent = 'Mode demo';
+                    text.style.color = '#facc15';
+                } else {
+                    dot.style.background = '#ef4444'; // red
+                    text.textContent = 'Fora de servei';
+                    text.style.color = '#ef4444';
+                }
+            }
         }
 
         // Initialize
