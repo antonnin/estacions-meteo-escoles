@@ -301,22 +301,35 @@
             }
         }
 
-        // Update all school status indicators
+        // Update all school status indicators using data/index.json for true/false status
         async function updateSchoolStatusIndicators() {
+            let indexData = null;
+            try {
+                const resp = await fetch('data/index.json', { cache: 'no-store' });
+                if (resp.ok) {
+                    indexData = await resp.json();
+                }
+            } catch (e) {
+                indexData = null;
+            }
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
-                let status = await checkThingSpeakStatus(schoolId);
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
-                if (status === 'online') {
-                    dot.style.background = '#22c55e'; // green
-                    text.textContent = 'En línia';
-                    text.style.color = '#22c55e';
-                } else if (status === 'demo') {
+                if (typeof CONFIG !== 'undefined' && CONFIG.demoMode) {
                     dot.style.background = '#facc15'; // yellow
                     text.textContent = 'Mode demo';
                     text.style.color = '#facc15';
+                } else if (
+                    indexData &&
+                    indexData.schools &&
+                    indexData.schools[schoolId] &&
+                    indexData.schools[schoolId].hasData === true
+                ) {
+                    dot.style.background = '#22c55e'; // green
+                    text.textContent = 'En línia';
+                    text.style.color = '#22c55e';
                 } else {
                     dot.style.background = '#ef4444'; // red
                     text.textContent = 'Fora de servei';
