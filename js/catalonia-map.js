@@ -704,10 +704,13 @@ class CataloniaMap {
                 const feeds = this.schoolData[schoolId].feeds;
                 for (let i = feeds.length - 1; i >= 0; i--) {
                     const feed = feeds[i];
-                    const t = new Date(feed.timestamp).getTime();
+                    // Support both 'timestamp' and 'created_at' fields
+                    const feedTime = feed.timestamp || feed.created_at;
+                    if (!feedTime) continue;
+                    const t = new Date(feedTime).getTime();
                     if (now - t <= DAY_MS && feed[this.currentSensor] !== undefined && feed[this.currentSensor] !== null) {
                         value = feed[this.currentSensor];
-                        timestamp = feed.timestamp;
+                        timestamp = feedTime;
                         break;
                     }
                 }
@@ -837,9 +840,12 @@ class CataloniaMap {
         function latestFieldValue(field) {
             for (let i = feeds.length - 1; i >= 0; i--) {
                 const feed = feeds[i];
-                const t = new Date(feed.timestamp).getTime();
+                // Support both 'timestamp' and 'created_at' fields
+                const feedTime = feed.timestamp || feed.created_at;
+                if (!feedTime) continue;
+                const t = new Date(feedTime).getTime();
                 if (now - t <= DAY_MS && feed[field] !== undefined && feed[field] !== null) {
-                    return { value: feed[field], timestamp: feed.timestamp };
+                    return { value: feed[field], timestamp: feedTime };
                 }
             }
             // fallback for demo/simple data
