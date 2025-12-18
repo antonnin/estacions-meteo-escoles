@@ -760,11 +760,24 @@ class CataloniaMap {
             });
         }
 
-        // Update school list panel (clear and update, never duplicate)
+        // Update school list panel (update values in place, never append new items)
         const schoolListElem = document.getElementById('school-list');
         if (schoolListElem) {
-            schoolListElem.innerHTML = '';
-            schoolList.forEach(({ schoolId, name, value, timestamp }) => {
+            // If the list is empty or has wrong number of items, re-create it
+            if (schoolListElem.children.length !== schoolList.length) {
+                schoolListElem.innerHTML = '';
+                schoolList.forEach(({ schoolId, name }) => {
+                    const li = document.createElement('li');
+                    li.style.marginBottom = '6px';
+                    li.setAttribute('data-school-id', schoolId);
+                    li.innerHTML = `<span style=\"font-weight:600;\">${name}</span>: <span class=\"school-status-value\"></span>`;
+                    schoolListElem.appendChild(li);
+                });
+            }
+            // Now update only the values
+            schoolList.forEach(({ schoolId, value, timestamp }) => {
+                const li = schoolListElem.querySelector(`li[data-school-id="${schoolId}"]`);
+                if (!li) return;
                 let statusHtml = '';
                 if (value !== null && value !== undefined) {
                     const d = new Date(timestamp);
@@ -774,10 +787,10 @@ class CataloniaMap {
                 } else {
                     statusHtml = `<span style=\"color:#ef4444;font-weight:600;\">dada no disponible</span>`;
                 }
-                const li = document.createElement('li');
-                li.style.marginBottom = '6px';
-                li.innerHTML = `<span style=\"font-weight:600;\">${name}</span>: ${statusHtml}`;
-                schoolListElem.appendChild(li);
+                const valueSpan = li.querySelector('.school-status-value');
+                if (valueSpan) {
+                    valueSpan.innerHTML = statusHtml;
+                }
             });
         }
     }
