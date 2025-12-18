@@ -301,6 +301,9 @@ class CataloniaMap {
     }
     
     render() {
+        // Remove any existing school-list-panel to prevent duplicates
+        const oldPanel = document.getElementById('school-list-panel');
+        if (oldPanel && oldPanel.parentNode) oldPanel.parentNode.removeChild(oldPanel);
         this.container.innerHTML = `
             <div class="catalonia-map-wrapper">
                 <div class="map-header">
@@ -326,17 +329,36 @@ class CataloniaMap {
                             <span id="legend-max">--</span>
                         </div>
                     </div>
-                    <div class="school-list-panel" id="school-list-panel" style="position:absolute;top:20px;left:20px;z-index:20;background:rgba(20,30,50,0.92);border-radius:12px;padding:12px 18px;min-width:220px;max-width:320px;box-shadow:0 2px 12px #0002;">
-                        <div style="font-weight:700;font-size:1.1em;margin-bottom:8px;">Estat de les escoles</div>
-                        <ul id="school-list" style="list-style:none;padding:0;margin:0;"></ul>
-                    </div>
                 </div>
                 <div class="map-info" id="map-info">
                     <p>Fes clic a una escola per veure més detalls</p>
                 </div>
+                <div class="school-list-panel" id="school-list-panel" style="margin: 24px auto 0 auto; position:relative; z-index:1; background:rgba(20,30,50,0.92); border-radius:12px; padding:0; min-width:220px; max-width:420px; box-shadow:0 2px 12px #0002; width:100%; max-width:420px;">
+                    <div id="school-list-header" style="font-weight:700;font-size:1.1em;padding:12px 18px;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;">
+                        <span>Estat de les escoles</span>
+                        <span id="school-list-toggle" style="font-size:1.3em;transition:transform 0.2s;">▼</span>
+                    </div>
+                    <ul id="school-list" style="list-style:none;padding:0 18px 12px 18px;margin:0;display:block;"></ul>
+                </div>
             </div>
         `;
         this.bindEvents();
+        // Add fold/unfold logic for school list
+        const header = document.getElementById('school-list-header');
+        const list = document.getElementById('school-list');
+        const toggle = document.getElementById('school-list-toggle');
+        if (header && list && toggle) {
+            header.addEventListener('click', () => {
+                const isOpen = list.style.display !== 'none';
+                if (isOpen) {
+                    list.style.display = 'none';
+                    toggle.textContent = '▲';
+                } else {
+                    list.style.display = 'block';
+                    toggle.textContent = '▼';
+                }
+            });
+        }
     }
     
     bindEvents() {
@@ -353,46 +375,41 @@ class CataloniaMap {
     
     async loadData() {
         const schools = CONFIG.schools;
-        
-        // Use DemoDataGenerator to get consistent data
-        for (const [schoolId, school] of Object.entries(schools)) {
-            if (!school.active) continue;
-            
-            try {
-                // Get data from DemoDataGenerator (same source as dashboard)
-                if (typeof DemoDataGenerator !== 'undefined') {
-                    const demoData = DemoDataGenerator.generateSchoolData(schoolId, 
-                        new Date(Date.now() - 24 * 60 * 60 * 1000), 
-                        new Date()
-                    );
-                    
-                    if (demoData && demoData.stats) {
-                        this.schoolData[schoolId] = {
-                            field1: demoData.stats.field1?.current ?? null,
-                            field2: demoData.stats.field2?.current ?? null,
-                            field3: demoData.stats.field3?.current ?? null,
-                            field4: demoData.stats.field4?.current ?? null
-                        };
-                        continue;
+        this.schoolData = {};
+        // DEMO MODE: use DemoDataGenerator
+        if (typeof DemoDataGenerator !== 'undefined' && DemoDataGenerator.isEnabled()) {
+            for (const [schoolId, school] of Object.entries(schools)) {
+                if (!school.active) continue;
+                try {
+                    const demoData = DemoDataGenerator.generateSchoolData(schoolId, new Date(Date.now() - 24 * 60 * 60 * 1000), new Date());
+                    if (demoData && demoData.feeds) {
+                        this.schoolData[schoolId] = demoData;
+                    }
+                } catch (e) {
+                    console.warn(`Could not load demo data for ${schoolId}:`, e);
+                }
+            }
+        } else {
+            // NON-DEMO MODE: use DataStorage
+            if (typeof DataStorage !== 'undefined') {
+                const ds = new DataStorage();
+                for (const [schoolId, school] of Object.entries(schools)) {
+                    if (!school.active) continue;
+                    try {
+                        // Try to load from local cache first, then server
+                        let data = ds.getFromLocal(schoolId);
+                        if (!data) {
+                            data = await ds.loadFromServer(schoolId);
+                        }
+                        if (data && data.feeds) {
+                            this.schoolData[schoolId] = data;
+                        }
+                    } catch (e) {
+                        console.warn(`Could not load data for ${schoolId}:`, e);
                     }
                 }
-            } catch (e) {
-                console.warn(`Could not load data for ${schoolId}:`, e);
             }
-            
-            // Fallback
-            const seed = schoolId.charCodeAt(schoolId.length - 1);
-            this.schoolData[schoolId] = {
-                field1: 10 + (seed % 30) + Math.random() * 10,  // Pols (ug/m3)
-                field2: 10 + (seed % 15) + Math.random() * 5,   // Temperatura (°C)
-                field3: 40 + (seed % 30) + Math.random() * 10,  // Humitat (%)
-                field4: 1000 + (seed % 25) + Math.random() * 5, // Pressió (hPa)
-                field5: 200 + (seed % 600) + Math.random() * 50, // Altura (m)
-                field6: 30 + (seed % 50) + Math.random() * 20,  // Lluminositat (%)
-                field7: 1 + (seed % 8) + Math.random() * 2      // Vent (m/s)
-            };
         }
-        
         this.createMarkers();
         this.updateMarkers();
     }
@@ -695,7 +712,6 @@ class CataloniaMap {
                     }
                 }
             }
-            // Only show marker if value is available within 24h
             schoolList.push({
                 schoolId,
                 name: school?.name || schoolId,
@@ -742,7 +758,7 @@ class CataloniaMap {
             });
         }
 
-        // Update school list panel
+        // Update school list panel (clear and update, never duplicate)
         const schoolListElem = document.getElementById('school-list');
         if (schoolListElem) {
             schoolListElem.innerHTML = '';
@@ -750,13 +766,15 @@ class CataloniaMap {
                 let statusHtml = '';
                 if (value !== null && value !== undefined) {
                     const d = new Date(timestamp);
-                    statusHtml = `<span style="color:#22c55e;font-weight:600;">${this.formatNumber(value, this.currentSensor === 'field3' ? 0 : 1)} ${config.unit}</span> <span style="color:#aaa;font-size:0.92em;">(${d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })})</span>`;
+                    statusHtml = `<span style=\"color:#22c55e;font-weight:600;\">${this.formatNumber(value, this.currentSensor === 'field3' ? 0 : 1)} ${config.unit}</span> <span style=\"color:#aaa;font-size:0.92em;\">(${d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })})</span>`;
+                } else if (typeof DemoDataGenerator !== 'undefined' && DemoDataGenerator.isEnabled()) {
+                    statusHtml = `<span style=\"color:#facc15;font-weight:600;\">Mode demo</span>`;
                 } else {
-                    statusHtml = `<span style="color:#ef4444;font-weight:600;">dada no disponible</span>`;
+                    statusHtml = `<span style=\"color:#ef4444;font-weight:600;\">dada no disponible</span>`;
                 }
                 const li = document.createElement('li');
                 li.style.marginBottom = '6px';
-                li.innerHTML = `<span style="font-weight:600;">${name}</span>: ${statusHtml}`;
+                li.innerHTML = `<span style=\"font-weight:600;\">${name}</span>: ${statusHtml}`;
                 schoolListElem.appendChild(li);
             });
         }
