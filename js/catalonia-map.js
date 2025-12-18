@@ -119,15 +119,18 @@ class CataloniaMap {
             maxLng: 3.35
         };
         
-        this.currentSensor = 'field1'; // Temperatura per defecte
+        this.currentSensor = 'field2'; // Temperatura per defecte
         this.schoolData = {};
         this.markers = [];
         
         this.sensorConfig = {
-            field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', colorScale: ['#3B82F6', '#10B981', '#FBBF24', '#F97316', '#EF4444'] },
-            field2: { name: 'Humitat', unit: '%', icon: '💧', colorScale: ['#FEE2E2', '#BFDBFE', '#93C5FD', '#3B82F6', '#1E40AF'] },
-            field3: { name: 'Pressió', unit: 'hPa', icon: '📊', colorScale: ['#D1FAE5', '#6EE7B7', '#34D399', '#10B981', '#047857'] },
-            field4: { name: 'Vent', unit: 'm/s', icon: '💨', colorScale: ['#E0E7FF', '#A5B4FC', '#818CF8', '#6366F1', '#4338CA'] }
+            field1: { name: 'Pols', unit: 'ug/m3', icon: '🫧', colorScale: ['#ECEFF1', '#B0BEC5', '#78909C', '#546E7A', '#37474F'] },
+            field2: { name: 'Temperatura', unit: '°C', icon: '🌡️', colorScale: ['#3B82F6', '#10B981', '#FBBF24', '#F97316', '#EF4444'] },
+            field3: { name: 'Humitat', unit: '%', icon: '💧', colorScale: ['#FEE2E2', '#BFDBFE', '#93C5FD', '#3B82F6', '#1E40AF'] },
+            field4: { name: 'Pressió', unit: 'hPa', icon: '📊', colorScale: ['#D1FAE5', '#6EE7B7', '#34D399', '#10B981', '#047857'] },
+            field5: { name: 'Altura', unit: 'm', icon: '⛰️', colorScale: ['#FFF3E0', '#FFB74D', '#FF9800', '#F57C00', '#E65100'] },
+            field6: { name: 'Lluminositat', unit: '%', icon: '☀️', colorScale: ['#FFF9C4', '#FFF176', '#FFEB3B', '#FDD835', '#F9A825'] },
+            field7: { name: 'Vent', unit: 'm/s', icon: '💨', colorScale: ['#E0E7FF', '#A5B4FC', '#818CF8', '#6366F1', '#4338CA'] }
         };
         
         this.init();
@@ -306,19 +309,31 @@ class CataloniaMap {
                 </div>
                 
                 <div class="sensor-selector">
-                    <button class="sensor-btn active" data-sensor="field1">
+                    <button class="sensor-btn" data-sensor="field1">
+                        <span>🫧</span>
+                        <span>Pols</span>
+                    </button>
+                    <button class="sensor-btn active" data-sensor="field2">
                         <span>🌡️</span>
                         <span>Temperatura</span>
                     </button>
-                    <button class="sensor-btn" data-sensor="field2">
+                    <button class="sensor-btn" data-sensor="field3">
                         <span>💧</span>
                         <span>Humitat</span>
                     </button>
-                    <button class="sensor-btn" data-sensor="field3">
+                    <button class="sensor-btn" data-sensor="field4">
                         <span>📊</span>
                         <span>Pressió</span>
                     </button>
-                    <button class="sensor-btn" data-sensor="field4">
+                    <button class="sensor-btn" data-sensor="field5">
+                        <span>⛰️</span>
+                        <span>Altura</span>
+                    </button>
+                    <button class="sensor-btn" data-sensor="field6">
+                        <span>☀️</span>
+                        <span>Lluminositat</span>
+                    </button>
+                    <button class="sensor-btn" data-sensor="field7">
                         <span>💨</span>
                         <span>Vent</span>
                     </button>
@@ -390,10 +405,13 @@ class CataloniaMap {
             // Fallback
             const seed = schoolId.charCodeAt(schoolId.length - 1);
             this.schoolData[schoolId] = {
-                field1: 10 + (seed % 15) + Math.random() * 5,
-                field2: 40 + (seed % 30) + Math.random() * 10,
-                field3: 1000 + (seed % 25) + Math.random() * 5,
-                field4: 1 + (seed % 8) + Math.random() * 2
+                field1: 10 + (seed % 30) + Math.random() * 10,  // Pols (ug/m3)
+                field2: 10 + (seed % 15) + Math.random() * 5,   // Temperatura (°C)
+                field3: 40 + (seed % 30) + Math.random() * 10,  // Humitat (%)
+                field4: 1000 + (seed % 25) + Math.random() * 5, // Pressió (hPa)
+                field5: 200 + (seed % 600) + Math.random() * 50, // Altura (m)
+                field6: 30 + (seed % 50) + Math.random() * 20,  // Lluminositat (%)
+                field7: 1 + (seed % 8) + Math.random() * 2      // Vent (m/s)
             };
         }
         
@@ -757,7 +775,7 @@ class CataloniaMap {
             gradient.style.background = `linear-gradient(to right, ${config.colorScale.join(', ')})`;
         }
         
-        const decimals = this.currentSensor === 'field3' ? 0 : 1;
+        const decimals = (this.currentSensor === 'field4' || this.currentSensor === 'field5') ? 0 : 1;
         if (minLabel) {
             minLabel.textContent = `${this.formatNumber(min, decimals)}${config.unit}`;
         }
@@ -795,20 +813,32 @@ class CataloniaMap {
                 </div>
                 <div class="school-info-values">
                     <div class="info-value">
+                        <span>🫧</span>
+                        <span>${this.formatNumber(data.field1, 1)} ug/m3</span>
+                    </div>
+                    <div class="info-value">
                         <span>🌡️</span>
-                        <span>${this.formatNumber(data.field1, 1)}°C</span>
+                        <span>${this.formatNumber(data.field2, 1)}°C</span>
                     </div>
                     <div class="info-value">
                         <span>💧</span>
-                        <span>${this.formatNumber(data.field2, 1)}%</span>
+                        <span>${this.formatNumber(data.field3, 1)}%</span>
                     </div>
                     <div class="info-value">
                         <span>📊</span>
-                        <span>${this.formatNumber(data.field3, 0)} hPa</span>
+                        <span>${this.formatNumber(data.field4, 0)} hPa</span>
+                    </div>
+                    <div class="info-value">
+                        <span>⛰️</span>
+                        <span>${this.formatNumber(data.field5, 0)} m</span>
+                    </div>
+                    <div class="info-value">
+                        <span>☀️</span>
+                        <span>${this.formatNumber(data.field6, 1)}%</span>
                     </div>
                     <div class="info-value">
                         <span>💨</span>
-                        <span>${this.formatNumber(data.field4, 1)} m/s</span>
+                        <span>${this.formatNumber(data.field7, 1)} m/s</span>
                     </div>
                 </div>
                 <a href="${schoolUrl}" class="view-data-btn" style="margin-top: 16px; display: inline-flex; text-align: center; justify-content: center; width: 100%;">
