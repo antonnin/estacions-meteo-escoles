@@ -1114,5 +1114,113 @@
     "field6": 26,
     "field7": 20,
     "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:51:15Z",
+    "entry_id": 94,
+    "field1": null,
+    "field2": 18,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 26,
+    "field7": 71,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:52:16Z",
+    "entry_id": 95,
+    "field1": null,
+    "field2": 18,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 26,
+    "field7": 71,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:53:17Z",
+    "entry_id": 96,
+    "field1": null,
+    "field2": 18,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 25,
+    "field7": 71,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:54:18Z",
+    "entry_id": 97,
+    "field1": null,
+    "field2": 18,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 24,
+    "field7": 20,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:55:19Z",
+    "entry_id": 98,
+    "field1": null,
+    "field2": 19,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 25,
+    "field7": 20,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:56:20Z",
+    "entry_id": 99,
+    "field1": null,
+    "field2": 19,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 24,
+    "field7": 71,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:57:21Z",
+    "entry_id": 100,
+    "field1": null,
+    "field2": 19,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 24,
+    "field7": 71,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:58:22Z",
+    "entry_id": 101,
+    "field1": null,
+    "field2": 19,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 25,
+    "field7": 71,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-18T11:59:23Z",
+    "entry_id": 102,
+    "field1": null,
+    "field2": 19,
+    "field3": 55,
+    "field4": 1018,
+    "field5": -27,
+    "field6": 27,
+    "field7": 71,
+    "field8": null
   }
 ]
