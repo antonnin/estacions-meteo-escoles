@@ -88,28 +88,29 @@
     <!-- Catalonia Map Section -->
 
     <!-- Catalonia Map Section -->
-    <section class="schools-section" id="mapa">
-        <div class="container">
-            <div id="catalonia-map"></div>
-        </div>
-    </section>
-
-    <!-- Estat de les escoles HERO (static, values updated by JS) -->
-    <section class="school-status-hero" style="margin: 0 auto 32px auto; max-width: 480px;">
-        <div class="school-list-panel" id="school-list-panel" style="background:rgba(20,30,50,0.92); border-radius:12px; padding:0; box-shadow:0 2px 12px #0002; width:100%;">
-            <div id="school-list-header" style="font-weight:700;font-size:1.1em;padding:12px 18px;user-select:none;display:flex;align-items:center;justify-content:space-between;">
-                <span>Estat de les escoles</span>
+        <section class="map-hero-group" style="margin: 0 auto 32px auto; max-width: 900px;">
+            <div class="map-hero-rectangle" style="display: flex; flex-wrap: wrap; gap: 32px; background:rgba(20,30,50,0.92); border-radius:18px; box-shadow:0 2px 16px #0003; padding:32px 24px; align-items: flex-start; justify-content: center;">
+                <div style="flex: 2 1 420px; min-width:320px; max-width:600px;">
+                    <div id="catalonia-map"></div>
+                </div>
+                <div style="flex: 1 1 260px; min-width:220px; max-width:340px;">
+                    <div class="school-list-panel" id="school-list-panel" style="background:rgba(20,30,50,0.92); border-radius:12px; padding:0; box-shadow:0 2px 12px #0002; width:100%;">
+                        <div id="school-list-header" style="font-weight:700;font-size:1.1em;padding:12px 18px;user-select:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                            <span>Estat de les escoles</span>
+                            <span id="school-list-toggle" style="font-size:1.3em;transition:transform 0.2s;">▼</span>
+                        </div>
+                        <ul id="school-list" style="list-style:none;padding:0 18px 12px 18px;margin:0;display:block;">
+                            <li data-school-id="escola1" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Mas i Perera</span>: <span class="school-status-value"></span></li>
+                            <li data-school-id="escola2" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Jaume Balmes</span>: <span class="school-status-value"></span></li>
+                            <li data-school-id="escola3" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Santa Coloma</span>: <span class="school-status-value"></span></li>
+                            <li data-school-id="escola4" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Mar i Cel</span>: <span class="school-status-value"></span></li>
+                            <li data-school-id="escola5" style="margin-bottom:6px;"><span style="font-weight:600;">ZER Moianès</span>: <span class="school-status-value"></span></li>
+                            <li data-school-id="escola6" style="margin-bottom:6px;"><span style="font-weight:600;">Escola El Castellot</span>: <span class="school-status-value"></span></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <ul id="school-list" style="list-style:none;padding:0 18px 12px 18px;margin:0;display:block;">
-                <li data-school-id="escola1" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Mas i Perera</span>: <span class="school-status-value"></span></li>
-                <li data-school-id="escola2" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Jaume Balmes</span>: <span class="school-status-value"></span></li>
-                <li data-school-id="escola3" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Santa Coloma</span>: <span class="school-status-value"></span></li>
-                <li data-school-id="escola4" style="margin-bottom:6px;"><span style="font-weight:600;">Escola Mar i Cel</span>: <span class="school-status-value"></span></li>
-                <li data-school-id="escola5" style="margin-bottom:6px;"><span style="font-weight:600;">ZER Moianès</span>: <span class="school-status-value"></span></li>
-                <li data-school-id="escola6" style="margin-bottom:6px;"><span style="font-weight:600;">Escola El Castellot</span>: <span class="school-status-value"></span></li>
-            </ul>
-        </div>
-    </section>
+        </section>
 
     <!-- Schools Section -->
     <section class="schools-section" id="escoles">
@@ -259,6 +260,24 @@
     <script src="js/thingspeak-service.js"></script>
     <script src="js/catalonia-map.js"></script>
     <script>
+                        // Fold/unfold logic for Estat de les escoles
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const header = document.getElementById('school-list-header');
+                            const list = document.getElementById('school-list');
+                            const toggle = document.getElementById('school-list-toggle');
+                            if (header && list && toggle) {
+                                header.addEventListener('click', () => {
+                                    const isOpen = list.style.display !== 'none';
+                                    if (isOpen) {
+                                        list.style.display = 'none';
+                                        toggle.textContent = '▲';
+                                    } else {
+                                        list.style.display = 'block';
+                                        toggle.textContent = '▼';
+                                    }
+                                });
+                            }
+                        });
         // Mobile menu toggle
         function toggleMenu() {
             document.getElementById('mainNav').classList.toggle('open');
