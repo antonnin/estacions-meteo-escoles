@@ -390,18 +390,17 @@ class CataloniaMap {
                 }
             }
         } else {
-            // NON-DEMO MODE: use DataStorage
-            if (typeof DataStorage !== 'undefined') {
-                const ds = new DataStorage();
+            // NON-DEMO MODE: use ThingSpeak service (same as dashboard and status indicators)
+            if (typeof thingSpeakService !== 'undefined') {
+                const now = new Date();
+                const startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Last 24 hours
+                
                 for (const [schoolId, school] of Object.entries(schools)) {
                     if (!school.active) continue;
                     try {
-                        // Try to load from local cache first, then server
-                        let data = ds.getFromLocal(schoolId);
-                        if (!data) {
-                            data = await ds.loadFromServer(schoolId);
-                        }
-                        if (data && data.feeds) {
+                        // Use the same data source as dashboard and status indicators
+                        const data = await thingSpeakService.fetchChannelData(schoolId, startDate, now);
+                        if (data && data.feeds && data.feeds.length > 0) {
                             this.schoolData[schoolId] = data;
                         }
                     } catch (e) {
