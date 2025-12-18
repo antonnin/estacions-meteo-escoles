@@ -1375,8 +1375,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 500px;
-    overflow: hidden;
+    min-height: 700px;
+    overflow: visible;
+    padding-bottom: 60px;
 }
 
 #catalonia-svg {
@@ -1493,6 +1494,12 @@ body {
 .map-info {
     margin-top: 24px;
     text-align: center;
+    min-height: 50px;
+    transition: all 0.3s ease;
+}
+
+.map-info:has(.school-info-card) {
+    min-height: 280px;
 }
 
 .map-info > p {

@@ -345,7 +345,7 @@ const CONFIG = {
     // ==========================================
     i18n: {
         title: 'Estació Meteorològica Escolar',
-        subtitle: 'Projecte STEM',
+        subtitle: 'Projecte mentoria 4.0',
         schools: 'Escoles',
         viewData: 'Veure Dades',
         temperature: 'Temperatura',

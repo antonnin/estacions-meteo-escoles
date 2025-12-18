@@ -226,4 +226,4 @@ MIT License - Lliure per a ús educatiu i personal.
 
 ---
 
-**Fet amb ❤️ per a l'educació STEM a Catalunya**
+**Fet amb ❤️ per al Projecte mentoria 4.0 a Catalunya**
