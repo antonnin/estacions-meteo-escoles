@@ -13,6 +13,7 @@ const SCHOOLS = [
     { id: 'escola3', channelId: process.env.ESCOLA3_CHANNEL_ID, apiKey: process.env.ESCOLA3_API_KEY },
     { id: 'escola4', channelId: process.env.ESCOLA4_CHANNEL_ID, apiKey: process.env.ESCOLA4_API_KEY },
     { id: 'escola5', channelId: process.env.ESCOLA5_CHANNEL_ID, apiKey: process.env.ESCOLA5_API_KEY },
+    { id: 'escola6', channelId: process.env.ESCOLA6_CHANNEL_ID, apiKey: process.env.ESCOLA6_API_KEY },
 ];
 
 const THINGSPEAK_BASE_URL = 'https://api.thingspeak.com/channels';
@@ -103,6 +104,25 @@ function saveData(schoolId, data) {
             console.log(`✅ ${schoolId}: Afegides ${newFeeds.length} noves entrades a ${month}.json`);
         } else {
             console.log(`ℹ️ ${schoolId}: No hi ha entrades noves per ${month}`);
+        }
+    }
+    
+    // Netejar fitxers de dades més antics de 30 dies
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const files = fs.readdirSync(dataDir);
+    
+    for (const file of files) {
+        if (file.endsWith('.json') && file !== 'channel-info.json') {
+            const filePath = path.join(dataDir, file);
+            const fileMonth = file.replace('.json', '');
+            const [year, month] = fileMonth.split('-').map(Number);
+            const fileDate = new Date(year, month - 1, 1);
+            
+            if (fileDate < thirtyDaysAgo) {
+                fs.unlinkSync(filePath);
+                console.log(`🧹 ${schoolId}: Eliminat fitxer antic ${file}`);
+            }
         }
     }
 

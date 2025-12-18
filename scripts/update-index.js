@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
+const FIVE_MINUTES_MS = 5 * 60 * 1000;
 
 /**
  * Escaneja els fitxers de dades disponibles
@@ -68,9 +69,14 @@ function scanDataFiles() {
             }
         }
 
+        // Check if school has recent data (within last 5 minutes)
+        const now = new Date();
+        const recentData = latestDate && (now - latestDate) <= FIVE_MINUTES_MS;
+        
         index.schools[schoolId] = {
             availableMonths: months,
             channelInfo: channelInfo,
+            recentData: recentData,
             stats: {
                 totalRecords: totalRecords,
                 earliestDate: earliestDate ? earliestDate.toISOString() : null,
@@ -78,7 +84,7 @@ function scanDataFiles() {
             }
         };
 
-        console.log(`📊 ${schoolId}: ${months.length} mesos, ${totalRecords} registres`);
+        console.log(`📊 ${schoolId}: ${months.length} mesos, ${totalRecords} registres, recentData: ${recentData}`);
     }
 
     return index;

@@ -315,7 +315,7 @@
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
 
-                if (indexData?.schools?.[schoolId]?.hasData === true) {
+                if (indexData?.schools?.[schoolId]?.recentData === true) {
                     dot.style.background = '#22c55e';
                     text.textContent = 'En línia';
                     text.style.color = '#22c55e';
@@ -332,6 +332,11 @@
             generateSchoolCards();
             initCataloniaMap();
             initDemoToggle();
+            
+            // Update status indicators every 2 minutes
+            setInterval(() => {
+                updateSchoolStatusIndicators();
+            }, 120000); // 120000ms = 2 minutes
             
             // Smooth scroll for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {

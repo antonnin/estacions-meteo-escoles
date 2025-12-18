@@ -38,6 +38,8 @@ jobs:
           ESCOLA4_API_KEY: ${{ secrets.ESCOLA4_API_KEY }}
           ESCOLA5_CHANNEL_ID: ${{ secrets.ESCOLA5_CHANNEL_ID }}
           ESCOLA5_API_KEY: ${{ secrets.ESCOLA5_API_KEY }}
+          ESCOLA6_CHANNEL_ID: ${{ secrets.ESCOLA6_CHANNEL_ID }}
+          ESCOLA6_API_KEY: ${{ secrets.ESCOLA6_API_KEY }}
         run: node scripts/collect-data.js
 
       - name: Update data index

@@ -39,6 +39,8 @@ jobs:
           ESCOLA4_API_KEY: ${{ secrets.ESCOLA4_API_KEY }}
           ESCOLA5_CHANNEL_ID: ${{ secrets.ESCOLA5_CHANNEL_ID }}
           ESCOLA5_API_KEY: ${{ secrets.ESCOLA5_API_KEY }}
+          ESCOLA6_CHANNEL_ID: ${{ secrets.ESCOLA6_CHANNEL_ID }}
+          ESCOLA6_API_KEY: ${{ secrets.ESCOLA6_API_KEY }}
         run: |
           # Script per obtenir dades de cada escola
           
@@ -64,12 +66,48 @@ jobs:
             fi
           }
           
+          check_recent_data() {
+            SCHOOL_ID=$1
+            LAST_FILE="data/${SCHOOL_ID}_last.json"
+            
+            if [ ! -f "$LAST_FILE" ]; then
+              echo "false"
+              return
+            fi
+            
+            # Extract last update timestamp from JSON
+            LAST_UPDATE=$(cat "$LAST_FILE" | grep -o '"created_at":"[^"]*"' | head -1 | cut -d'"' -f4)
+            
+            if [ -z "$LAST_UPDATE" ]; then
+              echo "false"
+              return
+            fi
+            
+            # Convert to Unix timestamp
+            LAST_TS=$(date -d "$LAST_UPDATE" +%s 2>/dev/null || echo "0")
+            NOW_TS=$(date +%s)
+            DIFF=$((NOW_TS - LAST_TS))
+            
+            # Check if data is within last 5 minutes (300 seconds)
+            if [ "$DIFF" -le 300 ]; then
+              echo "true"
+            else
+              echo "false"
+            fi
+          }
+          
           # Obtenir dades de cada escola
           fetch_school_data "escola1" "$ESCOLA1_CHANNEL_ID" "$ESCOLA1_API_KEY"
           fetch_school_data "escola2" "$ESCOLA2_CHANNEL_ID" "$ESCOLA2_API_KEY"
           fetch_school_data "escola3" "$ESCOLA3_CHANNEL_ID" "$ESCOLA3_API_KEY"
           fetch_school_data "escola4" "$ESCOLA4_CHANNEL_ID" "$ESCOLA4_API_KEY"
           fetch_school_data "escola5" "$ESCOLA5_CHANNEL_ID" "$ESCOLA5_API_KEY"
+          fetch_school_data "escola6" "$ESCOLA6_CHANNEL_ID" "$ESCOLA6_API_KEY"
+          
+          # Netejar dades antigues (més de 30 dies)
+          echo "🧹 Netejant dades antigues..."
+          find data -name "*_latest.json" -mtime +30 -delete 2>/dev/null || true
+          find data -name "*_last.json" -mtime +30 -delete 2>/dev/null || true
           
           # Crear índex de dades
           echo "📋 Creant índex..."
@@ -77,11 +115,12 @@ jobs:
           {
             "lastUpdate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
             "schools": {
-              "escola1": { "hasData": $([ -f "data/escola1_latest.json" ] && echo "true" || echo "false") },
-              "escola2": { "hasData": $([ -f "data/escola2_latest.json" ] && echo "true" || echo "false") },
-              "escola3": { "hasData": $([ -f "data/escola3_latest.json" ] && echo "true" || echo "false") },
-              "escola4": { "hasData": $([ -f "data/escola4_latest.json" ] && echo "true" || echo "false") },
-              "escola5": { "hasData": $([ -f "data/escola5_latest.json" ] && echo "true" || echo "false") }
+              "escola1": { "recentData": $(check_recent_data "escola1") },
+              "escola2": { "recentData": $(check_recent_data "escola2") },
+              "escola3": { "recentData": $(check_recent_data "escola3") },
+              "escola4": { "recentData": $(check_recent_data "escola4") },
+              "escola5": { "recentData": $(check_recent_data "escola5") },
+              "escola6": { "recentData": $(check_recent_data "escola6") }
             }
           }
           EOF
