@@ -342,6 +342,20 @@ class CataloniaMap {
                 </div>
             </div>
         `;
+            // Create the school list ONCE, never again
+            const schools = CONFIG.schools;
+            const schoolListElem = document.getElementById('school-list');
+            if (schoolListElem) {
+                schoolListElem.innerHTML = '';
+                for (const [schoolId, school] of Object.entries(schools)) {
+                    if (!school.active) continue;
+                    const li = document.createElement('li');
+                    li.style.marginBottom = '6px';
+                    li.setAttribute('data-school-id', schoolId);
+                    li.innerHTML = `<span style="font-weight:600;">${school.name}</span>: <span class="school-status-value"></span>`;
+                    schoolListElem.appendChild(li);
+                }
+            }
         this.bindEvents();
         // Add fold/unfold logic for school list
         const header = document.getElementById('school-list-header');
