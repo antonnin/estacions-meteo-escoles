@@ -301,9 +301,7 @@ class CataloniaMap {
     }
     
     render() {
-        // Remove any existing school-list-panel to prevent duplicates
-        const oldPanel = document.getElementById('school-list-panel');
-        if (oldPanel && oldPanel.parentNode) oldPanel.parentNode.removeChild(oldPanel);
+        // Only render the map and controls, not the school list panel
         this.container.innerHTML = `
             <div class="catalonia-map-wrapper">
                 <div class="map-header">
@@ -333,46 +331,9 @@ class CataloniaMap {
                 <div class="map-info" id="map-info">
                     <p>Fes clic a una escola per veure més detalls</p>
                 </div>
-                <div class="school-list-panel" id="school-list-panel" style="margin: 24px auto 0 auto; position:relative; z-index:1; background:rgba(20,30,50,0.92); border-radius:12px; padding:0; min-width:220px; max-width:420px; box-shadow:0 2px 12px #0002; width:100%; max-width:420px;">
-                    <div id="school-list-header" style="font-weight:700;font-size:1.1em;padding:12px 18px;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;">
-                        <span>Estat de les escoles</span>
-                        <span id="school-list-toggle" style="font-size:1.3em;transition:transform 0.2s;">▼</span>
-                    </div>
-                    <ul id="school-list" style="list-style:none;padding:0 18px 12px 18px;margin:0;display:block;"></ul>
-                </div>
             </div>
         `;
-            // Create the school list ONCE, never again
-            const schools = CONFIG.schools;
-            const schoolListElem = document.getElementById('school-list');
-            if (schoolListElem) {
-                schoolListElem.innerHTML = '';
-                for (const [schoolId, school] of Object.entries(schools)) {
-                    if (!school.active) continue;
-                    const li = document.createElement('li');
-                    li.style.marginBottom = '6px';
-                    li.setAttribute('data-school-id', schoolId);
-                    li.innerHTML = `<span style="font-weight:600;">${school.name}</span>: <span class="school-status-value"></span>`;
-                    schoolListElem.appendChild(li);
-                }
-            }
         this.bindEvents();
-        // Add fold/unfold logic for school list
-        const header = document.getElementById('school-list-header');
-        const list = document.getElementById('school-list');
-        const toggle = document.getElementById('school-list-toggle');
-        if (header && list && toggle) {
-            header.addEventListener('click', () => {
-                const isOpen = list.style.display !== 'none';
-                if (isOpen) {
-                    list.style.display = 'none';
-                    toggle.textContent = '▲';
-                } else {
-                    list.style.display = 'block';
-                    toggle.textContent = '▼';
-                }
-            });
-        }
     }
     
     bindEvents() {
@@ -774,12 +735,12 @@ class CataloniaMap {
             });
         }
 
-        // Update school list panel (update values in place, never append or re-create items)
+        // Update school list hero panel (update values in place only)
         const schoolListElem = document.getElementById('school-list');
         if (schoolListElem) {
             schoolList.forEach(({ schoolId, value, timestamp }) => {
-                const li = schoolListElem.querySelector(`li[data-school-id="${schoolId}"]`);
-                if (!li) return;
+                const valueSpan = schoolListElem.querySelector(`li[data-school-id="${schoolId}"] .school-status-value`);
+                if (!valueSpan) return;
                 let statusHtml = '';
                 if (value !== null && value !== undefined) {
                     const d = new Date(timestamp);
@@ -789,10 +750,7 @@ class CataloniaMap {
                 } else {
                     statusHtml = `<span style="color:#ef4444;font-weight:600;">dada no disponible</span>`;
                 }
-                const valueSpan = li.querySelector('.school-status-value');
-                if (valueSpan) {
-                    valueSpan.innerHTML = statusHtml;
-                }
+                valueSpan.innerHTML = statusHtml;
             });
         }
     }
