@@ -697,32 +697,64 @@ class CataloniaMap {
     
     updateMarkers() {
         const config = this.sensorConfig[this.currentSensor];
-        const values = Object.values(this.schoolData)
-            .map(d => d[this.currentSensor])
-            .filter(v => v !== null && v !== undefined);
-        
-        if (values.length === 0) return;
-        
-        const minVal = Math.min(...values);
-        const maxVal = Math.max(...values);
-        
+        const now = Date.now();
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        // Gather only values within last 24h
+        const values = this.markers.map(({ schoolId }) => {
+            const school = CONFIG.schools[schoolId];
+            let value = null;
+            let timestamp = null;
+            if (school && this.schoolData[schoolId] && this.schoolData[schoolId].feeds) {
+                // Find latest feed for this sensor within 24h
+                const feeds = this.schoolData[schoolId].feeds;
+                for (let i = feeds.length - 1; i >= 0; i--) {
+                    const feed = feeds[i];
+                    const t = new Date(feed.timestamp).getTime();
+                    if (now - t <= DAY_MS && feed[this.currentSensor] !== undefined && feed[this.currentSensor] !== null) {
+                        value = feed[this.currentSensor];
+                        timestamp = feed.timestamp;
+                        break;
+                    }
+                }
+            } else if (this.schoolData[schoolId] && this.schoolData[schoolId][this.currentSensor] !== undefined) {
+                // Fallback for demo/simple data
+                value = this.schoolData[schoolId][this.currentSensor];
+                timestamp = null;
+            }
+            return { schoolId, value, timestamp };
+        }).filter(v => v.value !== null && v.value !== undefined);
+
+        if (values.length === 0) {
+            // Hide all markers if no data
+            this.markers.forEach(({ element }) => {
+                element.style.display = 'none';
+            });
+            return;
+        }
+
+        const minVal = Math.min(...values.map(v => v.value));
+        const maxVal = Math.max(...values.map(v => v.value));
         this.updateLegend(minVal, maxVal, config);
-        
+
         this.markers.forEach(({ element, schoolId }) => {
-            const value = this.schoolData[schoolId]?.[this.currentSensor];
-            if (value === undefined || value === null) return;
-            
+            const found = values.find(v => v.schoolId === schoolId);
+            if (!found) {
+                element.style.display = 'none';
+                return;
+            }
+            element.style.display = '';
+            const value = found.value;
             const color = this.getColorForValue(value, minVal, maxVal, config.colorScale);
             const contrastColor = this.getContrastColor(color);
-            
+
             const valueText = element.querySelector('.marker-value');
             const markerBg = element.querySelector('.marker-bg');
             const markerInner = element.querySelector('.marker-inner');
             const pulse = element.querySelector('.marker-pulse');
-            
+
             const decimals = this.currentSensor === 'field3' ? 0 : 1;
             const formattedValue = this.formatNumber(value, decimals);
-            
+
             if (valueText) {
                 valueText.textContent = formattedValue;
                 valueText.setAttribute('fill', contrastColor);
@@ -788,9 +820,27 @@ class CataloniaMap {
         const school = CONFIG.schools[schoolId];
         const data = this.schoolData[schoolId];
         const infoBox = document.getElementById('map-info');
-        
         if (!school || !data || !infoBox) return;
-        
+
+        // Find latest value/timestamp for each field within 24h
+        const now = Date.now();
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        let feeds = data.feeds || [];
+        function latestFieldValue(field) {
+            for (let i = feeds.length - 1; i >= 0; i--) {
+                const feed = feeds[i];
+                const t = new Date(feed.timestamp).getTime();
+                if (now - t <= DAY_MS && feed[field] !== undefined && feed[field] !== null) {
+                    return { value: feed[field], timestamp: feed.timestamp };
+                }
+            }
+            // fallback for demo/simple data
+            if (data[field] !== undefined) {
+                return { value: data[field], timestamp: null };
+            }
+            return { value: null, timestamp: null };
+        }
+
         // Generate friendly school URL
         let schoolUrl = '';
         switch (schoolId) {
@@ -801,6 +851,12 @@ class CataloniaMap {
             case 'escola5': schoolUrl = 'zer-moianes.html'; break;
             case 'escola6': schoolUrl = 'escola-el-castellot.html'; break;
             default: schoolUrl = 'escola.html?id=' + schoolId;
+        }
+        // Helper to format timestamp
+        function formatTs(ts) {
+            if (!ts) return '<span style="color:#aaa">no disponible</span>';
+            const d = new Date(ts);
+            return d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' });
         }
         infoBox.innerHTML = `
             <div class="school-info-card">
@@ -814,31 +870,38 @@ class CataloniaMap {
                 <div class="school-info-values">
                     <div class="info-value">
                         <span>🫧</span>
-                        <span>${this.formatNumber(data.field1, 1)} ug/m3</span>
+                        <span>${this.formatNumber(latestFieldValue('field1').value, 1)} ug/m3</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field1').timestamp)}</span>
                     </div>
                     <div class="info-value">
                         <span>🌡️</span>
-                        <span>${this.formatNumber(data.field2, 1)}°C</span>
+                        <span>${this.formatNumber(latestFieldValue('field2').value, 1)}°C</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field2').timestamp)}</span>
                     </div>
                     <div class="info-value">
                         <span>💧</span>
-                        <span>${this.formatNumber(data.field3, 1)}%</span>
+                        <span>${this.formatNumber(latestFieldValue('field3').value, 1)}%</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field3').timestamp)}</span>
                     </div>
                     <div class="info-value">
                         <span>📊</span>
-                        <span>${this.formatNumber(data.field4, 0)} hPa</span>
+                        <span>${this.formatNumber(latestFieldValue('field4').value, 0)} hPa</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field4').timestamp)}</span>
                     </div>
                     <div class="info-value">
                         <span>⛰️</span>
-                        <span>${this.formatNumber(data.field5, 0)} m</span>
+                        <span>${this.formatNumber(latestFieldValue('field5').value, 0)} m</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field5').timestamp)}</span>
                     </div>
                     <div class="info-value">
                         <span>☀️</span>
-                        <span>${this.formatNumber(data.field6, 1)}%</span>
+                        <span>${this.formatNumber(latestFieldValue('field6').value, 1)}%</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field6').timestamp)}</span>
                     </div>
                     <div class="info-value">
                         <span>💨</span>
-                        <span>${this.formatNumber(data.field7, 1)} m/s</span>
+                        <span>${this.formatNumber(latestFieldValue('field7').value, 1)} m/s</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field7').timestamp)}</span>
                     </div>
                 </div>
                 <a href="${schoolUrl}" class="view-data-btn" style="margin-top: 16px; display: inline-flex; text-align: center; justify-content: center; width: 100%;">

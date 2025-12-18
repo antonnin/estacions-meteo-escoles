@@ -37,12 +37,14 @@ const DemoDataGenerator = {
         const school = CONFIG.schools[schoolId];
         if (!school) return null;
 
-        const start = startDate || new Date(Date.now() - 24 * 60 * 60 * 1000);
-        const end = endDate || new Date();
-        
-        // Generar punts de dades (cada 15 minuts)
+        // Default: last 30 days
+        const now = new Date();
+        const start = startDate || new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const end = endDate || now;
+
+        // Generate data points every 15 minutes
         const feeds = [];
-        const interval = 15 * 60 * 1000; // 15 minuts en ms
+        const interval = 15 * 60 * 1000; // 15 minutes in ms
         let currentTime = new Date(start);
         let entryId = 1;
 
@@ -53,7 +55,7 @@ const DemoDataGenerator = {
             entryId++;
         }
 
-        // Processar dades
+        // Process data for all 7 fields
         const fieldData = {};
         Object.keys(school.fields).forEach(fieldKey => {
             fieldData[fieldKey] = {
@@ -61,7 +63,7 @@ const DemoDataGenerator = {
                 data: feeds.map(feed => ({
                     timestamp: feed.timestamp,
                     value: feed[fieldKey]
-                })).filter(item => item.value !== null)
+                })).filter(item => item.value !== null && item.value !== undefined)
             };
         });
 
@@ -78,6 +80,22 @@ const DemoDataGenerator = {
             fieldData: fieldData,
             stats: this.calculateStats(feeds, school)
         };
+    },
+
+    /**
+     * Generate demo data for all schools for the last 30 days
+     * Returns: { [schoolId]: { feeds, fieldData, ... } }
+     */
+    generateAllSchoolsLastMonth() {
+        const result = {};
+        const now = new Date();
+        const start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        Object.keys(CONFIG.schools).forEach(schoolId => {
+            if (CONFIG.schools[schoolId].active) {
+                result[schoolId] = this.generateSchoolData(schoolId, start, now);
+            }
+        });
+        return result;
     },
 
     /**
