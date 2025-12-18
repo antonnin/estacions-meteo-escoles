@@ -197,22 +197,22 @@ class CataloniaMap {
                 const paths = svg.querySelectorAll('path');
                 console.log('Found', paths.length, 'paths');
                 
-                // Force uniform background color by completely replacing inline styles
+                // Force uniform light background color by completely replacing inline styles
                 paths.forEach(path => {
                     path.classList.add('comarca-path');
                     // Remove both fill attribute AND any inline style fill
                     path.removeAttribute('fill');
-                    // Clear existing inline style and set new one
-                    path.setAttribute('style', 'fill: rgba(30, 58, 95, 0.6) !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.3; transition: fill 0.3s ease;');
+                    // Clear existing inline style and set new one - light cream background
+                    path.setAttribute('style', 'fill: #FDF8F0 !important; fill-opacity: 1 !important; stroke: rgba(0, 0, 0, 0.15); stroke-width: 0.3; transition: fill 0.3s ease;');
                 });
                 
                 // No hover effects for map paths (landing page)
                 
-                // Style all text elements (comarca names) to white with consistent font
+                // Style all text elements (comarca names) to black with consistent font
                 const textElements = svg.querySelectorAll('text, tspan');
                 console.log('Found', textElements.length, 'text elements');
                 textElements.forEach(text => {
-                    text.style.fill = 'rgba(255, 255, 255, 0.9)';
+                    text.style.fill = '#1f2937';
                     text.style.fontFamily = 'var(--font-sans)';
                     text.style.fontWeight = '600';
                     text.style.fontSize = '10px';
@@ -650,8 +650,8 @@ class CataloniaMap {
                     </circle>
                     <circle class="marker-bg" r="16" fill="currentColor" filter="url(#markerShadow)"/>
                     <circle class="marker-inner" r="13" fill="white"/>
-                    <text class="marker-value" y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#333">--</text>
-                    <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${fullName}</text>
+                    <text class="marker-value" y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#1f2937">--</text>
+                    <text class="marker-label" y="32" text-anchor="middle" font-size="9" font-weight="600" fill="#1f2937">${fullName}</text>
                 </g>
             `;
             marker.addEventListener('click', () => this.showSchoolInfo(schoolId));

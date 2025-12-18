@@ -135,7 +135,24 @@
             <div class="schools-grid">
                 <div class="school-card" style="cursor: default;">
                     <div class="school-card-header" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-
+                        <div class="school-icon">🔧</div>
+                    </div>
+                    <div class="school-card-body">
+                        <h3>Construcció</h3>
+                        <p>Els alumnes han muntat les estacions meteorològiques utilitzant kits micro:bit, aprenent electrònica bàsica i programació.</p>
+                    </div>
+                </div>
+                
+                <div class="school-card" style="cursor: default;">
+                    <div class="school-card-header" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);">
+                        <div class="school-icon">💻</div>
+                    </div>
+                    <div class="school-card-body">
+                        <h3>Programació</h3>
+                        <p>Amb MakeCode i Python, els estudiants han programat els sensors per enviar dades automàticament a la plataforma ThingSpeak.</p>
+                    </div>
+                </div>
+                
                 <div class="school-card" style="cursor: default;">
                     <div class="school-card-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
                         <div class="school-icon">📊</div>
@@ -416,21 +433,3 @@
     </script>
 </body>
 </html>
-                    // Fold/unfold logic for Estat de les escoles
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const header = document.getElementById('school-list-header');
-                        const list = document.getElementById('school-list');
-                        const toggle = document.getElementById('school-list-toggle');
-                        if (header && list && toggle) {
-                            header.addEventListener('click', () => {
-                                const isOpen = list.style.display !== 'none';
-                                if (isOpen) {
-                                    list.style.display = 'none';
-                                    toggle.textContent = '▲';
-                                } else {
-                                    list.style.display = 'block';
-                                    toggle.textContent = '▼';
-                                }
-                            });
-                        }
-                    });
