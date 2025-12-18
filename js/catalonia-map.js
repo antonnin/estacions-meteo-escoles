@@ -774,32 +774,20 @@ class CataloniaMap {
             });
         }
 
-        // Update school list panel (update values in place, never append new items)
+        // Update school list panel (update values in place, never append or re-create items)
         const schoolListElem = document.getElementById('school-list');
         if (schoolListElem) {
-            // If the list is empty or has wrong number of items, re-create it
-            if (schoolListElem.children.length !== schoolList.length) {
-                schoolListElem.innerHTML = '';
-                schoolList.forEach(({ schoolId, name }) => {
-                    const li = document.createElement('li');
-                    li.style.marginBottom = '6px';
-                    li.setAttribute('data-school-id', schoolId);
-                    li.innerHTML = `<span style=\"font-weight:600;\">${name}</span>: <span class=\"school-status-value\"></span>`;
-                    schoolListElem.appendChild(li);
-                });
-            }
-            // Now update only the values
             schoolList.forEach(({ schoolId, value, timestamp }) => {
                 const li = schoolListElem.querySelector(`li[data-school-id="${schoolId}"]`);
                 if (!li) return;
                 let statusHtml = '';
                 if (value !== null && value !== undefined) {
                     const d = new Date(timestamp);
-                    statusHtml = `<span style=\"color:#22c55e;font-weight:600;\">${this.formatNumber(value, this.currentSensor === 'field3' ? 0 : 1)} ${config.unit}</span> <span style=\"color:#aaa;font-size:0.92em;\">(${d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })})</span>`;
+                    statusHtml = `<span style="color:#22c55e;font-weight:600;">${this.formatNumber(value, this.currentSensor === 'field3' ? 0 : 1)} ${config.unit}</span> <span style="color:#aaa;font-size:0.92em;">(${d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })})</span>`;
                 } else if (typeof DemoDataGenerator !== 'undefined' && DemoDataGenerator.isEnabled()) {
-                    statusHtml = `<span style=\"color:#facc15;font-weight:600;\">Mode demo</span>`;
+                    statusHtml = `<span style="color:#facc15;font-weight:600;">Mode demo</span>`;
                 } else {
-                    statusHtml = `<span style=\"color:#ef4444;font-weight:600;\">dada no disponible</span>`;
+                    statusHtml = `<span style="color:#ef4444;font-weight:600;">dada no disponible</span>`;
                 }
                 const valueSpan = li.querySelector('.school-status-value');
                 if (valueSpan) {
