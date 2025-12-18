@@ -2,8 +2,8 @@ name: Collect Weather Data
 
 on:
   schedule:
-    # Executa cada hora
-    - cron: '0 * * * *'
+    # Executa cada 5 minuts
+    - cron: '*/5 * * * *'
   workflow_dispatch:
     # Permet execució manual
 
