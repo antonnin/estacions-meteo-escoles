@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Detectar per nom de fitxer (friendly URL)
         const file = window.location.pathname.split('/').pop();
         switch (file) {
-            case 'escola-mas-i-perera.html': currentSchoolId = 'escola1'; break;
+            case 'escola-el-castellot.html': currentSchoolId = 'escola1'; break;
             case 'escola-jaume-balmes.html': currentSchoolId = 'escola2'; break;
             case 'escola-santa-coloma.html': currentSchoolId = 'escola3'; break;
             case 'escola-mar-i-cel.html': currentSchoolId = 'escola4'; break;
             case 'zer-moianes.html': currentSchoolId = 'escola5'; break;
-            case 'escola-el-castellot.html': currentSchoolId = 'escola6'; break;
+            case 'escola-mas-i-perera.html': currentSchoolId = 'escola6'; break;
             default: currentSchoolId = 'escola1';
         }
     }

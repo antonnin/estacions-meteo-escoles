@@ -45,7 +45,17 @@
                 
                 <nav class="nav" id="mainNav">
                     <a href="index.html" class="nav-link active">Inici</a>
-                    <a href="#escoles" class="nav-link">Escoles</a>
+                    <div class="nav-dropdown">
+                        <a href="#escoles" class="nav-link">Escoles ▼</a>
+                        <div class="nav-dropdown-menu">
+                            <a href="escola-el-castellot.html" class="nav-dropdown-item">🏰 Escola El Castellot</a>
+                            <a href="escola-jaume-balmes.html" class="nav-dropdown-item">💡 Escola Jaume Balmes</a>
+                            <a href="escola-santa-coloma.html" class="nav-dropdown-item">⭐ Escola Santa Coloma</a>
+                            <a href="escola-mar-i-cel.html" class="nav-dropdown-item">🍃 Escola Mar i Cel</a>
+                            <a href="zer-moianes.html" class="nav-dropdown-item">🌊 ZER Moianès</a>
+                            <a href="escola-mas-i-perera.html" class="nav-dropdown-item">🌻 Escola Mas i Perera</a>
+                        </div>
+                    </div>
                     <a href="#projecte" class="nav-link">El Projecte</a>
                     <a href="#contacte" class="nav-link">Contacte</a>
                 </nav>
@@ -99,12 +109,12 @@
                     <span id="school-list-toggle">▼</span>
                 </div>
                 <ul id="school-list">
-                    <li data-school-id="escola1"><span class="school-name">Escola Mas i Perera</span>: <span class="school-status-value"></span></li>
+                    <li data-school-id="escola1"><span class="school-name">Escola El Castellot</span>: <span class="school-status-value"></span></li>
                     <li data-school-id="escola2"><span class="school-name">Escola Jaume Balmes</span>: <span class="school-status-value"></span></li>
                     <li data-school-id="escola3"><span class="school-name">Escola Santa Coloma</span>: <span class="school-status-value"></span></li>
                     <li data-school-id="escola4"><span class="school-name">Escola Mar i Cel</span>: <span class="school-status-value"></span></li>
                     <li data-school-id="escola5"><span class="school-name">ZER Moianès</span>: <span class="school-status-value"></span></li>
-                    <li data-school-id="escola6"><span class="school-name">Escola El Castellot</span>: <span class="school-status-value"></span></li>
+                    <li data-school-id="escola6"><span class="school-name">Escola Mas i Perera</span>: <span class="school-status-value"></span></li>
                 </ul>
             </div>
         </div>
@@ -291,12 +301,12 @@
                 // Generate friendly URL based on school name
                 let schoolUrl = '';
                 switch (schoolId) {
-                    case 'escola1': schoolUrl = 'escola-mas-i-perera.html'; break;
+                    case 'escola1': schoolUrl = 'escola-el-castellot.html'; break;
                     case 'escola2': schoolUrl = 'escola-jaume-balmes.html'; break;
                     case 'escola3': schoolUrl = 'escola-santa-coloma.html'; break;
                     case 'escola4': schoolUrl = 'escola-mar-i-cel.html'; break;
                     case 'escola5': schoolUrl = 'zer-moianes.html'; break;
-                    case 'escola6': schoolUrl = 'escola-el-castellot.html'; break;
+                    case 'escola6': schoolUrl = 'escola-mas-i-perera.html'; break;
                     default: schoolUrl = 'escola.html?id=' + schoolId;
                 }
                 html += `

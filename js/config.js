@@ -60,20 +60,19 @@ const CONFIG = {
         // ------------------------------------------
         escola1: {
             id: 'escola1',
-            name: 'Escola Mas i Perera',
-            description: 'Vilafranca del Penedès (Alt Penedès)',
-            location: 'Vilafranca del Penedès',
-            website: 'https://agora.xtec.cat/ceip-masiperera/',
-            icon: '🌻',
-            color: '#FF6B6B',
-            gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
-            // GPS coordinates for map positioning (from Wikipedia: 41°20′53.75″N 1°41′34.60″E)
-            coordinates: { lat: 41.3632, lng: 1.7129 },
+            name: 'Escola El Castellot',
+            description: 'Castellví de la Marca (Alt Penedès)',
+            location: 'Castellví de la Marca',
+            website: 'https://agora.xtec.cat/ceipelcastellot/',
+            icon: '🏰',
+            color: '#ff9ff3',
+            gradient: 'linear-gradient(135deg, #ff9ff3 0%, #feca57 100%)',
+            coordinates: { lat: 41.3416, lng: 1.6356 },
             
             // CONFIGURACIÓ THINGSPEAK - MODIFICA AQUÍ
             thingspeak: {
-                channelId: 'YOUR_CHANNEL_ID_1',      // ← Substitueix pel Channel ID real
-                readApiKey: 'YOUR_READ_API_KEY_1',   // ← Substitueix per la Read API Key real
+                channelId: '3185873',
+                readApiKey: '66411666AE08BXSD',
             },
             
             // CONFIGURACIÓ DELS CAMPS/SENSORS
@@ -221,18 +220,18 @@ const CONFIG = {
         // ------------------------------------------
         escola6: {
             id: 'escola6',
-            name: 'Escola El Castellot',
-            description: 'Castellví de la Marca (Alt Penedès)',
-            location: 'Castellví de la Marca',
-            website: 'https://agora.xtec.cat/ceipelcastellot/',
-            icon: '🏰',
-            color: '#ff9ff3',
-            gradient: 'linear-gradient(135deg, #ff9ff3 0%, #feca57 100%)',
-            coordinates: { lat: 41.3416, lng: 1.6356 },
+            name: 'Escola Mas i Perera',
+            description: 'Vilafranca del Penedès (Alt Penedès)',
+            location: 'Vilafranca del Penedès',
+            website: 'https://agora.xtec.cat/ceip-masiperera/',
+            icon: '🌻',
+            color: '#FF6B6B',
+            gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
+            coordinates: { lat: 41.3632, lng: 1.7129 },
             
             thingspeak: {
-                channelId: '3185873',
-                readApiKey: '66411666AE08BXSD',
+                channelId: 'YOUR_CHANNEL_ID_6',
+                readApiKey: 'YOUR_READ_API_KEY_6',
             },
             
             fields: {

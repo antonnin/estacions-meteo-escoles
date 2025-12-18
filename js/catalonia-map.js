@@ -830,12 +830,12 @@ class CataloniaMap {
         // Generate friendly school URL
         let schoolUrl = '';
         switch (schoolId) {
-            case 'escola1': schoolUrl = 'escola-mas-i-perera.html'; break;
+            case 'escola1': schoolUrl = 'escola-el-castellot.html'; break;
             case 'escola2': schoolUrl = 'escola-jaume-balmes.html'; break;
             case 'escola3': schoolUrl = 'escola-santa-coloma.html'; break;
             case 'escola4': schoolUrl = 'escola-mar-i-cel.html'; break;
             case 'escola5': schoolUrl = 'zer-moianes.html'; break;
-            case 'escola6': schoolUrl = 'escola-el-castellot.html'; break;
+            case 'escola6': schoolUrl = 'escola-mas-i-perera.html'; break;
             default: schoolUrl = 'escola.html?id=' + schoolId;
         }
         // Helper to format timestamp
