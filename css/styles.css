@@ -427,6 +427,8 @@ body {
 /* Navigation Dropdown */
 .nav-dropdown {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .nav-dropdown-menu {
