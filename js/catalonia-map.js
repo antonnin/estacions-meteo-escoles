@@ -307,41 +307,17 @@ class CataloniaMap {
                     <h3>🗺️ Mapa de Catalunya</h3>
                     <p>Visualització en temps real de les estacions meteorològiques</p>
                 </div>
-                
                 <div class="sensor-selector">
-                    <button class="sensor-btn" data-sensor="field1">
-                        <span>🫧</span>
-                        <span>Pols</span>
-                    </button>
-                    <button class="sensor-btn active" data-sensor="field2">
-                        <span>🌡️</span>
-                        <span>Temperatura</span>
-                    </button>
-                    <button class="sensor-btn" data-sensor="field3">
-                        <span>💧</span>
-                        <span>Humitat</span>
-                    </button>
-                    <button class="sensor-btn" data-sensor="field4">
-                        <span>📊</span>
-                        <span>Pressió</span>
-                    </button>
-                    <button class="sensor-btn" data-sensor="field5">
-                        <span>⛰️</span>
-                        <span>Altura</span>
-                    </button>
-                    <button class="sensor-btn" data-sensor="field6">
-                        <span>☀️</span>
-                        <span>Lluminositat</span>
-                    </button>
-                    <button class="sensor-btn" data-sensor="field7">
-                        <span>💨</span>
-                        <span>Vent</span>
-                    </button>
+                    <button class="sensor-btn" data-sensor="field1"><span>🫧</span><span>Pols</span></button>
+                    <button class="sensor-btn active" data-sensor="field2"><span>🌡️</span><span>Temperatura</span></button>
+                    <button class="sensor-btn" data-sensor="field3"><span>💧</span><span>Humitat</span></button>
+                    <button class="sensor-btn" data-sensor="field4"><span>📊</span><span>Pressió</span></button>
+                    <button class="sensor-btn" data-sensor="field5"><span>⛰️</span><span>Altura</span></button>
+                    <button class="sensor-btn" data-sensor="field6"><span>☀️</span><span>Lluminositat</span></button>
+                    <button class="sensor-btn" data-sensor="field7"><span>💨</span><span>Vent</span></button>
                 </div>
-                
                 <div class="map-container">
                     <div id="catalunya-svg-container"></div>
-                    
                     <div class="map-legend" id="map-legend">
                         <div class="legend-title">ESCALA</div>
                         <div class="legend-gradient" id="legend-gradient"></div>
@@ -350,14 +326,16 @@ class CataloniaMap {
                             <span id="legend-max">--</span>
                         </div>
                     </div>
+                    <div class="school-list-panel" id="school-list-panel" style="position:absolute;top:20px;left:20px;z-index:20;background:rgba(20,30,50,0.92);border-radius:12px;padding:12px 18px;min-width:220px;max-width:320px;box-shadow:0 2px 12px #0002;">
+                        <div style="font-weight:700;font-size:1.1em;margin-bottom:8px;">Estat de les escoles</div>
+                        <ul id="school-list" style="list-style:none;padding:0;margin:0;"></ul>
+                    </div>
                 </div>
-                
                 <div class="map-info" id="map-info">
                     <p>Fes clic a una escola per veure més detalls</p>
                 </div>
             </div>
         `;
-        
         this.bindEvents();
     }
     
@@ -699,13 +677,13 @@ class CataloniaMap {
         const config = this.sensorConfig[this.currentSensor];
         const now = Date.now();
         const DAY_MS = 24 * 60 * 60 * 1000;
-        // Gather only values within last 24h
+        // For each school, find latest value within 24h for the selected field
+        const schoolList = [];
         const values = this.markers.map(({ schoolId }) => {
             const school = CONFIG.schools[schoolId];
             let value = null;
             let timestamp = null;
             if (school && this.schoolData[schoolId] && this.schoolData[schoolId].feeds) {
-                // Find latest feed for this sensor within 24h
                 const feeds = this.schoolData[schoolId].feeds;
                 for (let i = feeds.length - 1; i >= 0; i--) {
                     const feed = feeds[i];
@@ -716,60 +694,72 @@ class CataloniaMap {
                         break;
                     }
                 }
-            } else if (this.schoolData[schoolId] && this.schoolData[schoolId][this.currentSensor] !== undefined) {
-                // Fallback for demo/simple data
-                value = this.schoolData[schoolId][this.currentSensor];
-                timestamp = null;
             }
+            // Only show marker if value is available within 24h
+            schoolList.push({
+                schoolId,
+                name: school?.name || schoolId,
+                value,
+                timestamp
+            });
             return { schoolId, value, timestamp };
-        }).filter(v => v.value !== null && v.value !== undefined);
+        });
 
-        if (values.length === 0) {
-            // Hide all markers if no data
+        // Only show markers for schools with value in 24h
+        const validValues = values.filter(v => v.value !== null && v.value !== undefined);
+        if (validValues.length === 0) {
             this.markers.forEach(({ element }) => {
                 element.style.display = 'none';
             });
-            return;
+        } else {
+            const minVal = Math.min(...validValues.map(v => v.value));
+            const maxVal = Math.max(...validValues.map(v => v.value));
+            this.updateLegend(minVal, maxVal, config);
+            this.markers.forEach(({ element, schoolId }) => {
+                const found = validValues.find(v => v.schoolId === schoolId);
+                if (!found) {
+                    element.style.display = 'none';
+                    return;
+                }
+                element.style.display = '';
+                const value = found.value;
+                const color = this.getColorForValue(value, minVal, maxVal, config.colorScale);
+                const contrastColor = this.getContrastColor(color);
+                const valueText = element.querySelector('.marker-value');
+                const markerBg = element.querySelector('.marker-bg');
+                const markerInner = element.querySelector('.marker-inner');
+                const pulse = element.querySelector('.marker-pulse');
+                const decimals = this.currentSensor === 'field3' ? 0 : 1;
+                const formattedValue = this.formatNumber(value, decimals);
+                if (valueText) {
+                    valueText.textContent = formattedValue;
+                    valueText.setAttribute('fill', contrastColor);
+                }
+                if (markerBg) markerBg.setAttribute('fill', color);
+                if (markerInner) markerInner.setAttribute('fill', color);
+                if (pulse) pulse.setAttribute('stroke', color);
+                element.style.color = color;
+            });
         }
 
-        const minVal = Math.min(...values.map(v => v.value));
-        const maxVal = Math.max(...values.map(v => v.value));
-        this.updateLegend(minVal, maxVal, config);
-
-        this.markers.forEach(({ element, schoolId }) => {
-            const found = values.find(v => v.schoolId === schoolId);
-            if (!found) {
-                element.style.display = 'none';
-                return;
-            }
-            element.style.display = '';
-            const value = found.value;
-            const color = this.getColorForValue(value, minVal, maxVal, config.colorScale);
-            const contrastColor = this.getContrastColor(color);
-
-            const valueText = element.querySelector('.marker-value');
-            const markerBg = element.querySelector('.marker-bg');
-            const markerInner = element.querySelector('.marker-inner');
-            const pulse = element.querySelector('.marker-pulse');
-
-            const decimals = this.currentSensor === 'field3' ? 0 : 1;
-            const formattedValue = this.formatNumber(value, decimals);
-
-            if (valueText) {
-                valueText.textContent = formattedValue;
-                valueText.setAttribute('fill', contrastColor);
-            }
-            if (markerBg) {
-                markerBg.setAttribute('fill', color);
-            }
-            if (markerInner) {
-                markerInner.setAttribute('fill', color);
-            }
-            if (pulse) {
-                pulse.setAttribute('stroke', color);
-            }
-            element.style.color = color;
-        });
+        // Update school list panel
+        const schoolListElem = document.getElementById('school-list');
+        if (schoolListElem) {
+            schoolListElem.innerHTML = '';
+            schoolList.forEach(({ schoolId, name, value, timestamp }) => {
+                let statusHtml = '';
+                if (value !== null && value !== undefined) {
+                    const d = new Date(timestamp);
+                    statusHtml = `<span style="color:#22c55e;font-weight:600;">${this.formatNumber(value, this.currentSensor === 'field3' ? 0 : 1)} ${config.unit}</span> <span style="color:#aaa;font-size:0.92em;">(${d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })})</span>`;
+                } else {
+                    statusHtml = `<span style="color:#ef4444;font-weight:600;">dada no disponible</span>`;
+                }
+                const li = document.createElement('li');
+                li.style.marginBottom = '6px';
+                li.innerHTML = `<span style="font-weight:600;">${name}</span>: ${statusHtml}`;
+                schoolListElem.appendChild(li);
+            });
+        }
     }
     
     getColorForValue(value, min, max, colorScale) {
