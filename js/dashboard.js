@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Actualitzar títol de la pàgina
-    document.title = `${currentSchool.name} | MeteoBit`;
+    document.title = `${currentSchool.name} | Meteo:bit`;
     
     // Inicialitzar UI
     initializeUI();

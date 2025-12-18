@@ -96,7 +96,7 @@
     }
 }
 /* ===================================
-   METEOBIT - MODERN WEATHER DASHBOARD
+   METEO:BIT - MODERN WEATHER DASHBOARD
    Trendy Educational Design 2025
    With Light/Dark Mode Support
    =================================== */
@@ -1363,16 +1363,22 @@ body {
 
 /* Catalunya map styling */
 .comarca-path {
-    fill: rgba(56, 189, 248, 0.08) !important;
+    fill: var(--cream-dark) !important;
+    stroke: var(--border-color) !important;
     transition: all 0.3s ease !important;
 }
 
 .comarca-path:hover {
-    fill: rgba(56, 189, 248, 0.15) !important;
+    fill: var(--sand) !important;
 }
 
 #catalunya-svg-container svg {
-    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+/* Catalunya comarca labels - black text */
+.comarca-text, text {
+    fill: var(--gray-900) !important;
 }
 
 /* Map zoom controls */
@@ -1410,12 +1416,12 @@ body {
 }
 
 .sea-label {
-    fill: var(--text-muted);
+    fill: var(--text-tertiary);
     transition: fill var(--transition);
 }
 
 .marker-label {
-    fill: var(--text-primary);
+    fill: var(--gray-900);
     font-weight: 600;
     transition: fill var(--transition);
 }

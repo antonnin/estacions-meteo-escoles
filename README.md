@@ -1,4 +1,4 @@
-# 🌤️ MeteoBit - Estacions Meteorològiques Escolars
+# 🌤️ Meteo:bit - Estacions Meteorològiques Escolars
 
 Dashboard interactiu per visualitzar dades d'estacions meteorològiques construïdes per alumnes de primària utilitzant kits micro:bit i ThingSpeak.
 
