@@ -435,3 +435,21 @@
     </script>
 </body>
 </html>
+                    // Fold/unfold logic for Estat de les escoles
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const header = document.getElementById('school-list-header');
+                        const list = document.getElementById('school-list');
+                        const toggle = document.getElementById('school-list-toggle');
+                        if (header && list && toggle) {
+                            header.addEventListener('click', () => {
+                                const isOpen = list.style.display !== 'none';
+                                if (isOpen) {
+                                    list.style.display = 'none';
+                                    toggle.textContent = '▲';
+                                } else {
+                                    list.style.display = 'block';
+                                    toggle.textContent = '▼';
+                                }
+                            });
+                        }
+                    });

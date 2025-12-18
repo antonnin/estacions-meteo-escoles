@@ -37,7 +37,7 @@ const CONFIG = {
     // MODE DEMO - Activa per provar sense API keys
     // ==========================================
     // Posa a true per veure dades simulades, o afegeix ?demo=true a la URL
-    demoMode: false,  // ← Canvia a true només per proves, per defecte OFF
+    demoMode: false,  // ← Per defecte OFF
 
     // ==========================================
     // CONFIGURACIÓ GLOBAL DE THINGSPEAK
