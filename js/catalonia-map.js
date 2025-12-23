@@ -130,7 +130,7 @@ class CataloniaMap {
             field4: { name: 'Pressió', unit: 'hPa', icon: '📊', colorScale: ['#D1FAE5', '#6EE7B7', '#34D399', '#10B981', '#047857'] },
             field5: { name: 'Altura', unit: 'm', icon: '⛰️', colorScale: ['#FFF3E0', '#FFB74D', '#FF9800', '#F57C00', '#E65100'] },
             field6: { name: 'Lluminositat', unit: '%', icon: '☀️', colorScale: ['#FFF9C4', '#FFF176', '#FFEB3B', '#FDD835', '#F9A825'] },
-            field7: { name: 'Vent', unit: 'm/s', icon: '💨', colorScale: ['#E0E7FF', '#A5B4FC', '#818CF8', '#6366F1', '#4338CA'] }
+            field7: { name: 'Vent', unit: 'km/h', icon: '💨', colorScale: ['#E0E7FF', '#A5B4FC', '#818CF8', '#6366F1', '#4338CA'] }
         };
         
         this.init();
@@ -886,7 +886,7 @@ class CataloniaMap {
                     </div>
                     <div class="info-value">
                         <span>💨</span>
-                        <span>${this.formatNumber(latestFieldValue('field7').value, 1)} m/s</span>
+                        <span>${this.formatNumber(latestFieldValue('field7').value, 1)} km/h</span>
                         <span class="info-ts">${formatTs(latestFieldValue('field7').timestamp)}</span>
                     </div>
                 </div>

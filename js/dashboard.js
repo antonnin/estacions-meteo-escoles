@@ -284,7 +284,7 @@ function updateWeatherSummary(data) {
     // Update wind gauge
     if (stats.field4 && elements.windValue) {
         const wind = stats.field4.current;
-        elements.windValue.textContent = `${formatNumber(wind, 1)} m/s`;
+        elements.windValue.textContent = `${formatNumber(wind, 1)} km/h`;
         updateGauge(elements.windGauge, wind, 0, 20);
     }
     
