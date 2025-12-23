@@ -4822,5 +4822,65 @@
     "field6": 13,
     "field7": 5650,
     "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T07:35:24Z",
+    "entry_id": 403,
+    "field1": null,
+    "field2": 19,
+    "field3": 54,
+    "field4": 999,
+    "field5": 144,
+    "field6": 90,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T07:36:25Z",
+    "entry_id": 404,
+    "field1": null,
+    "field2": 19,
+    "field3": 54,
+    "field4": 999,
+    "field5": 144,
+    "field6": 90,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T07:37:55Z",
+    "entry_id": 405,
+    "field1": null,
+    "field2": 19,
+    "field3": 55,
+    "field4": 999,
+    "field5": 144,
+    "field6": 90,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T07:39:21Z",
+    "entry_id": 406,
+    "field1": null,
+    "field2": 19,
+    "field3": 54,
+    "field4": 999,
+    "field5": 144,
+    "field6": 91,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T07:40:22Z",
+    "entry_id": 407,
+    "field1": null,
+    "field2": 19,
+    "field3": 55,
+    "field4": 999,
+    "field5": 144,
+    "field6": 49,
+    "field7": null,
+    "field8": null
   }
 ]
