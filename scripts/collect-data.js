@@ -29,7 +29,18 @@ async function fetchThingSpeakData(channelId, apiKey, results = 100) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    
+    // Filtrar només dades a partir del 23 de desembre de 2025
+    const cutoffDate = new Date('2025-12-23T00:00:00Z');
+    if (data.feeds) {
+        data.feeds = data.feeds.filter(feed => {
+            const feedDate = new Date(feed.created_at);
+            return feedDate >= cutoffDate;
+        });
+    }
+    
+    return data;
 }
 
 /**
