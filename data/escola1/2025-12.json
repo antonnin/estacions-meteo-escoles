@@ -4162,5 +4162,113 @@
     "field6": 96,
     "field7": null,
     "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:49:11Z",
+    "entry_id": 348,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:50:13Z",
+    "entry_id": 349,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 25,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:51:15Z",
+    "entry_id": 350,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 7.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:52:32Z",
+    "entry_id": 351,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 18.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:53:34Z",
+    "entry_id": 352,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:54:35Z",
+    "entry_id": 353,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 19.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:55:37Z",
+    "entry_id": 354,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 34.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:56:39Z",
+    "entry_id": 355,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 66,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T14:57:41Z",
+    "entry_id": 356,
+    "field1": null,
+    "field2": -146,
+    "field3": null,
+    "field4": 1580,
+    "field5": -5085,
+    "field6": 95,
+    "field7": 14,
+    "field8": null
   }
 ]
