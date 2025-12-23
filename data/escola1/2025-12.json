@@ -1,0 +1,50 @@
+[
+  {
+    "timestamp": "2025-12-23T08:10:29Z",
+    "entry_id": 1,
+    "field1": null,
+    "field2": 14,
+    "field3": 52,
+    "field4": 999,
+    "field5": 144,
+    "field6": 93,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T08:11:30Z",
+    "entry_id": 2,
+    "field1": null,
+    "field2": 14,
+    "field3": 52,
+    "field4": 999,
+    "field5": 144,
+    "field6": 93,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T08:12:32Z",
+    "entry_id": 3,
+    "field1": null,
+    "field2": 14,
+    "field3": 53,
+    "field4": 999,
+    "field5": 144,
+    "field6": 93,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-23T08:13:34Z",
+    "entry_id": 4,
+    "field1": null,
+    "field2": 14,
+    "field3": 53,
+    "field4": 999,
+    "field5": 144,
+    "field6": 93,
+    "field7": null,
+    "field8": null
+  }
+]
