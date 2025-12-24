@@ -20434,5 +20434,113 @@
     "field6": 96,
     "field7": null,
     "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:43:43Z",
+    "entry_id": 1704,
+    "field1": null,
+    "field2": 14,
+    "field3": 48,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": 14,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:45:00Z",
+    "entry_id": 1705,
+    "field1": null,
+    "field2": 14,
+    "field3": 49,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": 51,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:46:01Z",
+    "entry_id": 1706,
+    "field1": null,
+    "field2": 14,
+    "field3": 49,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": 82,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:47:03Z",
+    "entry_id": 1707,
+    "field1": null,
+    "field2": 13,
+    "field3": 49,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": 10.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:48:06Z",
+    "entry_id": 1708,
+    "field1": null,
+    "field2": 13,
+    "field3": 50,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": 0.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:49:08Z",
+    "entry_id": 1709,
+    "field1": null,
+    "field2": 13,
+    "field3": 49,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:50:10Z",
+    "entry_id": 1710,
+    "field1": null,
+    "field2": 14,
+    "field3": 49,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:51:11Z",
+    "entry_id": 1711,
+    "field1": null,
+    "field2": 14,
+    "field3": 49,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": 1,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T15:52:13Z",
+    "entry_id": 1712,
+    "field1": null,
+    "field2": 14,
+    "field3": 49,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 96,
+    "field7": null,
+    "field8": null
   }
 ]
