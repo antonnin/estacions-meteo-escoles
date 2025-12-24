@@ -13522,5 +13522,41 @@
     "field6": 47,
     "field7": null,
     "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T05:40:19Z",
+    "entry_id": 1128,
+    "field1": null,
+    "field2": 10,
+    "field3": 64,
+    "field4": 1002,
+    "field5": 117,
+    "field6": 48,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T05:41:20Z",
+    "entry_id": 1129,
+    "field1": null,
+    "field2": 10,
+    "field3": 64,
+    "field4": 1002,
+    "field5": 117,
+    "field6": 47,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T05:42:22Z",
+    "entry_id": 1130,
+    "field1": null,
+    "field2": 10,
+    "field3": 65,
+    "field4": 1002,
+    "field5": 117,
+    "field6": 48,
+    "field7": null,
+    "field8": null
   }
 ]
