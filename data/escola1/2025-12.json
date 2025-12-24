@@ -19750,5 +19750,113 @@
     "field6": 97,
     "field7": 99,
     "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:44:46Z",
+    "entry_id": 1647,
+    "field1": null,
+    "field2": 15,
+    "field3": 45,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 54,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:45:48Z",
+    "entry_id": 1648,
+    "field1": null,
+    "field2": 15,
+    "field3": 45,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 49,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:46:50Z",
+    "entry_id": 1649,
+    "field1": null,
+    "field2": 15,
+    "field3": 45,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 32.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:47:51Z",
+    "entry_id": 1650,
+    "field1": null,
+    "field2": 15,
+    "field3": 45,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 66,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:48:53Z",
+    "entry_id": 1651,
+    "field1": null,
+    "field2": 15,
+    "field3": 46,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 33.5,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:49:55Z",
+    "entry_id": 1652,
+    "field1": null,
+    "field2": 14,
+    "field3": 47,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 91,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:50:57Z",
+    "entry_id": 1653,
+    "field1": null,
+    "field2": 14,
+    "field3": 47,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 23,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:51:58Z",
+    "entry_id": 1654,
+    "field1": null,
+    "field2": 14,
+    "field3": 47,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 14,
+    "field8": null
+  },
+  {
+    "timestamp": "2025-12-24T14:53:00Z",
+    "entry_id": 1655,
+    "field1": null,
+    "field2": 14,
+    "field3": 47,
+    "field4": 1000,
+    "field5": 135,
+    "field6": 97,
+    "field7": 78,
+    "field8": null
   }
 ]
