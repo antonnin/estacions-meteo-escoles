@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2025-12-27T19:21:38.970Z",
+  "lastUpdate": "2025-12-27T19:29:59.773Z",
   "schools": {
     "escola1": {
       "availableMonths": [
@@ -21,7 +21,7 @@
         "field6": "Lluminositat (%)",
         "field7": "Vent (km/h)"
       },
-      "recentData": true,
+      "recentData": false,
       "stats": {
         "totalRecords": 2739,
         "earliestDate": "2025-12-23T08:10:29.000Z",
