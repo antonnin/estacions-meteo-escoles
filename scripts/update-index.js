@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
-const FIVE_MINUTES_MS = 5 * 60 * 1000;
+const ONE_HOUR_MS = 60 * 60 * 1000;
 
 /**
  * Escaneja els fitxers de dades disponibles
@@ -69,9 +69,9 @@ function scanDataFiles() {
             }
         }
 
-        // Check if school has recent data (within last 5 minutes)
+        // Check if school has recent data (within last hour)
         const now = new Date();
-        const recentData = latestDate && (now - latestDate) <= FIVE_MINUTES_MS;
+        const recentData = latestDate && (now - latestDate) <= ONE_HOUR_MS;
         
         index.schools[schoolId] = {
             availableMonths: months,
