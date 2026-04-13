@@ -226,5 +226,41 @@
     "field6": 97,
     "field7": 281,
     "field8": null
+  },
+  {
+    "timestamp": "2026-04-13T09:18:08Z",
+    "entry_id": 1,
+    "field1": 15,
+    "field2": 55,
+    "field3": null,
+    "field4": 987,
+    "field5": 504,
+    "field6": null,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2026-04-13T09:18:25Z",
+    "entry_id": 2,
+    "field1": 15,
+    "field2": 55,
+    "field3": null,
+    "field4": 987,
+    "field5": 468,
+    "field6": null,
+    "field7": null,
+    "field8": null
+  },
+  {
+    "timestamp": "2026-04-13T09:18:41Z",
+    "entry_id": 3,
+    "field1": 15,
+    "field2": 55,
+    "field3": null,
+    "field4": 987,
+    "field5": 216,
+    "field6": null,
+    "field7": null,
+    "field8": null
   }
 ]
