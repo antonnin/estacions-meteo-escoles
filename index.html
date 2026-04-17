@@ -335,7 +335,7 @@
             updateSchoolStatusIndicators();
         }
 
-        // Update all school status indicators using data/index.json for true/false status
+        // Update all school status indicators by fetching live data from ThingSpeak
         async function updateSchoolStatusIndicators() {
             if (CONFIG.demoMode) {
                 for (const schoolId of Object.keys(CONFIG.schools)) {
@@ -350,23 +350,52 @@
                 return;
             }
 
-            let indexData = null;
-            try {
-                const resp = await fetch('data/index.json?t=' + Date.now(), { cache: 'no-store' });
-                if (resp.ok) indexData = await resp.json();
-            } catch (e) {}
-
+            // Fetch live data from ThingSpeak for each school
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
 
-                if (indexData?.schools?.[schoolId]?.recentData === true) {
-                    dot.style.background = '#22c55e';
-                    text.textContent = 'En línia';
-                    text.style.color = '#22c55e';
-                } else {
+                try {
+                    const school = CONFIG.schools[schoolId];
+                    const channelId = school.channelId;
+                    const apiKey = school.apiKey;
+                    
+                    // Fetch the latest 1 entry from ThingSpeak
+                    const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json?api_key=${apiKey}&results=1`;
+                    const resp = await fetch(url);
+                    
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data.feeds && data.feeds.length > 0) {
+                            // Check if data is recent (within last 10 minutes)
+                            const lastUpdate = new Date(data.feeds[0].created_at);
+                            const now = new Date();
+                            const minutesOld = (now - lastUpdate) / 60000;
+                            
+                            if (minutesOld < 10) {
+                                // Recent data
+                                dot.style.background = '#22c55e';
+                                text.textContent = 'En línia';
+                                text.style.color = '#22c55e';
+                            } else {
+                                // Stale data
+                                dot.style.background = '#ef4444';
+                                text.textContent = 'Fora de servei';
+                                text.style.color = '#ef4444';
+                            }
+                        } else {
+                            // No data
+                            dot.style.background = '#ef4444';
+                            text.textContent = 'Fora de servei';
+                            text.style.color = '#ef4444';
+                        }
+                    } else {
+                        throw new Error('API error');
+                    }
+                } catch (e) {
+                    // If API call fails, mark as offline
                     dot.style.background = '#ef4444';
                     text.textContent = 'Fora de servei';
                     text.style.color = '#ef4444';
