@@ -112,18 +112,18 @@ jobs:
           # Crear índex de dades
           echo "📋 Creant índex..."
           cat > data/index.json << EOF
-          {
-            "lastUpdate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-            "schools": {
-              "escola1": { "recentData": $(check_recent_data "escola1") },
-              "escola2": { "recentData": $(check_recent_data "escola2") },
-              "escola3": { "recentData": $(check_recent_data "escola3") },
-              "escola4": { "recentData": $(check_recent_data "escola4") },
-              "escola5": { "recentData": $(check_recent_data "escola5") },
-              "escola6": { "recentData": $(check_recent_data "escola6") }
-            }
-          }
-          EOF
+{
+  "lastUpdate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "schools": {
+    "escola1": { "recentData": $(check_recent_data "escola1") },
+    "escola2": { "recentData": $(check_recent_data "escola2") },
+    "escola3": { "recentData": $(check_recent_data "escola3") },
+    "escola4": { "recentData": $(check_recent_data "escola4") },
+    "escola5": { "recentData": $(check_recent_data "escola5") },
+    "escola6": { "recentData": $(check_recent_data "escola6") }
+  }
+}
+EOF
           
           echo "✅ Índex creat"
       
