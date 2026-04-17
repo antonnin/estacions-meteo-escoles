@@ -335,7 +335,7 @@
             updateSchoolStatusIndicators();
         }
 
-        // Update all school status indicators - try ThingSpeak, fall back to cached data
+        // Update all school status indicators - only fetch data for escola1
         async function updateSchoolStatusIndicators() {
             if (CONFIG.demoMode) {
                 for (const schoolId of Object.keys(CONFIG.schools)) {
@@ -355,22 +355,16 @@
                 window.thingSpeakService = new ThingSpeakService();
             }
 
-            // Fetch live data from ThingSpeak for each school, fall back to cached files
+            // Only fetch data for escola1 (the only connected school)
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
 
-                let isOnline = false;
-
-                // Try ThingSpeak first
-                try {
-                    const school = CONFIG.schools[schoolId];
-                    const { channelId, readApiKey } = school.thingspeak;
-                    
-                    // Skip if credentials are placeholders
-                    if (!channelId.startsWith('YOUR_') && !readApiKey.startsWith('YOUR_')) {
+                if (schoolId === 'escola1') {
+                    // Fetch live data from ThingSpeak for escola1
+                    try {
                         const entry = await window.thingSpeakService.fetchLastEntry(schoolId);
                         
                         if (entry && entry.created_at) {
@@ -379,51 +373,27 @@
                             const minutesOld = (now - lastUpdate) / 60000;
                             
                             if (minutesOld < 60) {
-                                isOnline = true;
+                                dot.style.background = '#22c55e';
+                                text.textContent = 'En línia';
+                                text.style.color = '#22c55e';
+                            } else {
+                                dot.style.background = '#ef4444';
+                                text.textContent = 'Fora de servei';
+                                text.style.color = '#ef4444';
                             }
-                        }
-                    }
-                } catch (e) {
-                    // ThingSpeak fetch failed, will try cached data
-                }
-
-                // If ThingSpeak failed or was skipped, try cached data files
-                if (!isOnline) {
-                    try {
-                        const now = new Date();
-                        const year = now.getFullYear();
-                        const month = String(now.getMonth() + 1).padStart(2, '0');
-                        const dataFile = `data/${schoolId}/${year}-${month}.json`;
-                        
-                        const resp = await fetch(dataFile + '?t=' + Date.now(), { cache: 'no-store' });
-                        
-                        if (resp.ok) {
-                            const entries = await resp.json();
-                            
-                            if (entries && entries.length > 0) {
-                                const latestEntry = entries[entries.length - 1];
-                                const lastUpdate = new Date(latestEntry.created_at);
-                                const nowTime = new Date();
-                                const minutesOld = (nowTime - lastUpdate) / 60000;
-                                
-                                if (minutesOld < 60) {
-                                    isOnline = true;
-                                }
-                            }
+                        } else {
+                            throw new Error('No data');
                         }
                     } catch (e) {
-                        // Cached data also failed
+                        // If API call fails, mark as offline
+                        dot.style.background = '#ef4444';
+                        text.textContent = 'Fora de servei';
+                        text.style.color = '#ef4444';
                     }
-                }
-
-                // Update status indicator
-                if (isOnline) {
-                    dot.style.background = '#22c55e';
-                    text.textContent = 'En línia';
-                    text.style.color = '#22c55e';
                 } else {
+                    // Schools 2-6 are not connected yet
                     dot.style.background = '#ef4444';
-                    text.textContent = 'Fora de servei';
+                    text.textContent = 'No connectat';
                     text.style.color = '#ef4444';
                 }
             }
