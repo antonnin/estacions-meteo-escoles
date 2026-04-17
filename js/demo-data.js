@@ -115,17 +115,14 @@ const DemoDataGenerator = {
             created_at: timestamp.toISOString()
         };
 
-        // Generar cada camp amb valors realistes
+        // Generar cada camp amb valors realistes (ordre: field1=Temp, field2=Humitat, field3=Llum, field4=Pressió, field5=Vent)
         const baseTemp = 15 + tempVariation + this.randomVariation(2);
         
-        entry.field1 = Math.round((baseTemp) * 10) / 10; // Temperatura
-        entry.field2 = Math.round((60 - tempVariation * 2 + this.randomVariation(10)) * 10) / 10; // Humitat
-        entry.field3 = Math.round((1013 + this.randomVariation(10)) * 10) / 10; // Pressió
-        entry.field4 = isDay ? Math.round(500 + Math.sin(dayProgress * Math.PI) * 400 + this.randomVariation(100)) : Math.round(this.randomVariation(20)); // Llum
-        entry.field5 = Math.round((40 + this.randomVariation(15)) * 10) / 10; // Soroll
-        entry.field6 = isDay ? Math.round((3 + Math.sin(dayProgress * Math.PI) * 4 + this.randomVariation(1)) * 10) / 10 : 0; // UV
-        entry.field7 = Math.random() > 0.9 ? Math.round(this.randomVariation(5) * 10) / 10 : 0; // Pluja
-        entry.field8 = Math.round((2 + this.randomVariation(3)) * 10) / 10; // Vent
+        entry.field1 = Math.round((baseTemp) * 10) / 10; // Temperatura °C
+        entry.field2 = Math.round(Math.min(100, Math.max(0, 60 - tempVariation * 2 + this.randomVariation(10))) * 10) / 10; // Humitat %
+        entry.field3 = isDay ? Math.round(Math.min(100, Math.max(0, 50 + Math.sin(dayProgress * Math.PI) * 45 + this.randomVariation(10)))) : Math.round(Math.max(0, this.randomVariation(5))); // Lluminositat %
+        entry.field4 = Math.round((1013 + this.randomVariation(10)) * 10) / 10; // Pressió hPa
+        entry.field5 = Math.round(Math.max(0, 5 + this.randomVariation(8)) * 10) / 10; // Vent km/h
 
         return entry;
     },

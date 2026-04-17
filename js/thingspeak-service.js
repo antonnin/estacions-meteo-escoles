@@ -182,9 +182,16 @@ class ThingSpeakService {
         // Processar cada camp
         Object.keys(school.fields).forEach(fieldKey => {
             const value = entry[fieldKey];
-            processed[fieldKey] = value !== null && value !== undefined && value !== '' 
+            let parsed = value !== null && value !== undefined && value !== '' 
                 ? parseFloat(value) 
                 : null;
+            
+            // Convert wind from cm/h to km/h (divide by 100)
+            if (fieldKey === 'field5' && parsed !== null && !isNaN(parsed)) {
+                parsed = parsed / 100;
+            }
+            
+            processed[fieldKey] = parsed;
         });
 
         return processed;

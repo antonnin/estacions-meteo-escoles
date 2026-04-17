@@ -1,11 +1,11 @@
 name: Fetch Weather Data from ThingSpeak
+# DISABLED - superseded by collect-data.yml which uses the Node.js script
+# This workflow used curl/bash and saved flat files (escola1_last.json).
+# collect-data.yml saves organised per-month JSON files used by the frontend.
 
 on:
-  schedule:
-    # Executa cada 5 minuts
-    - cron: '*/5 * * * *'
   workflow_dispatch:
-    # Permet executar manualment
+    # Only manual trigger; schedule disabled to avoid conflict with collect-data.yml
 
 permissions:
   contents: write

@@ -6,9 +6,9 @@
 const fs = require('fs');
 const path = require('path');
 
-// Configuració de les escoles des de variables d'entorn
+// Configuració de les escoles des de variables d'entorn (amb fallback per escola1)
 const SCHOOLS = [
-    { id: 'escola1', channelId: process.env.ESCOLA1_CHANNEL_ID, apiKey: process.env.ESCOLA1_API_KEY },
+    { id: 'escola1', channelId: process.env.ESCOLA1_CHANNEL_ID || '3185873', apiKey: process.env.ESCOLA1_API_KEY || '66411666AE08BXSD' },
     { id: 'escola2', channelId: process.env.ESCOLA2_CHANNEL_ID, apiKey: process.env.ESCOLA2_API_KEY },
     { id: 'escola3', channelId: process.env.ESCOLA3_CHANNEL_ID, apiKey: process.env.ESCOLA3_API_KEY },
     { id: 'escola4', channelId: process.env.ESCOLA4_CHANNEL_ID, apiKey: process.env.ESCOLA4_API_KEY },
@@ -31,8 +31,8 @@ async function fetchThingSpeakData(channelId, apiKey, results = 100) {
     
     const data = await response.json();
     
-    // Filtrar només dades a partir del 23 de desembre de 2025
-    const cutoffDate = new Date('2025-12-23T00:00:00Z');
+    // Filtrar només dades a partir del 13 d'abril de 2026 (canal reconfigurat)
+    const cutoffDate = new Date('2026-04-13T00:00:00Z');
     if (data.feeds) {
         data.feeds = data.feeds.filter(feed => {
             const feedDate = new Date(feed.created_at);
@@ -73,14 +73,11 @@ function saveData(schoolId, data) {
         dataByMonth[monthKey].push({
             timestamp: feed.created_at,
             entry_id: feed.entry_id,
-            field1: parseFloat(feed.field1) || null,
-            field2: parseFloat(feed.field2) || null,
-            field3: parseFloat(feed.field3) || null,
-            field4: parseFloat(feed.field4) || null,
-            field5: parseFloat(feed.field5) || null,
-            field6: parseFloat(feed.field6) || null,
-            field7: parseFloat(feed.field7) || null,
-            field8: parseFloat(feed.field8) || null,
+            field1: feed.field1 !== null && feed.field1 !== '' ? parseFloat(feed.field1) : null,
+            field2: feed.field2 !== null && feed.field2 !== '' ? parseFloat(feed.field2) : null,
+            field3: feed.field3 !== null && feed.field3 !== '' ? parseFloat(feed.field3) : null,
+            field4: feed.field4 !== null && feed.field4 !== '' ? parseFloat(feed.field4) : null,
+            field5: feed.field5 !== null && feed.field5 !== '' ? parseFloat(feed.field5) : null,
         });
     });
 
@@ -153,9 +150,6 @@ function saveData(schoolId, data) {
         field3: data.channel.field3,
         field4: data.channel.field4,
         field5: data.channel.field5,
-        field6: data.channel.field6,
-        field7: data.channel.field7,
-        field8: data.channel.field8,
     };
     fs.writeFileSync(channelInfoPath, JSON.stringify(channelInfo, null, 2));
 }

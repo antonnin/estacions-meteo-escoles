@@ -275,17 +275,17 @@ function updateWeatherSummary(data) {
     }
     
     // Update pressure gauge
-    if (stats.field3 && elements.pressureValue) {
-        const pressure = stats.field3.current;
+    if (stats.field4 && elements.pressureValue) {
+        const pressure = stats.field4.current;
         elements.pressureValue.textContent = `${formatNumber(pressure, 0)} hPa`;
         updateGauge(elements.pressureGauge, pressure, 970, 1050);
     }
     
     // Update wind gauge
-    if (stats.field4 && elements.windValue) {
-        const wind = stats.field4.current;
+    if (stats.field5 && elements.windValue) {
+        const wind = stats.field5.current;
         elements.windValue.textContent = `${formatNumber(wind, 1)} km/h`;
-        updateGauge(elements.windGauge, wind, 0, 20);
+        updateGauge(elements.windGauge, wind, 0, 60);
     }
     
     // Show weather summary
