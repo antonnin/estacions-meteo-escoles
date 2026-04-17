@@ -119,18 +119,16 @@ class CataloniaMap {
             maxLng: 3.35
         };
         
-        this.currentSensor = 'field2'; // Temperatura per defecte
+        this.currentSensor = 'field1'; // Temperatura per defecte
         this.schoolData = {};
         this.markers = [];
         
         this.sensorConfig = {
-            field1: { name: 'Pols', unit: 'ug/m3', icon: '🫧', colorScale: ['#ECEFF1', '#B0BEC5', '#78909C', '#546E7A', '#37474F'] },
-            field2: { name: 'Temperatura', unit: '°C', icon: '🌡️', colorScale: ['#3B82F6', '#10B981', '#FBBF24', '#F97316', '#EF4444'] },
-            field3: { name: 'Humitat', unit: '%', icon: '💧', colorScale: ['#FEE2E2', '#BFDBFE', '#93C5FD', '#3B82F6', '#1E40AF'] },
+            field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', colorScale: ['#3B82F6', '#10B981', '#FBBF24', '#F97316', '#EF4444'] },
+            field2: { name: 'Humitat', unit: '%', icon: '💧', colorScale: ['#FEE2E2', '#BFDBFE', '#93C5FD', '#3B82F6', '#1E40AF'] },
+            field3: { name: 'Lluminositat', unit: '%', icon: '☀️', colorScale: ['#FFF9C4', '#FFF176', '#FFEB3B', '#FDD835', '#F9A825'] },
             field4: { name: 'Pressió', unit: 'hPa', icon: '📊', colorScale: ['#D1FAE5', '#6EE7B7', '#34D399', '#10B981', '#047857'] },
-            field5: { name: 'Altura', unit: 'm', icon: '⛰️', colorScale: ['#FFF3E0', '#FFB74D', '#FF9800', '#F57C00', '#E65100'] },
-            field6: { name: 'Lluminositat', unit: '%', icon: '☀️', colorScale: ['#FFF9C4', '#FFF176', '#FFEB3B', '#FDD835', '#F9A825'] },
-            field7: { name: 'Vent', unit: 'km/h', icon: '💨', colorScale: ['#E0E7FF', '#A5B4FC', '#818CF8', '#6366F1', '#4338CA'] }
+            field5: { name: 'Vent', unit: 'km/h', icon: '💨', colorScale: ['#E0E7FF', '#A5B4FC', '#818CF8', '#6366F1', '#4338CA'] }
         };
         
         this.init();
@@ -309,13 +307,11 @@ class CataloniaMap {
                     <p>Visualització en temps real de les estacions meteorològiques</p>
                 </div>
                 <div class="sensor-selector">
-                    <button class="sensor-btn" data-sensor="field1"><span>🫧</span><span>Pols</span></button>
-                    <button class="sensor-btn active" data-sensor="field2"><span>🌡️</span><span>Temperatura</span></button>
-                    <button class="sensor-btn" data-sensor="field3"><span>💧</span><span>Humitat</span></button>
+                    <button class="sensor-btn active" data-sensor="field1"><span>🌡️</span><span>Temperatura</span></button>
+                    <button class="sensor-btn" data-sensor="field2"><span>💧</span><span>Humitat</span></button>
+                    <button class="sensor-btn" data-sensor="field3"><span>☀️</span><span>Lluminositat</span></button>
                     <button class="sensor-btn" data-sensor="field4"><span>📊</span><span>Pressió</span></button>
-                    <button class="sensor-btn" data-sensor="field5"><span>⛰️</span><span>Altura</span></button>
-                    <button class="sensor-btn" data-sensor="field6"><span>☀️</span><span>Lluminositat</span></button>
-                    <button class="sensor-btn" data-sensor="field7"><span>💨</span><span>Vent</span></button>
+                    <button class="sensor-btn" data-sensor="field5"><span>💨</span><span>Vent</span></button>
                 </div>
                 <div class="map-container">
                     <div id="catalunya-svg-container"></div>
@@ -372,6 +368,7 @@ class CataloniaMap {
                 
                 for (const [schoolId, school] of Object.entries(schools)) {
                     if (!school.active) continue;
+                    if (schoolId !== 'escola1') continue;
                     try {
                         // Use the same data source as dashboard and status indicators
                         const data = await thingSpeakService.fetchChannelData(schoolId, startDate, now);
@@ -744,7 +741,10 @@ class CataloniaMap {
                 let statusHtml = '';
                 if (value !== null && value !== undefined) {
                     const d = new Date(timestamp);
-                    statusHtml = `<span style="color:#22c55e;font-weight:600;">${this.formatNumber(value, this.currentSensor === 'field3' ? 0 : 1)} ${config.unit}</span> <span style="color:#aaa;font-size:0.92em;">(${d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })})</span>`;
+                    const decimals = this.currentSensor === 'field2' || this.currentSensor === 'field3' ? 0 : 1;
+                    statusHtml = `<span style="color:#22c55e;font-weight:600;">${this.formatNumber(value, decimals)} ${config.unit}</span> <span style="color:#aaa;font-size:0.92em;">(${d.toLocaleString('ca-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })})</span>`;
+                } else if (schoolId !== 'escola1' && !(typeof DemoDataGenerator !== 'undefined' && DemoDataGenerator.isEnabled())) {
+                    statusHtml = `<span style="color:#ef4444;font-weight:600;">No connectat</span>`;
                 } else if (typeof DemoDataGenerator !== 'undefined' && DemoDataGenerator.isEnabled()) {
                     statusHtml = `<span style="color:#facc15;font-weight:600;">Mode demo</span>`;
                 } else {
@@ -790,7 +790,7 @@ class CataloniaMap {
             gradient.style.background = `linear-gradient(to right, ${config.colorScale.join(', ')})`;
         }
         
-        const decimals = (this.currentSensor === 'field4' || this.currentSensor === 'field5') ? 0 : 1;
+        const decimals = this.currentSensor === 'field2' || this.currentSensor === 'field3' ? 0 : 1;
         if (minLabel) {
             minLabel.textContent = `${this.formatNumber(min, decimals)}${config.unit}`;
         }
@@ -855,18 +855,18 @@ class CataloniaMap {
                 </div>
                 <div class="school-info-values">
                     <div class="info-value">
-                        <span>🫧</span>
-                        <span>${this.formatNumber(latestFieldValue('field1').value, 1)} ug/m3</span>
+                        <span>🌡️</span>
+                        <span>${this.formatNumber(latestFieldValue('field1').value, 1)}°C</span>
                         <span class="info-ts">${formatTs(latestFieldValue('field1').timestamp)}</span>
                     </div>
                     <div class="info-value">
-                        <span>🌡️</span>
-                        <span>${this.formatNumber(latestFieldValue('field2').value, 1)}°C</span>
+                        <span>💧</span>
+                        <span>${this.formatNumber(latestFieldValue('field2').value, 0)}%</span>
                         <span class="info-ts">${formatTs(latestFieldValue('field2').timestamp)}</span>
                     </div>
                     <div class="info-value">
-                        <span>💧</span>
-                        <span>${this.formatNumber(latestFieldValue('field3').value, 1)}%</span>
+                        <span>☀️</span>
+                        <span>${this.formatNumber(latestFieldValue('field3').value, 0)}%</span>
                         <span class="info-ts">${formatTs(latestFieldValue('field3').timestamp)}</span>
                     </div>
                     <div class="info-value">
@@ -875,19 +875,9 @@ class CataloniaMap {
                         <span class="info-ts">${formatTs(latestFieldValue('field4').timestamp)}</span>
                     </div>
                     <div class="info-value">
-                        <span>⛰️</span>
-                        <span>${this.formatNumber(latestFieldValue('field5').value, 0)} m</span>
-                        <span class="info-ts">${formatTs(latestFieldValue('field5').timestamp)}</span>
-                    </div>
-                    <div class="info-value">
-                        <span>☀️</span>
-                        <span>${this.formatNumber(latestFieldValue('field6').value, 1)}%</span>
-                        <span class="info-ts">${formatTs(latestFieldValue('field6').timestamp)}</span>
-                    </div>
-                    <div class="info-value">
                         <span>💨</span>
-                        <span>${this.formatNumber(latestFieldValue('field7').value, 1)} km/h</span>
-                        <span class="info-ts">${formatTs(latestFieldValue('field7').timestamp)}</span>
+                        <span>${this.formatNumber(latestFieldValue('field5').value, 1)} km/h</span>
+                        <span class="info-ts">${formatTs(latestFieldValue('field5').timestamp)}</span>
                     </div>
                 </div>
                 <a href="${schoolUrl}" class="view-data-btn" style="margin-top: 16px; display: inline-flex; text-align: center; justify-content: center; width: 100%;">
