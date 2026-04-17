@@ -335,7 +335,7 @@
             updateSchoolStatusIndicators();
         }
 
-        // Update all school status indicators by fetching live data from ThingSpeak
+        // Update all school status indicators by fetching cached data files
         async function updateSchoolStatusIndicators() {
             if (CONFIG.demoMode) {
                 for (const schoolId of Object.keys(CONFIG.schools)) {
@@ -350,7 +350,7 @@
                 return;
             }
 
-            // Fetch live data from ThingSpeak for each school
+            // Fetch cached data files for each school
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
@@ -358,44 +358,44 @@
                 const text = statusElem.querySelector('.status-text');
 
                 try {
-                    const school = CONFIG.schools[schoolId];
-                    const channelId = school.channelId;
-                    const apiKey = school.apiKey;
+                    // Try to fetch the current month's data file
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const dataFile = `data/${schoolId}/${year}-${month}.json`;
                     
-                    // Fetch the latest 1 entry from ThingSpeak
-                    const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json?api_key=${apiKey}&results=1`;
-                    const resp = await fetch(url);
+                    const resp = await fetch(dataFile + '?t=' + Date.now(), { cache: 'no-store' });
                     
                     if (resp.ok) {
-                        const data = await resp.json();
-                        if (data.feeds && data.feeds.length > 0) {
-                            // Check if data is recent (within last 10 minutes)
-                            const lastUpdate = new Date(data.feeds[0].created_at);
-                            const now = new Date();
-                            const minutesOld = (now - lastUpdate) / 60000;
+                        const entries = await resp.json();
+                        
+                        if (entries && entries.length > 0) {
+                            // Get the latest entry
+                            const latestEntry = entries[entries.length - 1];
+                            const lastUpdate = new Date(latestEntry.created_at);
+                            const nowTime = new Date();
+                            const minutesOld = (nowTime - lastUpdate) / 60000;
                             
-                            if (minutesOld < 10) {
-                                // Recent data
+                            // Show online if data is less than 1 hour old
+                            if (minutesOld < 60) {
                                 dot.style.background = '#22c55e';
                                 text.textContent = 'En línia';
                                 text.style.color = '#22c55e';
                             } else {
-                                // Stale data
                                 dot.style.background = '#ef4444';
                                 text.textContent = 'Fora de servei';
                                 text.style.color = '#ef4444';
                             }
                         } else {
-                            // No data
                             dot.style.background = '#ef4444';
                             text.textContent = 'Fora de servei';
                             text.style.color = '#ef4444';
                         }
                     } else {
-                        throw new Error('API error');
+                        throw new Error('Data file not found');
                     }
                 } catch (e) {
-                    // If API call fails, mark as offline
+                    // If file fetch fails, mark as offline
                     dot.style.background = '#ef4444';
                     text.textContent = 'Fora de servei';
                     text.style.color = '#ef4444';
