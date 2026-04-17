@@ -335,7 +335,7 @@
             updateSchoolStatusIndicators();
         }
 
-        // Update all school status indicators by fetching live data from ThingSpeak
+        // Update all school status indicators - try ThingSpeak, fall back to cached data
         async function updateSchoolStatusIndicators() {
             if (CONFIG.demoMode) {
                 for (const schoolId of Object.keys(CONFIG.schools)) {
@@ -355,37 +355,73 @@
                 window.thingSpeakService = new ThingSpeakService();
             }
 
-            // Fetch live data from ThingSpeak for each school
+            // Fetch live data from ThingSpeak for each school, fall back to cached files
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
 
+                let isOnline = false;
+
+                // Try ThingSpeak first
                 try {
-                    // Fetch the latest entry from ThingSpeak
-                    const entry = await window.thingSpeakService.fetchLastEntry(schoolId);
+                    const school = CONFIG.schools[schoolId];
+                    const { channelId, readApiKey } = school.thingspeak;
                     
-                    if (entry && entry.created_at) {
-                        // Check if data is recent (within last 1 hour)
-                        const lastUpdate = new Date(entry.created_at);
-                        const now = new Date();
-                        const minutesOld = (now - lastUpdate) / 60000;
+                    // Skip if credentials are placeholders
+                    if (!channelId.startsWith('YOUR_') && !readApiKey.startsWith('YOUR_')) {
+                        const entry = await window.thingSpeakService.fetchLastEntry(schoolId);
                         
-                        if (minutesOld < 60) {
-                            dot.style.background = '#22c55e';
-                            text.textContent = 'En línia';
-                            text.style.color = '#22c55e';
-                        } else {
-                            dot.style.background = '#ef4444';
-                            text.textContent = 'Fora de servei';
-                            text.style.color = '#ef4444';
+                        if (entry && entry.created_at) {
+                            const lastUpdate = new Date(entry.created_at);
+                            const now = new Date();
+                            const minutesOld = (now - lastUpdate) / 60000;
+                            
+                            if (minutesOld < 60) {
+                                isOnline = true;
+                            }
                         }
-                    } else {
-                        throw new Error('No data');
                     }
                 } catch (e) {
-                    // If API call fails, mark as offline
+                    // ThingSpeak fetch failed, will try cached data
+                }
+
+                // If ThingSpeak failed or was skipped, try cached data files
+                if (!isOnline) {
+                    try {
+                        const now = new Date();
+                        const year = now.getFullYear();
+                        const month = String(now.getMonth() + 1).padStart(2, '0');
+                        const dataFile = `data/${schoolId}/${year}-${month}.json`;
+                        
+                        const resp = await fetch(dataFile + '?t=' + Date.now(), { cache: 'no-store' });
+                        
+                        if (resp.ok) {
+                            const entries = await resp.json();
+                            
+                            if (entries && entries.length > 0) {
+                                const latestEntry = entries[entries.length - 1];
+                                const lastUpdate = new Date(latestEntry.created_at);
+                                const nowTime = new Date();
+                                const minutesOld = (nowTime - lastUpdate) / 60000;
+                                
+                                if (minutesOld < 60) {
+                                    isOnline = true;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Cached data also failed
+                    }
+                }
+
+                // Update status indicator
+                if (isOnline) {
+                    dot.style.background = '#22c55e';
+                    text.textContent = 'En línia';
+                    text.style.color = '#22c55e';
+                } else {
                     dot.style.background = '#ef4444';
                     text.textContent = 'Fora de servei';
                     text.style.color = '#ef4444';
