@@ -1,11 +1,13 @@
 name: Fetch Weather Data from ThingSpeak
-# DISABLED - superseded by collect-data.yml which uses the Node.js script
-# This workflow used curl/bash and saved flat files (escola1_last.json).
-# collect-data.yml saves organised per-month JSON files used by the frontend.
+# Automatically fetches data from ThingSpeak every 5 minutes
+# Also allows manual trigger via GitHub Actions UI
 
 on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
   workflow_dispatch:
-    # Only manual trigger; schedule disabled to avoid conflict with collect-data.yml
+    # Allow manual trigger
 
 permissions:
   contents: write
@@ -28,7 +30,6 @@ jobs:
       
       - name: Fetch data from ThingSpeak
         env:
-          # API Keys - Configura com a secrets del repositori
           ESCOLA1_CHANNEL_ID: ${{ secrets.ESCOLA1_CHANNEL_ID }}
           ESCOLA1_API_KEY: ${{ secrets.ESCOLA1_API_KEY }}
           ESCOLA2_CHANNEL_ID: ${{ secrets.ESCOLA2_CHANNEL_ID }}
@@ -41,91 +42,7 @@ jobs:
           ESCOLA5_API_KEY: ${{ secrets.ESCOLA5_API_KEY }}
           ESCOLA6_CHANNEL_ID: ${{ secrets.ESCOLA6_CHANNEL_ID }}
           ESCOLA6_API_KEY: ${{ secrets.ESCOLA6_API_KEY }}
-        run: |
-          # Script per obtenir dades de cada escola
-          
-          fetch_school_data() {
-            SCHOOL_ID=$1
-            CHANNEL_ID=$2
-            API_KEY=$3
-            
-            if [ -n "$CHANNEL_ID" ] && [ -n "$API_KEY" ]; then
-              echo "📥 Obtenint dades de $SCHOOL_ID (Channel: $CHANNEL_ID)..."
-              
-              # Obtenir últimes 8000 entrades
-              curl -s "https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=${API_KEY}&results=8000" \
-                -o "data/${SCHOOL_ID}_latest.json"
-              
-              # Obtenir només l'última entrada
-              curl -s "https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds/last.json?api_key=${API_KEY}" \
-                -o "data/${SCHOOL_ID}_last.json"
-              
-              echo "✅ Dades de $SCHOOL_ID desades"
-            else
-              echo "⚠️ Saltant $SCHOOL_ID (no configurat)"
-            fi
-          }
-          
-          check_recent_data() {
-            SCHOOL_ID=$1
-            LAST_FILE="data/${SCHOOL_ID}_last.json"
-            
-            if [ ! -f "$LAST_FILE" ]; then
-              echo "false"
-              return
-            fi
-            
-            # Extract last update timestamp from JSON
-            LAST_UPDATE=$(cat "$LAST_FILE" | grep -o '"created_at":"[^"]*"' | head -1 | cut -d'"' -f4)
-            
-            if [ -z "$LAST_UPDATE" ]; then
-              echo "false"
-              return
-            fi
-            
-            # Convert to Unix timestamp
-            LAST_TS=$(date -d "$LAST_UPDATE" +%s 2>/dev/null || echo "0")
-            NOW_TS=$(date +%s)
-            DIFF=$((NOW_TS - LAST_TS))
-            
-            # Check if data is within last 5 minutes (300 seconds)
-            if [ "$DIFF" -le 300 ]; then
-              echo "true"
-            else
-              echo "false"
-            fi
-          }
-          
-          # Obtenir dades de cada escola
-          fetch_school_data "escola1" "$ESCOLA1_CHANNEL_ID" "$ESCOLA1_API_KEY"
-          fetch_school_data "escola2" "$ESCOLA2_CHANNEL_ID" "$ESCOLA2_API_KEY"
-          fetch_school_data "escola3" "$ESCOLA3_CHANNEL_ID" "$ESCOLA3_API_KEY"
-          fetch_school_data "escola4" "$ESCOLA4_CHANNEL_ID" "$ESCOLA4_API_KEY"
-          fetch_school_data "escola5" "$ESCOLA5_CHANNEL_ID" "$ESCOLA5_API_KEY"
-          fetch_school_data "escola6" "$ESCOLA6_CHANNEL_ID" "$ESCOLA6_API_KEY"
-          
-          # Netejar dades antigues (més de 30 dies)
-          echo "🧹 Netejant dades antigues..."
-          find data -name "*_latest.json" -mtime +30 -delete 2>/dev/null || true
-          find data -name "*_last.json" -mtime +30 -delete 2>/dev/null || true
-          
-          # Crear índex de dades
-          echo "📋 Creant índex..."
-          cat > data/index.json << EOF
-{
-  "lastUpdate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "schools": {
-    "escola1": { "recentData": $(check_recent_data "escola1") },
-    "escola2": { "recentData": $(check_recent_data "escola2") },
-    "escola3": { "recentData": $(check_recent_data "escola3") },
-    "escola4": { "recentData": $(check_recent_data "escola4") },
-    "escola5": { "recentData": $(check_recent_data "escola5") },
-    "escola6": { "recentData": $(check_recent_data "escola6") }
-  }
-}
-EOF
-          
-          echo "✅ Índex creat"
+        run: node scripts/collect-data.js
       
       - name: Commit and push data
         run: |
@@ -135,9 +52,9 @@ EOF
           git add data/
           
           if git diff --staged --quiet; then
-            echo "No hi ha canvis per cometre"
+            echo "No changes to commit"
           else
-            git commit -m "🌦️ Actualització de dades meteorològiques - $(date -u +"%Y-%m-%d %H:%M UTC")"
+            git commit -m "[AUTO] Weather data update - $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
-            echo "✅ Dades actualitzades al repositori"
+            echo "[OK] Data updated"
           fi
