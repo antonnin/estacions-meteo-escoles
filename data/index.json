@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-04-17T14:17:31.144Z",
+  "lastUpdate": "2026-04-17T14:43:46.576Z",
   "schools": {
     "escola1": {
       "availableMonths": [
@@ -12,18 +12,18 @@
         "longitude": "0.0",
         "created_at": "2025-11-28T11:31:55Z",
         "updated_at": "2026-04-13T09:44:11Z",
-        "last_entry_id": 14138,
+        "last_entry_id": 14190,
         "field1": "Temperatura (ºC)",
         "field2": "Humitat (%)",
         "field3": "Lluminositat (%)",
         "field4": "Pressió (hPa)",
         "field5": "Vent (km/h)"
       },
-      "recentData": false,
+      "recentData": true,
       "stats": {
-        "totalRecords": 10176,
+        "totalRecords": 10228,
         "earliestDate": "2026-04-08T10:49:07.000Z",
-        "latestDate": "2026-04-17T08:22:53.000Z"
+        "latestDate": "2026-04-17T14:43:30.000Z"
       }
     }
   }
