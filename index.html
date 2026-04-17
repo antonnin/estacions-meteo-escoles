@@ -335,7 +335,7 @@
             updateSchoolStatusIndicators();
         }
 
-        // Update all school status indicators by fetching cached data files
+        // Update all school status indicators by fetching live data from ThingSpeak
         async function updateSchoolStatusIndicators() {
             if (CONFIG.demoMode) {
                 for (const schoolId of Object.keys(CONFIG.schools)) {
@@ -350,7 +350,12 @@
                 return;
             }
 
-            // Fetch cached data files for each school
+            // Create service instance if needed
+            if (typeof window.thingSpeakService === 'undefined') {
+                window.thingSpeakService = new ThingSpeakService();
+            }
+
+            // Fetch live data from ThingSpeak for each school
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
@@ -358,44 +363,29 @@
                 const text = statusElem.querySelector('.status-text');
 
                 try {
-                    // Try to fetch the current month's data file
-                    const now = new Date();
-                    const year = now.getFullYear();
-                    const month = String(now.getMonth() + 1).padStart(2, '0');
-                    const dataFile = `data/${schoolId}/${year}-${month}.json`;
+                    // Fetch the latest entry from ThingSpeak
+                    const entry = await window.thingSpeakService.fetchLastEntry(schoolId);
                     
-                    const resp = await fetch(dataFile + '?t=' + Date.now(), { cache: 'no-store' });
-                    
-                    if (resp.ok) {
-                        const entries = await resp.json();
+                    if (entry && entry.created_at) {
+                        // Check if data is recent (within last 1 hour)
+                        const lastUpdate = new Date(entry.created_at);
+                        const now = new Date();
+                        const minutesOld = (now - lastUpdate) / 60000;
                         
-                        if (entries && entries.length > 0) {
-                            // Get the latest entry
-                            const latestEntry = entries[entries.length - 1];
-                            const lastUpdate = new Date(latestEntry.created_at);
-                            const nowTime = new Date();
-                            const minutesOld = (nowTime - lastUpdate) / 60000;
-                            
-                            // Show online if data is less than 1 hour old
-                            if (minutesOld < 60) {
-                                dot.style.background = '#22c55e';
-                                text.textContent = 'En línia';
-                                text.style.color = '#22c55e';
-                            } else {
-                                dot.style.background = '#ef4444';
-                                text.textContent = 'Fora de servei';
-                                text.style.color = '#ef4444';
-                            }
+                        if (minutesOld < 60) {
+                            dot.style.background = '#22c55e';
+                            text.textContent = 'En línia';
+                            text.style.color = '#22c55e';
                         } else {
                             dot.style.background = '#ef4444';
                             text.textContent = 'Fora de servei';
                             text.style.color = '#ef4444';
                         }
                     } else {
-                        throw new Error('Data file not found');
+                        throw new Error('No data');
                     }
                 } catch (e) {
-                    // If file fetch fails, mark as offline
+                    // If API call fails, mark as offline
                     dot.style.background = '#ef4444';
                     text.textContent = 'Fora de servei';
                     text.style.color = '#ef4444';
