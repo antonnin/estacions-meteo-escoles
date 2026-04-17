@@ -3,11 +3,8 @@ name: Fetch Weather Data from ThingSpeak
 # Also allows manual trigger via GitHub Actions UI
 
 on:
-  schedule:
-    # Run every 5 minutes
-    - cron: '*/5 * * * *'
   workflow_dispatch:
-    # Allow manual trigger
+    # Manual trigger only - DISABLED in favor of collect-data.yml which also updates the index
 
 permissions:
   contents: write
