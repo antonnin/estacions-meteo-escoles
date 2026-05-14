@@ -15,11 +15,11 @@ class ThingSpeakService {
     }
 
     /**
-     * Obté les dades d'un canal de ThingSpeak
+     * Obté les dades d'un canal de ThingSpeak amb suport per paginació
      * @param {string} schoolId - Identificador de l'escola
      * @param {Date} startDate - Data d'inici (opcional)
      * @param {Date} endDate - Data de fi (opcional)
-     * @returns {Promise<Object>} - Dades del canal
+     * @returns {Promise<Object>} - Dades del canal (combinades de múltiples requests si cal)
      */
     async fetchChannelData(schoolId, startDate = null, endDate = null) {
         const school = CONFIG.schools[schoolId];
@@ -27,25 +27,7 @@ class ThingSpeakService {
             throw new Error(`Escola no trobada: ${schoolId}`);
         }
 
-        const { channelId, readApiKey } = school.thingspeak;
-        
-        // Construir URL amb paràmetres
-        let url = `${this.baseUrl}/channels/${channelId}/feeds.json`;
-        const params = new URLSearchParams();
-        
-        params.append('api_key', readApiKey);
-        params.append('results', CONFIG.thingspeak.resultsPerRequest);
-        
-        if (startDate) {
-            params.append('start', this.formatDateForApi(startDate));
-        }
-        if (endDate) {
-            params.append('end', this.formatDateForApi(endDate));
-        }
-        
-        url += '?' + params.toString();
-
-        // Comprovar cache
+        // Comprovar cache primer
         const cacheKey = `${schoolId}_${startDate?.toISOString()}_${endDate?.toISOString()}`;
         const cached = this.getFromCache(cacheKey);
         if (cached) {
@@ -55,25 +37,122 @@ class ThingSpeakService {
 
         try {
             console.log(`🌐 Obtenint dades de ${school.name}...`);
-            const response = await fetch(url);
             
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            
-            const data = await response.json();
+            // Fetch all data with pagination support
+            const allFeeds = await this._fetchAllChannelFeeds(school, startDate, endDate);
             
             // Processar i normalitzar les dades
-            const processedData = this.processChannelData(data, school);
+            const data = {
+                channel: allFeeds.channel || {},
+                school: school,
+                feeds: allFeeds.feeds || [],
+                fieldData: {},
+                stats: {}
+            };
+            
+            // Separar dades per camp
+            Object.keys(school.fields).forEach(fieldKey => {
+                data.fieldData[fieldKey] = {
+                    ...school.fields[fieldKey],
+                    data: allFeeds.feeds.map(feed => ({
+                        timestamp: feed.timestamp,
+                        value: feed[fieldKey]
+                    })).filter(item => item.value !== null && item.value !== undefined)
+                };
+            });
+
+            // Calcular estadístiques
+            data.stats = this.calculateStats(allFeeds.feeds, school);
             
             // Guardar al cache
-            this.saveToCache(cacheKey, processedData);
+            this.saveToCache(cacheKey, data);
             
-            return processedData;
+            return data;
         } catch (error) {
             console.error(`❌ Error obtenint dades de ${school.name}:`, error);
             throw error;
         }
+    }
+
+    /**
+     * Obté totes les dades del canal amb paginació automàtica
+     * @private
+     */
+    async _fetchAllChannelFeeds(school, startDate, endDate) {
+        const { channelId, readApiKey } = school.thingspeak;
+        let allFeeds = [];
+        let page = 0;
+        let hasMoreData = true;
+        const baseUrl = `${this.baseUrl}/channels/${channelId}/feeds.json`;
+
+        while (hasMoreData) {
+            try {
+                const params = new URLSearchParams();
+                params.append('api_key', readApiKey);
+                params.append('results', CONFIG.thingspeak.resultsPerRequest);
+                
+                // Afegir paginació
+                const offset = page * CONFIG.thingspeak.resultsPerRequest;
+                if (offset > 0) {
+                    params.append('offset', offset);
+                }
+                
+                if (startDate) {
+                    params.append('start', this.formatDateForApi(startDate));
+                }
+                if (endDate) {
+                    params.append('end', this.formatDateForApi(endDate));
+                }
+                
+                const url = baseUrl + '?' + params.toString();
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const feeds = data.feeds || [];
+
+                if (feeds.length === 0) {
+                    hasMoreData = false;
+                    if (page === 0) {
+                        // Primera petició i no hi ha dades
+                        return data;
+                    }
+                } else {
+                    // Processar feeds
+                    const processedFeeds = feeds.map(feed => this.processEntry(feed, school));
+                    allFeeds = processedFeeds.concat(allFeeds); // Afegir al principi (per mantenir ordre cronològic)
+                    
+                    if (feeds.length < CONFIG.thingspeak.resultsPerRequest) {
+                        // Hem rebut menys resultats que el màxim, significa que no hi ha més dades
+                        hasMoreData = false;
+                    } else {
+                        // Potser hi ha més dades, intenta la pàgina següent
+                        page++;
+                        // Afegir petita espera per evitar rate limiting
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+
+                if (page === 0 && feeds.length > 0) {
+                    // Retornar info del canal de la primera petició
+                    return {
+                        channel: data.channel,
+                        feeds: allFeeds
+                    };
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error en pàgina ${page}:`, error);
+                hasMoreData = false;
+            }
+        }
+
+        return {
+            channel: {},
+            feeds: allFeeds
+        };
     }
 
     /**

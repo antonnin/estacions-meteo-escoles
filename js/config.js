@@ -45,7 +45,9 @@ const CONFIG = {
     thingspeak: {
         baseUrl: 'https://api.thingspeak.com',
         resultsPerRequest: 8000, // Màxim 8000 resultats per petició
-        updateInterval: 60000,  // Actualització cada 60 segons (en milisegons)
+        // Con paginació automàtica, es fan múltiples requests si cal per obtenir 30 dies complets
+        // Exemple: a 1 min per entrada = 44000 entries/30 dies → ~6 requests
+        updateInterval: 60000,  // Actualització UI cada 60 segons (en milisegons)
     },
 
     // ==========================================
@@ -244,8 +246,9 @@ const CONFIG = {
         fileNameFormat: '{schoolId}_{date}.json',
         // Utilitza emmagatzematge local del navegador com a cache
         useLocalStorage: true,
-        // Temps màxim de cache (en milisegons) - 5 minuts
-        cacheExpiry: 300000,
+        // Temps màxim de cache (en milisegons) - 24 hores per a dades de 30 dies
+        // Amb 5 minuts era insuficient: 5min * 48 requests (8000 results × 48 = 384000 entries ≈ 30 dies)
+        cacheExpiry: 86400000,  // 24 hores
     },
 
     // ==========================================
