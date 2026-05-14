@@ -231,14 +231,27 @@ function updateCurrentWeather(data) {
 }
 
 /**
+ * Trova un field per type
+ */
+function findFieldByType(type) {
+    for (const [fieldKey, field] of Object.entries(currentSchool.fields)) {
+        if (field.type === type) {
+            return { fieldKey, field };
+        }
+    }
+    return null;
+}
+
+/**
  * Actualitza el panell de resum del temps
  */
 function updateWeatherSummary(data) {
     const stats = data.stats;
     
-    // Update temperature
-    if (stats.field1 && elements.summaryTemp) {
-        const temp = stats.field1.current;
+    // Update temperature (find field by type, not hardcoded)
+    const tempField = findFieldByType('temperature');
+    if (tempField && stats[tempField.fieldKey] && elements.summaryTemp) {
+        const temp = stats[tempField.fieldKey].current;
         elements.summaryTemp.textContent = formatNumber(temp, 1);
         
         // Set condition based on temperature
@@ -267,23 +280,26 @@ function updateWeatherSummary(data) {
         elements.summaryLocation.textContent = currentSchool.location;
     }
     
-    // Update humidity gauge
-    if (stats.field2 && elements.humidityValue) {
-        const humidity = stats.field2.current;
+    // Update humidity gauge (find field by type, not hardcoded)
+    const humidityField = findFieldByType('humidity');
+    if (humidityField && stats[humidityField.fieldKey] && elements.humidityValue) {
+        const humidity = stats[humidityField.fieldKey].current;
         elements.humidityValue.textContent = `${formatNumber(humidity, 0)}%`;
         updateGauge(elements.humidityGauge, humidity, 0, 100);
     }
     
-    // Update pressure gauge
-    if (stats.field4 && elements.pressureValue) {
-        const pressure = stats.field4.current;
+    // Update pressure gauge (find field by type, not hardcoded)
+    const pressureField = findFieldByType('pressure');
+    if (pressureField && stats[pressureField.fieldKey] && elements.pressureValue) {
+        const pressure = stats[pressureField.fieldKey].current;
         elements.pressureValue.textContent = `${formatNumber(pressure, 0)} hPa`;
         updateGauge(elements.pressureGauge, pressure, 970, 1050);
     }
     
-    // Update wind gauge
-    if (stats.field5 && elements.windValue) {
-        const wind = stats.field5.current;
+    // Update wind gauge (find field by type, not hardcoded)
+    const windField = findFieldByType('wind');
+    if (windField && stats[windField.fieldKey] && elements.windValue) {
+        const wind = stats[windField.fieldKey].current;
         elements.windValue.textContent = `${formatNumber(wind, 1)} km/h`;
         updateGauge(elements.windGauge, wind, 0, 60);
     }
@@ -319,7 +335,11 @@ function createMiniTempChart(data) {
     const canvas = document.getElementById('miniTempChart');
     if (!canvas) return;
     
-    const tempData = data.fieldData?.field1?.data;
+    // Find temperature field dynamically
+    const tempField = findFieldByType('temperature');
+    if (!tempField) return;
+    
+    const tempData = data.fieldData?.[tempField.fieldKey]?.data;
     if (!tempData || tempData.length === 0) return;
     
     // Destroy existing chart
@@ -338,8 +358,8 @@ function createMiniTempChart(data) {
             labels: last24h.map(d => new Date(d.timestamp)),
             datasets: [{
                 data: last24h.map(d => d.value),
-                borderColor: '#FF6B6B',
-                backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                borderColor: tempField.field.color,
+                backgroundColor: `${tempField.field.color}20`,
                 borderWidth: 2,
                 fill: true,
                 tension: 0.4,

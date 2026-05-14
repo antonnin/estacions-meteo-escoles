@@ -162,16 +162,15 @@ const CONFIG = {
             coordinates: { lat: 41.2222, lng: 1.6940 },
             
             thingspeak: {
-                channelId: 'YOUR_CHANNEL_ID_4',
-                readApiKey: 'YOUR_READ_API_KEY_4',
+                channelId: '3253909',
+                readApiKey: '7TRVWD841RO5ZJML',
             },
             
             fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-                field5: { name: 'Vent', unit: 'km/h', icon: '💨', color: '#a29bfe', type: 'wind' },
+                field1: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
+                field2: { name: 'Humitat Relativa', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
+                field3: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
+                field4: { name: 'Pols', unit: 'μg/m³', icon: '🫧', color: '#95a5a6', type: 'dust' },
             },
             active: true,
         },
