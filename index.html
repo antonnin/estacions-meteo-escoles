@@ -355,14 +355,14 @@
                 window.thingSpeakService = new ThingSpeakService();
             }
 
-            // Fetch data for connected schools (escola1 and escola4)
+            // Fetch data for connected schools (escola1, escola4, and escola6)
             for (const schoolId of Object.keys(CONFIG.schools)) {
                 const statusElem = document.getElementById(`school-status-${schoolId}`);
                 if (!statusElem) continue;
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
 
-                if (schoolId === 'escola1' || schoolId === 'escola4') {
+                if (schoolId === 'escola1' || schoolId === 'escola4' || schoolId === 'escola6') {
                     // Fetch live data from ThingSpeak for connected schools
                     try {
                         const entry = await window.thingSpeakService.fetchLastEntry(schoolId);
@@ -391,7 +391,7 @@
                         text.style.color = '#ef4444';
                     }
                 } else {
-                    // Schools 2-3, 5-6 are not connected yet
+                    // Schools 2-3, 5 are not connected yet
                     dot.style.background = '#ef4444';
                     text.textContent = 'No connectat';
                     text.style.color = '#ef4444';

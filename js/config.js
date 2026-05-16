@@ -221,16 +221,15 @@ const CONFIG = {
             coordinates: { lat: 41.3632, lng: 1.7129 },
             
             thingspeak: {
-                channelId: 'YOUR_CHANNEL_ID_6',
-                readApiKey: 'YOUR_READ_API_KEY_6',
+                channelId: '3262256',
+                readApiKey: '4DZ4GNPAUXQJWQN4',
             },
             
             fields: {
                 field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
                 field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
                 field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-                field5: { name: 'Vent', unit: 'km/h', icon: '💨', color: '#a29bfe', type: 'wind' },
+                field4: { name: 'Pressió Atmosfèrica', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
             },
             active: true,
         },
