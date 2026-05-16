@@ -368,7 +368,7 @@ class CataloniaMap {
                 
                 for (const [schoolId, school] of Object.entries(schools)) {
                     if (!school.active) continue;
-                    if (schoolId !== 'escola1') continue;
+                    if (!['escola1', 'escola4', 'escola6', 'escola7'].includes(schoolId)) continue;
                     try {
                         // Use the same data source as dashboard and status indicators
                         const data = await thingSpeakService.fetchChannelData(schoolId, startDate, now);
