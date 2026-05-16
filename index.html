@@ -54,6 +54,7 @@
                             <a href="escola-mar-i-cel.html" class="nav-dropdown-item">Escola Mar i Cel</a>
                             <a href="zer-moianes.html" class="nav-dropdown-item">ZER Moianès</a>
                             <a href="escola-mas-i-perera.html" class="nav-dropdown-item">Escola Mas i Perera</a>
+                            <a href="citilab.html" class="nav-dropdown-item">Citilab</a>
                         </div>
                     </div>
                     <a href="#projecte" class="nav-link">El Projecte</a>
@@ -73,13 +74,13 @@
                 </div>
                 <h1 style="text-align: center;">Ens convertim en meteoròlegs!</h1>
                 <p>
-                    Alumnes d'11 anys de 6 escoles diferents han construït les seves pròpies 
+                    Alumnes d'11 anys de 7 escoles i centres diferents han construït les seves pròpies 
                     estacions meteorològiques utilitzant kits <strong>micro:bit</strong>. 
                     Descobreix les dades del temps en temps real recollides pels nostres joves científics!
                 </p>
                 <div class="hero-stats">
                     <div class="stat-item">
-                        <span class="stat-number">6</span>
+                        <span class="stat-number">7</span>
                         <span class="stat-label">Escoles</span>
                     </div>
                     <div class="stat-item">
@@ -115,6 +116,7 @@
                     <li data-school-id="escola4"><span class="school-name">Escola Mar i Cel</span>: <span class="school-status-value"></span></li>
                     <li data-school-id="escola5"><span class="school-name">ZER Moianès</span>: <span class="school-status-value"></span></li>
                     <li data-school-id="escola6"><span class="school-name">Escola Mas i Perera</span>: <span class="school-status-value"></span></li>
+                    <li data-school-id="escola7"><span class="school-name">Citilab</span>: <span class="school-status-value"></span></li>
                 </ul>
             </div>
         </div>
@@ -263,10 +265,10 @@
     </button>
 
     <!-- Scripts -->
-    <script src="js/config.js?v=20260417b"></script>
-    <script src="js/demo-data.js?v=20260417b"></script>
-    <script src="js/thingspeak-service.js?v=20260417b"></script>
-    <script src="js/catalonia-map.js?v=20260417b"></script>
+    <script src="js/config.js?v=20260516b"></script>
+    <script src="js/demo-data.js?v=20260516b"></script>
+    <script src="js/thingspeak-service.js?v=20260516b"></script>
+    <script src="js/catalonia-map.js?v=20260516b"></script>
     <script>
                         // Fold/unfold logic for Estat de les escoles
                         document.addEventListener('DOMContentLoaded', () => {
@@ -307,6 +309,7 @@
                     case 'escola4': schoolUrl = 'escola-mar-i-cel.html'; break;
                     case 'escola5': schoolUrl = 'zer-moianes.html'; break;
                     case 'escola6': schoolUrl = 'escola-mas-i-perera.html'; break;
+                    case 'escola7': schoolUrl = 'citilab.html'; break;
                     default: schoolUrl = 'escola.html?id=' + schoolId;
                 }
                 html += `
@@ -362,7 +365,7 @@
                 const dot = statusElem.querySelector('.status-dot');
                 const text = statusElem.querySelector('.status-text');
 
-                if (schoolId === 'escola1' || schoolId === 'escola4' || schoolId === 'escola6') {
+                if (schoolId === 'escola1' || schoolId === 'escola4' || schoolId === 'escola6' || schoolId === 'escola7') {
                     // Fetch live data from ThingSpeak for connected schools
                     try {
                         const entry = await window.thingSpeakService.fetchLastEntry(schoolId);
@@ -392,6 +395,7 @@
                     }
                 } else {
                     // Schools 2-3, 5 are not connected yet
+                    // (escola7=Citilab is connected above)
                     dot.style.background = '#ef4444';
                     text.textContent = 'No connectat';
                     text.style.color = '#ef4444';

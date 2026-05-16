@@ -233,6 +233,34 @@ const CONFIG = {
             },
             active: true,
         },
+
+        // ------------------------------------------
+        // ESCOLA 7
+        // ------------------------------------------
+        escola7: {
+            id: 'escola7',
+            name: 'Citilab',
+            description: 'Cornellà de Llobregat (Baix Llobregat)',
+            location: 'Cornellà de Llobregat',
+            website: 'https://citilab.eu',
+            icon: '🔬',
+            color: '#00b894',
+            gradient: 'linear-gradient(135deg, #00b894 0%, #00cec9 100%)',
+            coordinates: { lat: 41.3557, lng: 2.0704 },
+
+            thingspeak: {
+                channelId: '3385483',
+                readApiKey: '6Z3LTL7DRNF7OTT3',
+            },
+
+            fields: {
+                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
+                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
+                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
+                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
+            },
+            active: true,
+        },
     },
 
     // ==========================================

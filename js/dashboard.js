@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'escola-mar-i-cel.html': currentSchoolId = 'escola4'; break;
             case 'zer-moianes.html': currentSchoolId = 'escola5'; break;
             case 'escola-mas-i-perera.html': currentSchoolId = 'escola6'; break;
+            case 'citilab.html': currentSchoolId = 'escola7'; break;
             default: currentSchoolId = 'escola1';
         }
     }
