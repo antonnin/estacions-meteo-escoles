@@ -270043,5 +270043,905 @@
     "field3": 0,
     "field4": 1004,
     "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:17:43Z",
+    "entry_id": 86299,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 612
+  },
+  {
+    "timestamp": "2026-05-21T11:17:59Z",
+    "entry_id": 86300,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:18:23Z",
+    "entry_id": 86301,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:18:40Z",
+    "entry_id": 86302,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:18:57Z",
+    "entry_id": 86303,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:19:13Z",
+    "entry_id": 86304,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:19:30Z",
+    "entry_id": 86305,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:19:47Z",
+    "entry_id": 86306,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:20:04Z",
+    "entry_id": 86307,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:20:20Z",
+    "entry_id": 86308,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:20:37Z",
+    "entry_id": 86309,
+    "field1": 39,
+    "field2": 11,
+    "field3": 1,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:20:53Z",
+    "entry_id": 86310,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:21:10Z",
+    "entry_id": 86311,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:21:26Z",
+    "entry_id": 86312,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:21:43Z",
+    "entry_id": 86313,
+    "field1": 39,
+    "field2": 10,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:21:59Z",
+    "entry_id": 86314,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 0
+  },
+  {
+    "timestamp": "2026-05-21T11:22:16Z",
+    "entry_id": 86315,
+    "field1": 39,
+    "field2": 11,
+    "field3": 1,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:22:32Z",
+    "entry_id": 86316,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:22:49Z",
+    "entry_id": 86317,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:23:05Z",
+    "entry_id": 86318,
+    "field1": 39,
+    "field2": 11,
+    "field3": 1,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:23:22Z",
+    "entry_id": 86319,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:23:38Z",
+    "entry_id": 86320,
+    "field1": 39,
+    "field2": 10,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:23:55Z",
+    "entry_id": 86321,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:24:11Z",
+    "entry_id": 86322,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:24:28Z",
+    "entry_id": 86323,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:24:44Z",
+    "entry_id": 86324,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:25:01Z",
+    "entry_id": 86325,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:25:17Z",
+    "entry_id": 86326,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:25:34Z",
+    "entry_id": 86327,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:25:50Z",
+    "entry_id": 86328,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:26:07Z",
+    "entry_id": 86329,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:26:23Z",
+    "entry_id": 86330,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:26:40Z",
+    "entry_id": 86331,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:26:56Z",
+    "entry_id": 86332,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:27:13Z",
+    "entry_id": 86333,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:27:30Z",
+    "entry_id": 86334,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:27:46Z",
+    "entry_id": 86335,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:28:03Z",
+    "entry_id": 86336,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:28:19Z",
+    "entry_id": 86337,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:28:52Z",
+    "entry_id": 86338,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:29:08Z",
+    "entry_id": 86339,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:29:25Z",
+    "entry_id": 86340,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 684
+  },
+  {
+    "timestamp": "2026-05-21T11:29:41Z",
+    "entry_id": 86341,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:29:58Z",
+    "entry_id": 86342,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:30:15Z",
+    "entry_id": 86343,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:30:32Z",
+    "entry_id": 86344,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:30:48Z",
+    "entry_id": 86345,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:31:05Z",
+    "entry_id": 86346,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:31:21Z",
+    "entry_id": 86347,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:31:38Z",
+    "entry_id": 86348,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:31:54Z",
+    "entry_id": 86349,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 360
+  },
+  {
+    "timestamp": "2026-05-21T11:32:11Z",
+    "entry_id": 86350,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 684
+  },
+  {
+    "timestamp": "2026-05-21T11:32:27Z",
+    "entry_id": 86351,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:32:44Z",
+    "entry_id": 86352,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:33:00Z",
+    "entry_id": 86353,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:33:17Z",
+    "entry_id": 86354,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:33:34Z",
+    "entry_id": 86355,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:33:51Z",
+    "entry_id": 86356,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:34:07Z",
+    "entry_id": 86357,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:34:24Z",
+    "entry_id": 86358,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:34:42Z",
+    "entry_id": 86359,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:34:58Z",
+    "entry_id": 86360,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:35:15Z",
+    "entry_id": 86361,
+    "field1": 38,
+    "field2": 11,
+    "field3": 1,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:35:31Z",
+    "entry_id": 86362,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:35:48Z",
+    "entry_id": 86363,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:36:04Z",
+    "entry_id": 86364,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:36:21Z",
+    "entry_id": 86365,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 468
+  },
+  {
+    "timestamp": "2026-05-21T11:36:38Z",
+    "entry_id": 86366,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:36:54Z",
+    "entry_id": 86367,
+    "field1": 38,
+    "field2": 11,
+    "field3": 1,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:37:10Z",
+    "entry_id": 86368,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:37:27Z",
+    "entry_id": 86369,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:37:44Z",
+    "entry_id": 86370,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:38:00Z",
+    "entry_id": 86371,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:38:16Z",
+    "entry_id": 86372,
+    "field1": 38,
+    "field2": 11,
+    "field3": 1,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:38:33Z",
+    "entry_id": 86373,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:38:50Z",
+    "entry_id": 86374,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:39:06Z",
+    "entry_id": 86375,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:39:22Z",
+    "entry_id": 86376,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:39:39Z",
+    "entry_id": 86377,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:39:55Z",
+    "entry_id": 86378,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:40:12Z",
+    "entry_id": 86379,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:40:28Z",
+    "entry_id": 86380,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
+  },
+  {
+    "timestamp": "2026-05-21T11:40:45Z",
+    "entry_id": 86381,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 468
+  },
+  {
+    "timestamp": "2026-05-21T11:41:13Z",
+    "entry_id": 86382,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:41:30Z",
+    "entry_id": 86383,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:41:46Z",
+    "entry_id": 86384,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:42:03Z",
+    "entry_id": 86385,
+    "field1": 38,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:42:19Z",
+    "entry_id": 86386,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:42:36Z",
+    "entry_id": 86387,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:42:53Z",
+    "entry_id": 86388,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:43:10Z",
+    "entry_id": 86389,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:43:27Z",
+    "entry_id": 86390,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:43:43Z",
+    "entry_id": 86391,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:44:00Z",
+    "entry_id": 86392,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:44:16Z",
+    "entry_id": 86393,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 504
+  },
+  {
+    "timestamp": "2026-05-21T11:44:33Z",
+    "entry_id": 86394,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:44:49Z",
+    "entry_id": 86395,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 288
+  },
+  {
+    "timestamp": "2026-05-21T11:45:06Z",
+    "entry_id": 86396,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 540
+  },
+  {
+    "timestamp": "2026-05-21T11:45:22Z",
+    "entry_id": 86397,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 324
+  },
+  {
+    "timestamp": "2026-05-21T11:45:39Z",
+    "entry_id": 86398,
+    "field1": 39,
+    "field2": 11,
+    "field3": 0,
+    "field4": 1004,
+    "field5": 576
   }
 ]
