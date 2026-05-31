@@ -1,10 +1,8 @@
 {
-  "lastUpdate": "2026-05-30T23:38:55.153Z",
+  "lastUpdate": "2026-05-31T00:07:00.765Z",
   "schools": {
     "escola1": {
-      "availableMonths": [
-        "2026-05"
-      ],
+      "availableMonths": [],
       "channelInfo": {
         "id": 3185873,
         "name": "Estació Meteorològica",
@@ -12,18 +10,18 @@
         "longitude": "0.0",
         "created_at": "2025-11-28T11:31:55Z",
         "updated_at": "2026-04-13T09:44:11Z",
-        "last_entry_id": 135782,
+        "last_entry_id": 135884,
         "field1": "Temperatura (ºC)",
         "field2": "Humitat (%)",
         "field3": "Lluminositat (%)",
         "field4": "Pressió (hPa)",
         "field5": "Vent (km/h)"
       },
-      "recentData": true,
+      "recentData": null,
       "stats": {
-        "totalRecords": 56690,
-        "earliestDate": "2026-05-11T10:18:12.000Z",
-        "latestDate": "2026-05-30T23:38:40.000Z"
+        "totalRecords": 0,
+        "earliestDate": null,
+        "latestDate": null
       }
     }
   }
