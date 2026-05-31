@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-05-31T14:46:35.565Z",
+  "lastUpdate": "2026-05-31T15:18:57.821Z",
   "schools": {
     "escola1": {
       "availableMonths": [],
@@ -10,7 +10,7 @@
         "longitude": "0.0",
         "created_at": "2025-11-28T11:31:55Z",
         "updated_at": "2026-04-13T09:44:11Z",
-        "last_entry_id": 139067,
+        "last_entry_id": 139184,
         "field1": "Temperatura (ºC)",
         "field2": "Humitat (%)",
         "field3": "Lluminositat (%)",
