@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-06-21T05:48:19.883Z",
+  "lastUpdate": "2026-06-21T07:24:13.529Z",
   "schools": {
     "escola1": {
       "availableMonths": [
@@ -19,7 +19,7 @@
         "field4": "Pressió (hPa)",
         "field5": "Vent (km/h)"
       },
-      "recentData": true,
+      "recentData": false,
       "stats": {
         "totalRecords": 47567,
         "earliestDate": "2026-06-01T00:55:21.000Z",
