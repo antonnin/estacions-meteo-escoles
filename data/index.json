@@ -1,10 +1,8 @@
 {
-  "lastUpdate": "2026-09-30T23:52:19.187Z",
+  "lastUpdate": "2026-10-01T03:43:17.986Z",
   "schools": {
     "escola1": {
-      "availableMonths": [
-        "2026-09"
-      ],
+      "availableMonths": [],
       "channelInfo": {
         "id": 3185873,
         "name": "Estació Meteorològica",
@@ -19,11 +17,11 @@
         "field4": "Pressió (hPa)",
         "field5": "Vent (km/h)"
       },
-      "recentData": false,
+      "recentData": null,
       "stats": {
-        "totalRecords": 12700,
-        "earliestDate": "2026-09-09T05:37:24.000Z",
-        "latestDate": "2026-09-28T06:13:36.000Z"
+        "totalRecords": 0,
+        "earliestDate": null,
+        "latestDate": null
       }
     }
   }
