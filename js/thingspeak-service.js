@@ -11,7 +11,8 @@ class ThingSpeakService {
     constructor() {
         this.baseUrl = CONFIG.thingspeak.baseUrl;
         this.cache = new Map();
-        this.cacheExpiry = CONFIG.storage.cacheExpiry || 300000; // 5 minuts
+        // TTL curt: el dashboard s'actualitza cada minut i no ha de quedar-se amb dades velles
+        this.cacheExpiry = CONFIG.thingspeak.cacheTtl || 30000;
     }
 
     /**
@@ -22,51 +23,21 @@ class ThingSpeakService {
      * @returns {Promise<Object>} - Dades del canal (combinades de múltiples requests si cal)
      */
     async fetchChannelData(schoolId, startDate = null, endDate = null) {
-        const school = CONFIG.schools[schoolId];
+        const school = Stations.get(schoolId);
         if (!school) {
-            throw new Error(`Escola no trobada: ${schoolId}`);
+            throw new Error(`Estació no trobada: ${schoolId}`);
         }
+        await Stations.ensureFields(school);
 
         // Comprovar cache primer
-        const cacheKey = `${schoolId}_${startDate?.toISOString()}_${endDate?.toISOString()}`;
+        const cacheKey = `${schoolId}_${startDate?.getTime()}_${endDate?.getTime()}`;
         const cached = this.getFromCache(cacheKey);
-        if (cached) {
-            console.log(`📦 Dades del cache per ${school.name}`);
-            return cached;
-        }
+        if (cached) return cached;
 
         try {
-            console.log(`🌐 Obtenint dades de ${school.name}...`);
-            
-            // Fetch all data with pagination support
             const allFeeds = await this._fetchAllChannelFeeds(school, startDate, endDate);
-            
-            // Processar i normalitzar les dades
-            const data = {
-                channel: allFeeds.channel || {},
-                school: school,
-                feeds: allFeeds.feeds || [],
-                fieldData: {},
-                stats: {}
-            };
-            
-            // Separar dades per camp
-            Object.keys(school.fields).forEach(fieldKey => {
-                data.fieldData[fieldKey] = {
-                    ...school.fields[fieldKey],
-                    data: allFeeds.feeds.map(feed => ({
-                        timestamp: feed.timestamp,
-                        value: feed[fieldKey]
-                    })).filter(item => item.value !== null && item.value !== undefined)
-                };
-            });
-
-            // Calcular estadístiques
-            data.stats = this.calculateStats(allFeeds.feeds, school);
-            
-            // Guardar al cache
+            const data = this.buildDataset(school, allFeeds.feeds || [], allFeeds.channel);
             this.saveToCache(cacheKey, data);
-            
             return data;
         } catch (error) {
             console.error(`❌ Error obtenint dades de ${school.name}:`, error);
@@ -75,84 +46,108 @@ class ThingSpeakService {
     }
 
     /**
-     * Obté totes les dades del canal amb paginació automàtica
+     * Construeix l'objecte de dades que consumeix el dashboard
+     * a partir d'una llista d'entrades ja processades (processEntry).
+     */
+    buildDataset(school, feeds, channel = {}) {
+        const fieldData = {};
+        Object.keys(school.fields).forEach(fieldKey => {
+            fieldData[fieldKey] = {
+                ...school.fields[fieldKey],
+                data: feeds
+                    .map(feed => ({ timestamp: feed.timestamp, value: feed[fieldKey] }))
+                    .filter(item => item.value !== null && item.value !== undefined)
+            };
+        });
+        return {
+            channel: channel || {},
+            school: school,
+            feeds: feeds,
+            fieldData: fieldData,
+            stats: this.calculateStats(feeds, school)
+        };
+    }
+
+    /**
+     * Decideix la mitjana (en minuts) segons l'interval demanat.
+     * ThingSpeak torna màxim 8000 registres per petició; amb una estació
+     * que escriu cada ~20 s això són uns 2 dies. Per a rangs llargs demanem
+     * mitjanes i evitem baixar centenars de milers de punts.
+     * @returns {number|null} minuts de mitjana o null per dades crues
+     */
+    getAverageMinutes(startDate, endDate) {
+        const end = endDate || new Date();
+        const start = startDate || new Date(end.getTime() - 24 * 3600 * 1000);
+        const hours = (end - start) / 3600000;
+        const tiers = CONFIG.thingspeak.averageTiers || [];
+        for (const tier of tiers) {
+            if (hours <= tier.maxHours) return tier.average;
+        }
+        return null;
+    }
+
+    /**
+     * Obté les dades del canal. Si cal més d'una pàgina, pagina cap
+     * endavant fent servir `start` = últim timestamp rebut.
+     * (El paràmetre `offset` de ThingSpeak és un desplaçament horari, no
+     * serveix per paginar.)
      * @private
      */
-    async _fetchAllChannelFeeds(school, startDate, endDate) {
+    async _fetchAllChannelFeeds(school, startDate, endDate, forceAverage = null) {
         const { channelId, readApiKey } = school.thingspeak;
-        let allFeeds = [];
-        let page = 0;
-        let hasMoreData = true;
         const baseUrl = `${this.baseUrl}/channels/${channelId}/feeds.json`;
+        const pageSize = CONFIG.thingspeak.resultsPerRequest;
+        const maxPages = CONFIG.thingspeak.maxPages || 10;
+        const average = forceAverage || this.getAverageMinutes(startDate, endDate);
 
-        while (hasMoreData) {
-            try {
-                const params = new URLSearchParams();
-                params.append('api_key', readApiKey);
-                params.append('results', CONFIG.thingspeak.resultsPerRequest);
-                
-                // Afegir paginació
-                const offset = page * CONFIG.thingspeak.resultsPerRequest;
-                if (offset > 0) {
-                    params.append('offset', offset);
-                }
-                
-                if (startDate) {
-                    params.append('start', this.formatDateForApi(startDate));
-                }
-                if (endDate) {
-                    params.append('end', this.formatDateForApi(endDate));
-                }
-                
-                const url = baseUrl + '?' + params.toString();
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                const feeds = data.feeds || [];
+        const allFeeds = [];
+        let channel = {};
+        let cursor = startDate;
+        const seen = new Set();
 
-                if (feeds.length === 0) {
-                    hasMoreData = false;
-                    if (page === 0) {
-                        // Primera petició i no hi ha dades
-                        return data;
-                    }
-                } else {
-                    // Processar feeds
-                    const processedFeeds = feeds.map(feed => this.processEntry(feed, school));
-                    allFeeds = processedFeeds.concat(allFeeds); // Afegir al principi (per mantenir ordre cronològic)
-                    
-                    if (feeds.length < CONFIG.thingspeak.resultsPerRequest) {
-                        // Hem rebut menys resultats que el màxim, significa que no hi ha més dades
-                        hasMoreData = false;
-                    } else {
-                        // Potser hi ha més dades, intenta la pàgina següent
-                        page++;
-                        // Afegir petita espera per evitar rate limiting
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-                }
-
-                if (page === 0 && feeds.length > 0) {
-                    // Retornar info del canal de la primera petició
-                    return {
-                        channel: data.channel,
-                        feeds: allFeeds
-                    };
-                }
-            } catch (error) {
-                console.warn(`⚠️ Error en pàgina ${page}:`, error);
-                hasMoreData = false;
+        for (let page = 0; page < maxPages; page++) {
+            const params = new URLSearchParams();
+            if (readApiKey && !readApiKey.startsWith('YOUR_')) params.append('api_key', readApiKey);
+            params.append('results', pageSize);
+            if (average) {
+                params.append('average', average);
+                params.append('round', 2);
             }
+            if (cursor) params.append('start', this.formatDateForApi(cursor));
+            if (endDate) params.append('end', this.formatDateForApi(endDate));
+
+            const response = await fetch(`${baseUrl}?${params.toString()}`);
+            if (!response.ok) {
+                if (page === 0) throw new Error(`Error HTTP: ${response.status}`);
+                console.warn(`⚠️ Error HTTP ${response.status} a la pàgina ${page}`);
+                break;
+            }
+
+            const data = await response.json();
+            if (page === 0) channel = data.channel || {};
+            const feeds = data.feeds || [];
+            if (feeds.length === 0) break;
+
+            let added = 0;
+            for (const feed of feeds) {
+                // Amb mitjanes no hi ha entry_id: la clau és el timestamp
+                const key = feed.entry_id ?? feed.created_at;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                allFeeds.push(this.processEntry(feed, school));
+                added++;
+            }
+
+            // Última pàgina (o sense res nou): parem
+            if (feeds.length < pageSize || added === 0) break;
+
+            // Següent pàgina: just després de l'últim registre rebut
+            cursor = new Date(new Date(feeds[feeds.length - 1].created_at).getTime() + 1000);
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        return {
-            channel: {},
-            feeds: allFeeds
-        };
+        allFeeds.sort((a, b) => a.timestamp - b.timestamp);
+        return { channel, feeds: allFeeds, average };
     }
 
     /**
@@ -161,13 +156,15 @@ class ThingSpeakService {
      * @returns {Promise<Object>} - Última lectura
      */
     async fetchLastEntry(schoolId) {
-        const school = CONFIG.schools[schoolId];
+        const school = Stations.get(schoolId);
         if (!school) {
-            throw new Error(`Escola no trobada: ${schoolId}`);
+            throw new Error(`Estació no trobada: ${schoolId}`);
         }
 
+        await Stations.ensureFields(school);
+
         const { channelId, readApiKey } = school.thingspeak;
-        const url = `${this.baseUrl}/channels/${channelId}/feeds/last.json?api_key=${readApiKey}`;
+        const url = `${this.baseUrl}/channels/${channelId}/feeds/last.json${this.keyQuery(readApiKey)}`;
 
         try {
             const response = await fetch(url);
@@ -184,18 +181,35 @@ class ThingSpeakService {
     }
 
     /**
+     * Últimes N lectures (més recent al final). Serveix perquè cada magnitud
+     * trobi el seu últim valor encara que la placa no envii tots els camps a cada escriptura.
+     */
+    async fetchRecentEntries(schoolId, count = 30) {
+        const school = Stations.get(schoolId);
+        if (!school) throw new Error(`Estació no trobada: ${schoolId}`);
+        await Stations.ensureFields(school);
+        const { channelId, readApiKey } = school.thingspeak;
+        const key = this.keyQuery(readApiKey);
+        const url = `${this.baseUrl}/channels/${channelId}/feeds.json${key ? key + '&' : '?'}results=${count}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        const data = await response.json();
+        return (data.feeds || []).map(f => this.processEntry(f, school));
+    }
+
+    /**
      * Obté informació del canal (metadades)
      * @param {string} schoolId - Identificador de l'escola
      * @returns {Promise<Object>} - Informació del canal
      */
     async fetchChannelInfo(schoolId) {
-        const school = CONFIG.schools[schoolId];
+        const school = Stations.get(schoolId);
         if (!school) {
-            throw new Error(`Escola no trobada: ${schoolId}`);
+            throw new Error(`Estació no trobada: ${schoolId}`);
         }
 
         const { channelId, readApiKey } = school.thingspeak;
-        const url = `${this.baseUrl}/channels/${channelId}.json?api_key=${readApiKey}`;
+        const url = `${this.baseUrl}/channels/${channelId}.json${this.keyQuery(readApiKey)}`;
 
         try {
             const response = await fetch(url);
@@ -208,44 +222,6 @@ class ThingSpeakService {
             console.error(`❌ Error obtenint info del canal de ${school.name}:`, error);
             throw error;
         }
-    }
-
-    /**
-     * Processa les dades del canal i les normalitza
-     */
-    processChannelData(data, school) {
-        const channel = data.channel || {};
-        const feeds = data.feeds || [];
-        
-        // Processar cada entrada
-        const processedFeeds = feeds.map(feed => this.processEntry(feed, school));
-        
-        // Separar dades per camp
-        const fieldData = {};
-        Object.keys(school.fields).forEach(fieldKey => {
-            fieldData[fieldKey] = {
-                ...school.fields[fieldKey],
-                data: processedFeeds.map(feed => ({
-                    timestamp: feed.timestamp,
-                    value: feed[fieldKey]
-                })).filter(item => item.value !== null && item.value !== undefined)
-            };
-        });
-
-        return {
-            channel: {
-                id: channel.id,
-                name: channel.name || school.name,
-                description: channel.description || school.description,
-                created_at: channel.created_at,
-                updated_at: channel.updated_at,
-                last_entry_id: channel.last_entry_id
-            },
-            school: school,
-            feeds: processedFeeds,
-            fieldData: fieldData,
-            stats: this.calculateStats(processedFeeds, school)
-        };
     }
 
     /**
@@ -265,15 +241,19 @@ class ThingSpeakService {
                 ? parseFloat(value) 
                 : null;
             
-            // Convert wind from cm/h to km/h (divide by 100)
-            if (fieldKey === 'field5' && parsed !== null && !isNaN(parsed)) {
-                parsed = parsed / 100;
-            }
+            // Escala configurable per camp (p. ex. vent del kit micro:bit en cm/h → scale 0.01)
+            const scale = this.getFieldScale(school.fields[fieldKey]);
+            if (parsed !== null && !isNaN(parsed)) parsed = parsed * scale;
             
             processed[fieldKey] = parsed;
         });
 
         return processed;
+    }
+
+    /** Factor d'escala d'un camp (p. ex. vent del kit micro:bit en cm/h → 0.01). Per defecte 1. */
+    getFieldScale(field) {
+        return field && typeof field.scale === 'number' ? field.scale : 1;
     }
 
     /**
@@ -301,6 +281,17 @@ class ThingSpeakService {
         });
 
         return stats;
+    }
+
+    /** Cadena `?api_key=` només si hi ha clau (els canals públics no la necessiten) */
+    keyQuery(readApiKey) {
+        return readApiKey && !readApiKey.startsWith('YOUR_') ? `?api_key=${readApiKey}` : '';
+    }
+
+    /** Un canal està configurat si té un channelId real */
+    isConfigured(schoolId) {
+        const ts = Stations.get(schoolId)?.thingspeak;
+        return !!ts && !!ts.channelId && !String(ts.channelId).startsWith('YOUR_');
     }
 
     /**

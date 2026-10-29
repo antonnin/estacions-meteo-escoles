@@ -1,0 +1,16 @@
+{
+  "categories": [
+    { "id": "alta",    "title": "Donar-se d'alta" },
+    { "id": "muntatge", "title": "Muntatge de la placa" },
+    { "id": "thingspeak", "title": "Connexió a ThingSpeak" },
+    { "id": "altres",  "title": "Altres" }
+  ],
+  "resources": [
+    { "category": "alta", "title": "Pàgina d'alta d'estacions", "description": "Comprovador de canal i formulari d'alta.", "url": "alta.html", "type": "web" },
+    { "category": "muntatge", "title": "MakeCode per a micro:bit", "description": "Editor de blocs i JavaScript per programar la micro:bit.", "url": "https://makecode.microbit.org", "type": "web" },
+    { "category": "muntatge", "title": "Instal·lar el suport ESP32 a l'Arduino IDE", "description": "Documentació oficial d'Espressif.", "url": "https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html", "type": "web" },
+    { "category": "muntatge", "title": "MicroBlocks", "description": "Programació per blocs per a ESP32 i altres plaques.", "url": "https://microblocks.fun", "type": "web" },
+    { "category": "thingspeak", "title": "ThingSpeak", "description": "Plataforma IoT on es creen els canals.", "url": "https://thingspeak.com", "type": "web" },
+    { "category": "thingspeak", "title": "Documentació de ThingSpeak", "description": "Referència oficial de l'API i dels canals.", "url": "https://www.mathworks.com/help/thingspeak/", "type": "web" }
+  ]
+}

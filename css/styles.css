@@ -1120,7 +1120,7 @@ body {
     font-family: var(--font-display);
     font-size: 1rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     margin-bottom: 12px;
 }
 
@@ -1174,7 +1174,7 @@ body {
     font-family: var(--font-mono);
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--white);
+    color: var(--text-primary);
 }
 
 .indicator-label {
@@ -1182,7 +1182,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     font-weight: 500;
     font-size: 0.95rem;
 }
@@ -1256,7 +1256,7 @@ body {
 }
 
 .chart-card p {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     font-size: 0.95rem;
     margin-bottom: 24px;
 }
@@ -1271,13 +1271,13 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
 .update-time {
     font-family: var(--font-mono);
-    color: var(--white);
+    color: var(--text-primary);
 }
 
 /* Loading State */
@@ -1304,7 +1304,7 @@ body {
 
 .loading p {
     margin-top: 24px;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
@@ -1840,3 +1840,152 @@ body {
         color: black;
     }
 }
+
+/* ===================================
+   PEU DE PÀGINA (mateixa estètica que mentoria-apps)
+   =================================== */
+.site-footer {
+    margin-top: 80px;
+    padding: 28px 16px 40px;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+}
+.site-footer img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+.site-footer .footer-logos {
+    display: flex;
+    flex-wrap: wrap;            /* en pantalles molt estretes es posen una sota l'altra */
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 14px;
+}
+.site-footer .footer-logos img { margin: 0; }
+.site-footer .footer-logos-financament { max-width: 420px; }
+.site-footer .footer-logo-mentories { max-width: 150px; }
+.site-footer p {
+    font-size: 0.72rem;
+    color: #999;
+    line-height: 1.4;
+    margin: 0 auto;
+    max-width: 600px;
+}
+.site-footer a { color: inherit; }
+
+/* ===================================
+   HERO COMPACTE: descripció a l'esquerra, dades a la dreta
+   (perquè la part superior del mapa es vegi en carregar la pàgina)
+   =================================== */
+.hero.hero-compact {
+    padding: 20px 0 8px;
+    text-align: left;
+}
+.hero-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 32px;
+    padding: 22px 32px;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+.hero-compact h1 {
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    line-height: 1.15;
+    margin: 0 0 6px;
+    text-align: left;
+}
+.hero-compact .hero-subtitle {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--text-primary);
+}
+.hero-compact .hero-text p {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    max-width: none;
+    margin: 0;
+}
+.hero-compact .hero-stats {
+    display: grid;
+    grid-template-columns: auto auto;   /* xifres a una columna, etiquetes a l'altra: tot alineat */
+    justify-content: start;
+    align-items: baseline;
+    gap: 8px 14px;
+}
+.hero-compact .stat-item { display: contents; }
+.hero-compact .stat-number {
+    font-size: 1.9rem;
+    text-align: right;
+}
+.hero-compact .stat-label { font-size: 0.78rem; }
+
+@media (max-width: 768px) {
+    .hero.hero-compact { display: none; }
+}
+
+/* Tema clar: targetes i indicadors de la fitxa d'estació i de l'alta (restes del tema fosc) */
+.chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    backdrop-filter: none;
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
+}
+.chart-card:hover { border-color: var(--border-color-hover); box-shadow: var(--shadow); }
+.chart-card p, .chart-card li { color: var(--text-secondary); }
+.mini-chart-container { background: var(--bg-card-hover); }
+.indicator-card { background: var(--bg-card-hover); border: 1px solid var(--border-color); }
+.indicator-card:hover { background: var(--bg-card-hover); border-color: var(--border-color-hover); }
+
+/* Fitxa d'estació: resum sense gauges */
+.weather-summary-hero { margin-bottom: 24px; }
+.weather-summary-hero .summary-main { margin-bottom: 0; }
+.current-weather { margin-bottom: 32px; }
+
+/* Quadre d'informació del mapa: horitzontal, coherent amb la fitxa d'estació */
+.map-info:has(.station-info-panel) { min-height: 0; text-align: left; }
+.station-info-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+.station-info-head { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.station-info-head .school-icon {
+    font-size: 2rem; width: 52px; height: 52px; flex-shrink: 0;
+    background: var(--bg-card-hover); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+}
+.station-info-title { flex: 1; min-width: 160px; }
+.station-info-title h4 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 400; color: var(--text-primary); margin: 0; }
+.station-info-title p { font-size: 0.9rem; color: var(--text-tertiary); margin: 2px 0 0; }
+.station-info-head .view-data-btn { white-space: nowrap; }
+.station-info-cards { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 0; }
+.station-info-cards .weather-card { padding: 14px; box-shadow: none; }
+.station-info-cards .weather-card:hover { transform: none; box-shadow: none; }
+.station-info-cards .weather-card-icon { width: 48px; height: 48px; font-size: 1.7rem; }
+.station-info-cards .weather-card-value { font-size: 1.4rem; }
+.station-info-cards .info-ts { font-size: 0.72rem; color: var(--text-tertiary); margin-top: 4px; }
+.info-empty { color: var(--text-tertiary); margin: 0; }
+.weather-card-icon.temperature { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); }
+.weather-card-icon.light { background: linear-gradient(135deg, #FEF9C3 0%, #FDE68A 100%); }
+.weather-card-icon.rain { background: linear-gradient(135deg, #DBEAFE 0%, #BAE6FD 100%); }
+.weather-card-icon.dust, .weather-card-icon.signal, .weather-card-icon.battery, .weather-card-icon.generic { background: var(--bg-card-hover); }
+.weather-card-value { font-size: 1.5rem; }
+.weather-card-value span { font-size: 0.85rem; opacity: 0.6; margin-left: 4px; white-space: nowrap; }
+
+/* Mapa: avís d'ús i focus */
+#catalunya-svg-container { position: relative; }
+.map-hint {
+    position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
+    background: rgba(28, 25, 23, 0.82); color: #fff; font-size: 0.85rem;
+    padding: 8px 14px; border-radius: 999px; pointer-events: none;
+    opacity: 0; transition: opacity 0.25s ease; z-index: 11; white-space: nowrap;
+}
+.map-hint.visible { opacity: 1; }
+#catalonia-svg:focus { outline: none; }
+#catalonia-svg:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; border-radius: 8px; }

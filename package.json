@@ -1,16 +1,11 @@
 {
-  "name": "estacions-meteo-escoles",
+  "name": "estacions-meteo-xarxa",
   "version": "1.0.0",
-  "description": "Dashboard d'estacions meteorològiques escolars",
+  "description": "Xarxa d'estacions meteorològiques de centres educatius (Estacions Meteorològiques en Xarxa)",
   "private": true,
   "scripts": {
-    "collect-data": "node scripts/collect-data.js",
-    "update-index": "node scripts/update-index.js",
-    "serve": "npx serve -l 8000"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/EL_TEU_USUARI/estacions-meteo-escoles.git"
+    "check": "node --check js/config.js && node --check js/boards.js && node --check js/stations.js && node --check js/thingspeak-service.js && node --check js/history-service.js && node --check js/data-source.js && node --check js/dashboard.js && node --check js/catalonia-map.js && node --check js/alta.js && node --check js/layout.js && node --check js/recursos.js && node --check js/contacte.js",
+    "serve": "python3 -m http.server 8000"
   },
   "keywords": [
     "weather",

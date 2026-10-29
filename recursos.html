@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Guies per donar-se d'alta, muntar la placa i connectar-la a ThingSpeak">
+    <title>Recursos didàctics | Estacions Meteorològiques en Xarxa</title>
+    
+    <!-- Fonts: DM Serif Display for headings, Source Sans 3 for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌦️</text></svg>">
+</head>
+<body data-page="recursos">
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+    <div id="site-header"></div>
+
+    <main class="dashboard">
+        <div class="container" style="max-width: 900px;">
+            <div class="section-title" style="text-align:left;">
+                <h2>📚 Recursos didàctics</h2>
+                <p>Guies pas a pas per donar-se d'alta, muntar la placa i connectar-la a ThingSpeak.</p>
+            </div>
+
+            <div class="chart-card" style="margin-bottom:1.5rem;">
+                <h3>1. Com donar-se d'alta</h3>
+                <ol style="line-height:1.8;">
+                    <li>Munta la placa i fes que enviï dades a un canal de ThingSpeak (guies 2 i 3).</li>
+                    <li>Fes el canal <strong>públic</strong> i posa nom als camps (<em>Temperatura</em>, <em>Humitat</em>…).</li>
+                    <li>Obre <a href="alta.html">la pàgina d'alta</a>, tria el tipus de placa i <strong>comprova el canal</strong>.</li>
+                    <li>Omple el formulari. Una persona responsable l'aprovarà i l'estació sortirà al mapa.</li>
+                </ol>
+                <p><a href="alta.html" class="btn btn-primary" style="text-decoration:none;display:inline-block;">Anar a l'alta →</a></p>
+            </div>
+
+            <div class="chart-card" style="margin-bottom:1.5rem;">
+                <h3>2. Muntatge de la placa</h3>
+
+                <details style="margin:0.5rem 0;" open>
+                    <summary style="cursor:pointer;font-weight:600;">micro:bit amb kit IoT (Wi-Fi)</summary>
+                    <ol style="line-height:1.8;margin-top:0.5rem;">
+                        <li>Connecta la micro:bit a la placa d'expansió del kit i els sensors (temperatura/humitat/pressió, llum, vent) als connectors indicats al manual del kit.</li>
+                        <li>A <a href="https://makecode.microbit.org" target="_blank" rel="noopener">MakeCode</a>, afegeix l'<strong>extensió del fabricant del teu kit</strong> (Extensions → cerca el nom del kit o del mòdul Wi-Fi).</li>
+                        <li>Programa: <em>connecta al Wi-Fi</em> (nom i contrasenya de la xarxa del centre) → <em>llegeix els sensors</em> → <em>envia a ThingSpeak</em> amb la <strong>Write API Key</strong> i un valor per a cada camp.</li>
+                        <li>Fes-ho en un bucle amb una pausa de <strong>60 segons o més</strong> (ThingSpeak accepta com a màxim una escriptura cada 15 s).</li>
+                        <li>Camps: <code>field1</code> temperatura, <code>field2</code> humitat, <code>field3</code> llum, <code>field4</code> pressió, <code>field5</code> vent. A l'alta tria el perfil «micro:bit amb kit IoT».</li>
+                    </ol>
+                </details>
+
+                <details style="margin:0.5rem 0;">
+                    <summary style="cursor:pointer;font-weight:600;">ESP32 (Arduino IDE)</summary>
+                    <ol style="line-height:1.8;margin-top:0.5rem;">
+                        <li>Instal·la l'<a href="https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html" target="_blank" rel="noopener">Arduino IDE amb el suport ESP32</a> i la llibreria <em>Adafruit BME280</em> (Gestor de llibreries).</li>
+                        <li>Connecta el sensor BME280 per I²C: <code>VIN→3V3</code>, <code>GND→GND</code>, <code>SDA→GPIO 21</code>, <code>SCL→GPIO 22</code> (en una placa ESP32 DevKit clàssica).</li>
+                        <li>Crea una pestanya <code>secrets.h</code> amb les teves dades. <strong>No la pugis mai a git ni la comparteixis.</strong>
+<pre style="background:#f5f5f4;padding:0.75rem;border-radius:8px;overflow:auto;">#define WIFI_SSID    "nom-de-la-xarxa"
+#define WIFI_PASS    "contrasenya"
+#define TS_WRITE_KEY "LA_TEVA_WRITE_API_KEY"</pre></li>
+                        <li>Programa d'exemple (orientatiu; prova'l a la teva placa abans de dependre'n):
+<pre style="background:#f5f5f4;padding:0.75rem;border-radius:8px;overflow:auto;">#include &lt;WiFi.h&gt;
+#include &lt;HTTPClient.h&gt;
+#include &lt;Adafruit_BME280.h&gt;
+#include "secrets.h"
+
+Adafruit_BME280 bme;
+
+void setup() {
+  Serial.begin(115200);
+  if (!bme.begin(0x76)) Serial.println("BME280 no trobat (prova 0x77)");
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  while (WiFi.status() != WL_CONNECTED) delay(500);
+}
+
+void loop() {
+  if (WiFi.status() != WL_CONNECTED) { WiFi.reconnect(); delay(5000); return; }
+  float t = bme.readTemperature();
+  float h = bme.readHumidity();
+  float p = bme.readPressure() / 100.0F;   // hPa
+
+  HTTPClient http;
+  String url = String("http://api.thingspeak.com/update?api_key=") + TS_WRITE_KEY
+             + "&amp;field1=" + t + "&amp;field2=" + h + "&amp;field4=" + p
+             + "&amp;field8=" + WiFi.RSSI();
+  http.begin(url);
+  int code = http.GET();           // 200 = correcte
+  Serial.println(code);
+  http.end();
+  delay(60000);                    // una lectura cada minut
+}</pre></li>
+                        <li>Camps: <code>field1</code> temperatura, <code>2</code> humitat, <code>3</code> llum (lux), <code>4</code> pressió, <code>5</code> vent (<strong>km/h</strong>), <code>6</code> pluja (mm), <code>7</code> pols, <code>8</code> senyal Wi-Fi. A l'alta tria el perfil «ESP32».</li>
+                        <li>L'ESP32 només es connecta a Wi-Fi de <strong>2,4 GHz</strong>.</li>
+                    </ol>
+                </details>
+
+                <details style="margin:0.5rem 0;">
+                    <summary style="cursor:pointer;font-weight:600;">Consells de muntatge a l'exterior</summary>
+                    <ul style="line-height:1.8;margin-top:0.5rem;">
+                        <li>Posa el sensor de temperatura a l'ombra i ben ventilat, lluny de l'electrònica (que s'escalfa).</li>
+                        <li>Caixa estanca per a la placa; protegeix els connectors de la pluja i la humitat.</li>
+                        <li>Contrasta les mesures amb un termòmetre fiable els primers dies.</li>
+                    </ul>
+                </details>
+            </div>
+
+            <div class="chart-card" style="margin-bottom:1.5rem;">
+                <h3>3. Connexió a ThingSpeak</h3>
+                <ol style="line-height:1.8;">
+                    <li>Crea un compte a <a href="https://thingspeak.com" target="_blank" rel="noopener">thingspeak.com</a> (s'entra amb un compte de MathWorks).</li>
+                    <li><strong>Channels → New Channel.</strong> Posa-hi un nom i activa els camps que faràs servir, amb noms clars: <em>Temperatura</em>, <em>Humitat</em>, <em>Pressió</em>…</li>
+                    <li>Desa el canal. Apunta el <strong>Channel ID</strong> (el número de dalt).</li>
+                    <li>A la pestanya <strong>API Keys</strong> copia la <strong>Write API Key</strong>: és la que posa la placa al programa. <strong>Mai no la comparteixis.</strong></li>
+                    <li>A la pestanya <strong>Sharing</strong>, marca <em>Share channel view with everyone</em> perquè el canal sigui públic.</li>
+                    <li>Encén la placa: en uns minuts hauries de veure punts al gràfic del canal.</li>
+                    <li>Comprova'l a <a href="alta.html">la pàgina d'alta</a> amb el Channel ID.</li>
+                </ol>
+                <p style="color:var(--gray-500);font-size:0.9rem;">Límits i condicions del compte gratuït (interval d'escriptura, missatges l'any, nombre de canals): consulta-los a la documentació de ThingSpeak, poden canviar.</p>
+            </div>
+
+            <div class="chart-card" style="margin-bottom:1.5rem;">
+                <h3>4. Si alguna cosa no funciona</h3>
+                <ul style="line-height:1.8;">
+                    <li><strong>El canal no té dades:</strong> revisa que la placa tingui Wi-Fi i que la Write API Key sigui la correcta. Un codi 200 a la resposta vol dir que s'ha acceptat.</li>
+                    <li><strong>No es connecta a la xarxa del centre:</strong> comprova que sigui de 2,4 GHz i parla amb el coordinador digital (pot haver-hi filtratge o registre de dispositius).</li>
+                    <li><strong>Els valors surten estranys:</strong> mira que el camp correspongui al sensor correcte i el perfil triat a l'alta.</li>
+                    <li><strong>Més dubtes:</strong> escriu-nos des de <a href="contacte.html">Contacte</a>.</li>
+                </ul>
+            </div>
+
+            <div id="recursosExtra"></div>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="js/layout.js"></script>
+    <script src="js/recursos.js"></script>
+</body>
+</html>

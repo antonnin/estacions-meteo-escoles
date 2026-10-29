@@ -11,6 +11,11 @@ let currentSchoolId = null;
 let currentSchool = null;
 let currentData = null;
 let autoUpdateInterval = null;
+// Mode de rang actual: 'today' | 'yesterday' | '7days' | '30days' | 'month' | 'custom'
+// Si no és 'custom', el rang es recalcula a cada refresc perquè "ara" avanci.
+let currentRange = 'today';
+let isLoading = false;
+let lastRequestId = 0;
 
 /**
  * Format number with comma as decimal separator (European format)
@@ -39,69 +44,65 @@ const elements = {
     summaryTemp: document.getElementById('summaryTemp'),
     conditionIcon: document.getElementById('conditionIcon'),
     conditionText: document.getElementById('conditionText'),
-    summaryLocation: document.getElementById('summaryLocation'),
-    humidityValue: document.getElementById('humidityValue'),
-    pressureValue: document.getElementById('pressureValue'),
-    windValue: document.getElementById('windValue'),
-    humidityGauge: document.getElementById('humidityGauge'),
-    pressureGauge: document.getElementById('pressureGauge'),
-    windGauge: document.getElementById('windGauge')
+    summaryLocation: document.getElementById('summaryLocation')
 };
 
 /**
  * Inicialització
  */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Obtenir ID de l'escola de la URL o deduir-lo del nom del fitxer HTML
     const urlParams = new URLSearchParams(window.location.search);
     currentSchoolId = urlParams.get('id');
+
+    try {
+        await Stations.load();
+    } catch (e) {
+        showError('No s\'ha pogut carregar el registre d\'estacions.');
+        return;
+    }
     if (!currentSchoolId) {
-        // Detectar per nom de fitxer (friendly URL)
-        const file = window.location.pathname.split('/').pop();
-        switch (file) {
-            case 'escola-el-castellot.html': currentSchoolId = 'escola1'; break;
-            case 'escola-jaume-balmes.html': currentSchoolId = 'escola2'; break;
-            case 'escola-santa-coloma.html': currentSchoolId = 'escola3'; break;
-            case 'escola-mar-i-cel.html': currentSchoolId = 'escola4'; break;
-            case 'zer-moianes.html': currentSchoolId = 'escola5'; break;
-            case 'escola-mas-i-perera.html': currentSchoolId = 'escola6'; break;
-            case 'citilab.html': currentSchoolId = 'escola7'; break;
-            default: currentSchoolId = 'escola1';
-        }
+        // Sense ?id= → primera estació activa (o tornem a la portada si no n'hi ha)
+        const first = Stations.list()[0];
+        if (!first) { window.location.href = 'index.html'; return; }
+        currentSchoolId = first.id;
     }
     
     // Verificar que l'escola existeix
-    currentSchool = CONFIG.schools[currentSchoolId];
+    currentSchool = Stations.get(currentSchoolId);
     if (!currentSchool) {
-        showError('Escola no trobada. Tornant a l\'inici...');
+        showError('Estació no trobada. Tornant a l\'inici...');
         setTimeout(() => window.location.href = 'index.html', 2000);
         return;
     }
     
     // Actualitzar títol de la pàgina
-    document.title = `${currentSchool.name} | Meteo:bit`;
+    document.title = `${currentSchool.name} | Estacions Meteorològiques en Xarxa`;
+
+    // Estacions de perfil "personalitzat": els camps es dedueixen dels noms del canal
+    try {
+        await Stations.ensureFields(currentSchool);
+    } catch (e) {
+        showError(`No s'ha pogut llegir el canal de ThingSpeak (${e.message}). Comprova que és públic.`);
+        return;
+    }
     
     // Inicialitzar UI
     initializeUI();
     
-    // Configurar dates per defecte (avui) i carregar dades d'avui per defecte
-    // Força la selecció de dates d'avui i carrega dades, independentment de l'estat dels inputs
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-    const end = now;
-    elements.startDate.value = formatDateTimeLocal(start);
-    elements.endDate.value = formatDateTimeLocal(end);
-    // Visualment marca el botó 'Avui' com actiu
+    // Rang per defecte: avui
+    applyRange('today');
     document.querySelectorAll('.quick-date-btn').forEach(btn => {
-        if (btn.textContent.trim().toLowerCase().includes('avui')) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+        btn.classList.toggle('active', btn.dataset.period === 'today');
+    });
+    // Si l'usuari toca les dates a mà, passem a mode personalitzat
+    [elements.startDate, elements.endDate].forEach(input => {
+        input.addEventListener('change', () => {
+            currentRange = 'custom';
+            document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
+        });
     });
     loadData();
-    // Iniciar actualització automàtica
-    // Iniciar actualització automàtica
     startAutoUpdate();
 });
 
@@ -173,16 +174,23 @@ function generateChartContainers() {
 /**
  * Carrega les dades de l'estació
  */
-async function loadData() {
-    showLoading(true);
+async function loadData({ silent = false } = {}) {
+    if (isLoading && silent) return;   // un refresc automàtic no trepitja una càrrega en curs
+    const requestId = ++lastRequestId;  // si n'arriba una de més nova, descartem aquesta resposta
+    isLoading = true;
+    // En refrescos automàtics no amaguem els gràfics (evita el parpelleig)
+    if (!silent) showLoading(true);
     hideError();
     
     const startDate = elements.startDate.value ? new Date(elements.startDate.value) : null;
-    const endDate = elements.endDate.value ? new Date(elements.endDate.value) : null;
+    let endDate = elements.endDate.value ? new Date(elements.endDate.value) : null;
+    // Rangs relatius: l'input només té precisió de minut, usem l'hora exacta
+    if (currentRange !== 'custom' && currentRange !== 'yesterday') endDate = new Date();
     
     try {
-        // Obtenir dades de ThingSpeak
-        let data = await thingSpeakService.fetchChannelData(currentSchoolId, startDate, endDate);
+        // Temps real (ThingSpeak) o històric (full de càlcul) segons el rang
+        let data = await dataSource.fetch(currentSchoolId, startDate, endDate);
+        if (requestId !== lastRequestId) return;  // resposta obsoleta
         
         // Filtrar per dates si cal
         if (startDate || endDate) {
@@ -208,7 +216,12 @@ async function loadData() {
         
     } catch (error) {
         console.error('Error carregant dades:', error);
-        showError(`Error: ${error.message}. Comprova que les claus API són correctes.`);
+        // En un refresc automàtic no tapem les dades ja mostrades amb un error passatger
+        if (!silent || !currentData) {
+            showError(`Error: ${error.message}. Comprova que el canal és públic o que la clau API és correcta.`);
+        }
+    } finally {
+        if (requestId === lastRequestId) isLoading = false;
     }
 }
 
@@ -217,12 +230,23 @@ async function loadData() {
  */
 function updateCurrentWeather(data) {
     const stats = data.stats;
-    
+
+    // Només mostrem els camps que tenen dades (molts centres no tenen anemòmetre, pluviòmetre…)
+    for (const fieldKey of Object.keys(currentSchool.fields)) {
+        const hasData = (data.fieldData?.[fieldKey]?.data || []).length > 0;
+        document.querySelectorAll(`[data-field="${fieldKey}"]`).forEach(el => { el.style.display = hasData ? '' : 'none'; });
+        // La temperatura ja es veu gran al resum: no es repeteix com a targeta
+        if (currentSchool.fields[fieldKey].type === 'temperature') {
+            const card = document.querySelector(`.weather-card[data-field="${fieldKey}"]`);
+            if (card) card.style.display = 'none';
+        }
+    }
+
     for (const [fieldKey, stat] of Object.entries(stats)) {
         const element = document.getElementById(`current_${fieldKey}`);
         if (element && stat) {
             const field = currentSchool.fields[fieldKey];
-            const value = formatNumber(stat.current, 1);
+            const value = formatNumber(stat.current, field.decimals ?? 1);
             element.innerHTML = `${value} <span>${field.unit}</span>`;
         }
     }
@@ -281,50 +305,15 @@ function updateWeatherSummary(data) {
         elements.summaryLocation.textContent = currentSchool.location;
     }
     
-    // Update humidity gauge (find field by type, not hardcoded)
-    const humidityField = findFieldByType('humidity');
-    if (humidityField && stats[humidityField.fieldKey] && elements.humidityValue) {
-        const humidity = stats[humidityField.fieldKey].current;
-        elements.humidityValue.textContent = `${formatNumber(humidity, 0)}%`;
-        updateGauge(elements.humidityGauge, humidity, 0, 100);
-    }
-    
-    // Update pressure gauge (find field by type, not hardcoded)
-    const pressureField = findFieldByType('pressure');
-    if (pressureField && stats[pressureField.fieldKey] && elements.pressureValue) {
-        const pressure = stats[pressureField.fieldKey].current;
-        elements.pressureValue.textContent = `${formatNumber(pressure, 0)} hPa`;
-        updateGauge(elements.pressureGauge, pressure, 970, 1050);
-    }
-    
-    // Update wind gauge (find field by type, not hardcoded)
-    const windField = findFieldByType('wind');
-    if (windField && stats[windField.fieldKey] && elements.windValue) {
-        const wind = stats[windField.fieldKey].current;
-        elements.windValue.textContent = `${formatNumber(wind, 1)} km/h`;
-        updateGauge(elements.windGauge, wind, 0, 60);
-    }
-    
     // Show weather summary
     if (elements.weatherSummary) {
-        elements.weatherSummary.style.display = '';
+        const tf = findFieldByType('temperature');
+        const hasTemp = tf && (data.fieldData?.[tf.fieldKey]?.data || []).length > 0;
+        elements.weatherSummary.style.display = hasTemp ? '' : 'none';
     }
     
     // Create mini temperature chart
     createMiniTempChart(data);
-}
-
-/**
- * Actualitza un gauge SVG
- */
-function updateGauge(gaugeElement, value, min, max) {
-    if (!gaugeElement || value === null) return;
-    
-    const percentage = Math.min(Math.max((value - min) / (max - min), 0), 1);
-    const arcLength = 110; // Total arc length
-    const dashLength = percentage * arcLength;
-    
-    gaugeElement.setAttribute('stroke-dasharray', `${dashLength} ${arcLength}`);
 }
 
 /**
@@ -395,16 +384,16 @@ function createMiniTempChart(data) {
                     grid: { display: false },
                     ticks: {
                         maxTicksLimit: 6,
-                        color: 'rgba(255, 255, 255, 0.5)',
+                        color: '#78716c',
                         font: { size: 10 }
                     }
                 },
                 y: {
                     grid: { 
-                        color: 'rgba(255, 255, 255, 0.05)'
+                        color: 'rgba(28, 25, 23, 0.06)'
                     },
                     ticks: {
-                        color: 'rgba(255, 255, 255, 0.5)',
+                        color: '#78716c',
                         font: { size: 10 },
                         callback: (value) => `${value}°`
                     }
@@ -449,51 +438,38 @@ function updateCharts(data) {
 }
 
 /**
- * Configura dates ràpides
+ * Calcula l'interval de dates d'un període ràpid
  */
-function setQuickDate(period) {
-    const now = new Date();
-    let start, end;
-    
-    // Actualitzar botons actius
-    document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
-    if (event && event.target) {
-        event.target.classList.add('active');
-    } else {
-        // No event: do not touch button state (handled on DOMContentLoaded)
-    }
-    
+function computeRange(period, now = new Date()) {
+    const y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
     switch (period) {
-        case 'today':
-            start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-            end = now;
-            break;
-        case 'yesterday':
-            start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0);
-            end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59);
-            break;
-        case '7days':
-            start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            end = now;
-            break;
-        case '30days':
-            start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-            end = now;
-            break;
-        case 'month':
-            start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
-            end = now;
-            break;
-        default:
-            start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-            end = now;
+        case 'today':     return [new Date(y, m, d, 0, 0, 0), now];
+        case 'yesterday': return [new Date(y, m, d - 1, 0, 0, 0), new Date(y, m, d - 1, 23, 59, 59)];
+        case '7days':     return [new Date(now.getTime() - 7 * 86400000), now];
+        case '30days':    return [new Date(now.getTime() - 30 * 86400000), now];
+        case 'month':     return [new Date(y, m, 1, 0, 0, 0), now];
+        default:          return [new Date(now.getTime() - 86400000), now];
     }
-    
-    // Formatar per a l'input datetime-local
+}
+
+/**
+ * Aplica un període ràpid als inputs de data
+ */
+function applyRange(period) {
+    currentRange = period;
+    const [start, end] = computeRange(period);
     elements.startDate.value = formatDateTimeLocal(start);
     elements.endDate.value = formatDateTimeLocal(end);
-    
-    // Carregar dades
+}
+
+/**
+ * Configura dates ràpides (cridat des dels botons)
+ */
+function setQuickDate(period, btn) {
+    document.querySelectorAll('.quick-date-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.period === period || b === btn);
+    });
+    applyRange(period);
     loadData();
 }
 
@@ -501,6 +477,8 @@ function setQuickDate(period) {
  * Actualitza les dades
  */
 function updateData() {
+    if (currentRange !== 'custom') applyRange(currentRange);
+    thingSpeakService.clearCache();
     loadData();
 }
 
@@ -526,11 +504,24 @@ function exportData(format) {
  * Actualització automàtica
  */
 function startAutoUpdate() {
+    stopAutoUpdate();
     autoUpdateInterval = setInterval(() => {
-        console.log('🔄 Actualització automàtica...');
-        loadData();
+        // No gastem peticions si la pestanya està en segon pla
+        if (document.hidden) return;
+        // Rangs fixos (ahir, personalitzat) no canvien: no cal refrescar
+        if (currentRange === 'custom' || currentRange === 'yesterday') return;
+        applyRange(currentRange);
+        loadData({ silent: true });
     }, CONFIG.thingspeak.updateInterval);
 }
+
+// En tornar a la pestanya, refresca de seguida
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && currentRange !== 'custom' && currentRange !== 'yesterday' && currentSchool) {
+        applyRange(currentRange);
+        loadData({ silent: true });
+    }
+});
 
 function stopAutoUpdate() {
     if (autoUpdateInterval) {
@@ -587,13 +578,6 @@ function formatDateTimeLocal(date) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-
-/**
- * Toggle menú mòbil
- */
-function toggleMenu() {
-    document.getElementById('mainNav').classList.toggle('open');
 }
 
 // Netejar quan es tanca la pàgina

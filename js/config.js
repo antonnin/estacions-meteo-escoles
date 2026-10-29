@@ -1,297 +1,61 @@
 /**
  * ============================================
- * CONFIGURACIÓ DE LES ESTACIONS METEOROLÒGIQUES
+ * CONFIGURACIÓ GENERAL DE METEO:BIT
  * ============================================
- * 
- * INSTRUCCIONS PER AL PROGRAMADOR:
- * 
- * Per afegir o modificar una estació meteorològica:
- * 1. Afegeix una nova entrada a l'objecte SCHOOLS
- * 2. Configura el channelId de ThingSpeak
- * 3. Afegeix la readApiKey del canal
- * 4. Personalitza els camps (fields) segons els sensors connectats
- * 
- * Per obtenir les claus de ThingSpeak:
- * 1. Inicia sessió a https://thingspeak.com
- * 2. Vés al teu canal
- * 3. A "API Keys", copia la "Read API Key"
- * 4. El "Channel ID" es troba a la configuració del canal
- * 
- * CONFIGURACIÓ GITHUB PAGES:
- * 1. Puja aquest projecte a un repositori GitHub
- * 2. Activa GitHub Pages a Settings > Pages > Source: main branch
- * 3. Actualitza GITHUB_USERNAME i GITHUB_REPO a sota
+ *
+ * Les ESTACIONS ja no es defineixen aquí: viuen al full de càlcul (registre)
+ * i s'hi donen d'alta des de la web (alta.html). Aquest fitxer només té
+ * els paràmetres globals.
+ *
+ * Posada en marxa: desplega l'Apps Script (apps-script/README.md) i enganxa
+ * aquí les dues URL que et dona.
  */
 
 const CONFIG = {
     // ==========================================
-    // CONFIGURACIÓ GITHUB - ACTUALITZA AIXÒ!
+    // BACKEND (Google Apps Script + full de càlcul)
     // ==========================================
-    github: {
-        username: 'antonnin',           // ← Canvia pel teu usuari de GitHub
-        repository: 'estacions-meteo-escoles', // ← Canvia pel nom del teu repositori
-        branch: 'main'
+    api: {
+        // URL de l'aplicació web d'Apps Script (acaba en /exec). Serveix el
+        // registre d'estacions (?action=stations) i l'històric (?action=history).
+        // Buida = mode local: s'usa data/stations.json i no hi ha històric.
+        url: 'https://script.google.com/macros/s/AKfycbxc3ABXa7gEGNISD2muJ3c-zPvfkczqpE2cefziiH-uGTHvYRIRGy3Rh1hrC-SyicOa/exec',
+        // URL del Google Form d'alta d'estacions (la de "incrustar", amb ?embedded=true)
+        formUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSczdOsUD-_hBLeXFSfCbdwRawMCyGHwxrtDB2ZTwSuyWIlFpw/viewform?embedded=true',
+        // Cache local del registre d'estacions (ms)
+        registryCacheTtl: 10 * 60 * 1000,
     },
 
     // ==========================================
-    // MODE DEMO - Activa per provar sense API keys
+    // MODE DEMO - dades simulades (també amb ?demo=true a la URL)
     // ==========================================
-    // Posa a true per veure dades simulades, o afegeix ?demo=true a la URL
-    demoMode: false,  // ← Per defecte OFF
+    demoMode: false,
 
     // ==========================================
-    // CONFIGURACIÓ GLOBAL DE THINGSPEAK
+    // THINGSPEAK (temps real)
     // ==========================================
     thingspeak: {
         baseUrl: 'https://api.thingspeak.com',
-        resultsPerRequest: 8000, // Màxim 8000 resultats per petició
-        // Con paginació automàtica, es fan múltiples requests si cal per obtenir 30 dies complets
-        // Exemple: a 1 min per entrada = 44000 entries/30 dies → ~6 requests
-        updateInterval: 60000,  // Actualització UI cada 60 segons (en milisegons)
+        resultsPerRequest: 8000, // Màxim de ThingSpeak per petició
+        updateInterval: 60000,   // Refresc automàtic del dashboard (ms)
+        cacheTtl: 30000,         // Cache en memòria de peticions (ms); < updateInterval
+        maxPages: 10,            // Límit de seguretat de pàgines per petició
+        // Mitjanes de ThingSpeak segons la durada del rang (hores → minuts de mitjana).
+        averageTiers: [
+            { maxHours: 36,  average: null },  // fins a 1,5 dies: dades crues
+            { maxHours: 96,  average: 10 },
+            { maxHours: 400, average: 60 },
+            { maxHours: 9999, average: 240 },
+        ],
     },
 
     // ==========================================
-    // CONFIGURACIÓ DE LES ESCOLES
+    // HISTÒRIC (full de càlcul via Apps Script)
     // ==========================================
-    // 
-    // IMPORTANT: Modifica aquesta secció amb les dades reals de cada escola
-    // 
-    schools: {
-        // ------------------------------------------
-        // ESCOLA 1
-        // ------------------------------------------
-        escola1: {
-            id: 'escola1',
-            name: 'Escola El Castellot',
-            description: 'Castellví de la Marca (Alt Penedès)',
-            location: 'Castellví de la Marca',
-            website: 'https://agora.xtec.cat/ceipelcastellot/',
-            icon: '🏰',
-            color: '#ff9ff3',
-            gradient: 'linear-gradient(135deg, #ff9ff3 0%, #feca57 100%)',
-            coordinates: { lat: 41.3416, lng: 1.6356 },
-            
-            // CONFIGURACIÓ THINGSPEAK - MODIFICA AQUÍ
-            thingspeak: {
-                channelId: '3185873',
-                readApiKey: '66411666AE08BXSD',
-            },
-            
-            // CONFIGURACIÓ DELS CAMPS/SENSORS
-            // Cada field correspon a un sensor connectat al kit micro:bit
-            fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-                field5: { name: 'Vent', unit: 'km/h', icon: '💨', color: '#a29bfe', type: 'wind' },
-            },
-            active: true, // Posa a false si l'estació està inactiva
-        },
-
-        // ------------------------------------------
-        // ESCOLA 2
-        // ------------------------------------------
-        escola2: {
-            id: 'escola2',
-            name: 'Escola Jaume Balmes',
-            description: 'Sant Martí Sarroca (Alt Penedès)',
-            location: 'Sant Martí Sarroca',
-            website: 'https://agora.xtec.cat/escolajaumebalmes/',
-            icon: '💡',
-            color: '#4ECDC4',
-            gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
-            // GPS coordinates for map positioning (Sant Martí Sarroca: 41°18′36″N 1°36′37″E)
-            coordinates: { lat: 41.3250, lng: 1.6303 },
-            
-            thingspeak: {
-                channelId: 'YOUR_CHANNEL_ID_2',
-                readApiKey: 'YOUR_READ_API_KEY_2',
-            },
-            
-            fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-                field5: { name: 'Vent', unit: 'km/h', icon: '💨', color: '#a29bfe', type: 'wind' },
-            },
-            active: true,
-        },
-
-        // ------------------------------------------
-        // ESCOLA 3
-        // ------------------------------------------
-        escola3: {
-            id: 'escola3',
-            name: 'Escola Santa Coloma',
-            description: 'Ger (Baixa Cerdanya)',
-            location: 'Ger',
-            website: 'https://agora.xtec.cat/escsantacolomager/',
-            icon: '⭐',
-            color: '#667eea',
-            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            coordinates: { lat: 42.4065, lng: 1.9385 },
-            
-            thingspeak: {
-                channelId: 'YOUR_CHANNEL_ID_3',
-                readApiKey: 'YOUR_READ_API_KEY_3',
-            },
-            
-            fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-                field5: { name: 'Vent', unit: 'km/h', icon: '💨', color: '#a29bfe', type: 'wind' },
-            },
-            active: true,
-        },
-
-        // ------------------------------------------
-        // ESCOLA 4
-        // ------------------------------------------
-        escola4: {
-            id: 'escola4',
-            name: 'Escola Mar i Cel',
-            description: 'Cubelles (Garraf)',
-            location: 'Cubelles',
-            website: 'https://agora.xtec.cat/ceipmaricel/',
-            icon: '🍃',
-            color: '#f093fb',
-            gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            // GPS coordinates for map positioning (from Wikipedia: 41°12′26″N 1°40′26.4″E)
-            coordinates: { lat: 41.2222, lng: 1.6940 },
-            
-            thingspeak: {
-                channelId: '3253909',
-                readApiKey: '7TRVWD841RO5ZJML',
-            },
-            
-            fields: {
-                field1: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field2: { name: 'Humitat Relativa', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field4: { name: 'Pols', unit: 'μg/m³', icon: '🫧', color: '#95a5a6', type: 'dust' },
-            },
-            active: true,
-        },
-
-        // ------------------------------------------
-        // ESCOLA 5
-        // ------------------------------------------
-        escola5: {
-            id: 'escola5',
-            name: 'ZER Moianès',
-            description: 'Moianès',
-            location: 'Moianès',
-            website: 'https://agora.xtec.cat/zermoianesllevant/',
-            icon: '🌊',
-            color: '#4facfe',
-            gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            coordinates: { lat: 41.8270, lng: 2.1194 },
-            
-            thingspeak: {
-                channelId: 'YOUR_CHANNEL_ID_5',
-                readApiKey: 'YOUR_READ_API_KEY_5',
-            },
-            
-            fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-                field5: { name: 'Vent', unit: 'km/h', icon: '💨', color: '#a29bfe', type: 'wind' },
-            },
-            active: true,
-        },
-
-        // ------------------------------------------
-        // ESCOLA 6
-        // ------------------------------------------
-        escola6: {
-            id: 'escola6',
-            name: 'Escola Mas i Perera',
-            description: 'Vilafranca del Penedès (Alt Penedès)',
-            location: 'Vilafranca del Penedès',
-            website: 'https://agora.xtec.cat/ceip-masiperera/',
-            icon: '🌻',
-            color: '#FF6B6B',
-            gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
-            coordinates: { lat: 41.3632, lng: 1.7129 },
-            
-            thingspeak: {
-                channelId: '3262256',
-                readApiKey: '4DZ4GNPAUXQJWQN4',
-            },
-            
-            fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió Atmosfèrica', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-            },
-            active: true,
-        },
-
-        // ------------------------------------------
-        // ESCOLA 7
-        // ------------------------------------------
-        escola7: {
-            id: 'escola7',
-            name: 'Citilab',
-            description: 'Cornellà de Llobregat (Baix Llobregat)',
-            location: 'Cornellà de Llobregat',
-            website: 'https://citilab.eu',
-            icon: '🔬',
-            color: '#00b894',
-            gradient: 'linear-gradient(135deg, #00b894 0%, #00cec9 100%)',
-            coordinates: { lat: 41.3557, lng: 2.0704 },
-
-            thingspeak: {
-                channelId: '3385483',
-                readApiKey: '6Z3LTL7DRNF7OTT3',
-            },
-
-            fields: {
-                field1: { name: 'Temperatura', unit: '°C', icon: '🌡️', color: '#FF6B6B', type: 'temperature' },
-                field2: { name: 'Humitat', unit: '%', icon: '💧', color: '#54a0ff', type: 'humidity' },
-                field3: { name: 'Lluminositat', unit: '%', icon: '☀️', color: '#f1c40f', type: 'light' },
-                field4: { name: 'Pressió', unit: 'hPa', icon: '📊', color: '#1dd1a1', type: 'pressure' },
-            },
-            active: true,
-        },
-    },
-
-    // ==========================================
-    // CONFIGURACIÓ DE L'EMMAGATZEMATGE DE DADES
-    // ==========================================
-    storage: {
-        // Ruta base per als arxius JSON de dades (relatiu a GitHub Pages)
-        dataPath: 'data/',
-        // Format del nom dels arxius: {schoolId}_{date}.json
-        fileNameFormat: '{schoolId}_{date}.json',
-        // Utilitza emmagatzematge local del navegador com a cache
-        useLocalStorage: true,
-        // Temps màxim de cache (en milisegons) - 24 hores per a dades de 30 dies
-        // Amb 5 minuts era insuficient: 5min * 48 requests (8000 results × 48 = 384000 entries ≈ 30 dies)
-        cacheExpiry: 86400000,  // 24 hores
-    },
-
-    // ==========================================
-    // FUNCIONS AUXILIARS
-    // ==========================================
-    getDataUrl: function() {
-        // Retorna la URL base de les dades segons l'entorn
-        if (this.github.username !== 'EL_TEU_USUARI') {
-            return `https://${this.github.username}.github.io/${this.github.repository}/data/`;
-        }
-        // En desenvolupament local, usa ruta relativa
-        return 'data/';
-    },
-    
-    isGitHubConfigured: function() {
-        return this.github.username !== 'EL_TEU_USUARI';
+    history: {
+        // Per sobre d'aquestes hores es llegeix l'històric del full (mitjanes horàries)
+        // i només l'últim tram es demana a ThingSpeak.
+        minHours: 36,
     },
 
     // ==========================================

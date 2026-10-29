@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Contacta amb l'equip del projecte Estacions Meteorològiques en Xarxa">
+    <title>Contacte | Estacions Meteorològiques en Xarxa</title>
+    
+    <!-- Fonts: DM Serif Display for headings, Source Sans 3 for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌦️</text></svg>">
+</head>
+<body data-page="contacte">
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+    <div id="site-header"></div>
+
+    <main class="dashboard">
+        <div class="container" style="max-width: 720px;">
+            <div class="section-title" style="text-align:left;">
+                <h2>✉️ Contacte</h2>
+                <p>Dubtes sobre l'alta, problemes tècnics o propostes de col·laboració.</p>
+            </div>
+
+            <div class="chart-card">
+                <form id="contactForm" novalidate>
+                    <div class="date-input-group" style="margin-bottom:1rem;">
+                        <label for="cName">Nom</label>
+                        <input type="text" id="cName" maxlength="100" required autocomplete="name" style="width:100%;">
+                    </div>
+                    <div class="date-input-group" style="margin-bottom:1rem;">
+                        <label for="cEmail">Correu electrònic</label>
+                        <input type="email" id="cEmail" maxlength="150" required autocomplete="email" style="width:100%;">
+                    </div>
+                    <div class="date-input-group" style="margin-bottom:1rem;">
+                        <label for="cTopic">Motiu</label>
+                        <select id="cTopic" style="width:100%;padding:0.6rem;">
+                            <option>Dubte sobre l'alta d'una estació</option>
+                            <option>Problema tècnic amb una estació</option>
+                            <option>Proposta de col·laboració</option>
+                            <option>Altres</option>
+                        </select>
+                    </div>
+                    <div class="date-input-group" style="margin-bottom:1rem;">
+                        <label for="cMessage">Missatge</label>
+                        <textarea id="cMessage" rows="6" maxlength="3000" required style="width:100%;padding:0.6rem;font:inherit;"></textarea>
+                    </div>
+                    <!-- Camp parany per a robots: ha de quedar buit -->
+                    <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                        <label>Web <input type="text" id="cWebsite" tabindex="-1" autocomplete="off"></label>
+                    </div>
+                    <label style="display:flex;gap:0.5rem;align-items:flex-start;margin-bottom:1rem;font-size:0.9rem;">
+                        <input type="checkbox" id="cConsent" required style="margin-top:0.25rem;">
+                        <span>Accepto que les meves dades (nom i correu) s'utilitzin només per respondre aquesta consulta.</span>
+                    </label>
+                    <button type="submit" class="btn btn-primary" id="cSend">Envia el missatge</button>
+                    <div id="cStatus" role="status" style="margin-top:1rem;"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="js/layout.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/contacte.js"></script>
+</body>
+</html>

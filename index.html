@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <meta name="description" content="Estació Meteorològica Escolar - Projecte mentoria 4.0. 6 escoles mesurant el temps en temps real.">
-    <title>Meteo:bit | Projecte mentoria 4.0</title>
+    <meta name="description" content="Xarxa d'estacions meteorològiques de centres educatius - Projecte mentoria 4.0. Dades en temps real i alta de noves plaques.">
+    <title>Estacions Meteorològiques en Xarxa | Projecte mentoria 4.0</title>
     
     <!-- Fonts: Amulya for headings, Synonym for body -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +18,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌦️</text></svg>">
 </head>
-<body>
+<body data-page="inici">
     <!-- Animated Background -->
     <div class="animated-bg"></div>
     <div class="clouds">
@@ -26,448 +26,126 @@
         <div class="cloud"></div>
         <div class="cloud"></div>
     </div>
+    <div id="site-header"></div>
 
-    <!-- Header -->
-    <header class="header">
+    <!-- Hero -->
+    <section class="hero hero-compact">
         <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="logo">
-                    <div class="logo-icon">🌦️</div>
-                    <div class="logo-text">
-                        Meteo:bit
-                        <span>Projecte mentoria 4.0</span>
-                    </div>
-                </a>
-                
-                <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Menú">
-                    ☰
-                </button>
-                
-                <nav class="nav" id="mainNav">
-                    <a href="index.html" class="nav-link active">Inici</a>
-                    <div class="nav-dropdown">
-                        <a href="#escoles" class="nav-link">Escoles ▼</a>
-                        <div class="nav-dropdown-menu">
-                            <a href="escola-el-castellot.html" class="nav-dropdown-item">Escola El Castellot</a>
-                            <a href="escola-jaume-balmes.html" class="nav-dropdown-item">Escola Jaume Balmes</a>
-                            <a href="escola-santa-coloma.html" class="nav-dropdown-item">Escola Santa Coloma</a>
-                            <a href="escola-mar-i-cel.html" class="nav-dropdown-item">Escola Mar i Cel</a>
-                            <a href="zer-moianes.html" class="nav-dropdown-item">ZER Moianès</a>
-                            <a href="escola-mas-i-perera.html" class="nav-dropdown-item">Escola Mas i Perera</a>
-                            <a href="citilab.html" class="nav-dropdown-item">Citilab</a>
-                        </div>
-                    </div>
-                    <a href="#projecte" class="nav-link">El Projecte</a>
-                    <a href="#contacte" class="nav-link">Contacte</a>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span>🧪</span>
-                    <span>Projecte mentoria 4.0</span>
+            <div class="hero-card">
+                <div class="hero-text">
+                    <h1>Convertim-nos en científics i científiques de dades!</h1>
+                    <p>
+                        Centres educatius de Catalunya han construït les seves pròpies estacions meteorològiques
+                        amb <strong>micro:bit</strong>, <strong>ESP32</strong> i altres plaques.
+                        Consulta les dades en temps real o <a href="alta.html" style="color:inherit;font-weight:700;">afegeix la teva estació</a> a la xarxa.
+                    </p>
                 </div>
-                <h1 style="text-align: center;">Ens convertim en meteoròlegs!</h1>
-                <p>
-                    Alumnes d'11 anys de 7 escoles i centres diferents han construït les seves pròpies 
-                    estacions meteorològiques utilitzant kits <strong>micro:bit</strong>. 
-                    Descobreix les dades del temps en temps real recollides pels nostres joves científics!
-                </p>
                 <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">7</span>
-                        <span class="stat-label">Escoles</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">7</span>
-                        <span class="stat-label">Sensors</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">24/7</span>
-                        <span class="stat-label">Dades en Temps Real</span>
-                    </div>
+                    <div class="stat-item"><span class="stat-number" id="statStations">–</span><span class="stat-label">Estacions</span></div>
+                    <div class="stat-item"><span class="stat-number" id="statOnline">–</span><span class="stat-label">Amb dades avui</span></div>
+                    <div class="stat-item"><span class="stat-number">24/7</span><span class="stat-label">Dades en temps real</span></div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Catalonia Map Section -->
-    <section class="map-hero-group">
+    <section class="map-hero-group" id="estacions">
         <div class="map-hero-rectangle">
             <!-- Map container -->
             <div class="map-wrapper">
                 <div id="catalonia-map"></div>
             </div>
-            <!-- Estat de les escoles below map -->
+            <!-- Estacions below map -->
             <div class="school-list-panel" id="school-list-panel">
                 <div id="school-list-header">
-                    <span>Estat de les escoles</span>
+                    <span>Estacions</span>
                     <span id="school-list-toggle">▼</span>
                 </div>
-                <ul id="school-list">
-                    <li data-school-id="escola1"><span class="school-name">Escola El Castellot</span>: <span class="school-status-value"></span></li>
-                    <li data-school-id="escola2"><span class="school-name">Escola Jaume Balmes</span>: <span class="school-status-value"></span></li>
-                    <li data-school-id="escola3"><span class="school-name">Escola Santa Coloma</span>: <span class="school-status-value"></span></li>
-                    <li data-school-id="escola4"><span class="school-name">Escola Mar i Cel</span>: <span class="school-status-value"></span></li>
-                    <li data-school-id="escola5"><span class="school-name">ZER Moianès</span>: <span class="school-status-value"></span></li>
-                    <li data-school-id="escola6"><span class="school-name">Escola Mas i Perera</span>: <span class="school-status-value"></span></li>
-                    <li data-school-id="escola7"><span class="school-name">Citilab</span>: <span class="school-status-value"></span></li>
-                </ul>
+                <ul id="school-list"><li>Carregant estacions…</li></ul>
             </div>
         </div>
     </section>
 
-    <!-- Schools Section -->
-    <section class="schools-section" id="escoles">
+
+    <!-- Alta de plaques -->
+    <section class="schools-section" id="alta">
         <div class="container">
             <div class="section-title">
-                <h2>🏫 Les Nostres Escoles</h2>
-                <p>Fes clic a una escola per veure les dades meteorològiques en temps real</p>
+                <h2>➕ Afegeix la teva placa</h2>
+                <p>Qualsevol placa que enviï dades a ThingSpeak (micro:bit amb extensió IoT, ESP32…) pot aparèixer al mapa</p>
             </div>
-            
-            <div class="schools-grid" id="schoolsGrid">
-                <!-- Les targetes es generen dinàmicament -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Project Info Section -->
-    <section class="schools-section" id="projecte">
-        <div class="container">
-            <div class="section-title">
-                <h2>📚 Sobre el Projecte</h2>
-                <p>Aprenentatge basat en projectes reals</p>
-            </div>
-            
-            <div class="schools-grid">
-                <div class="school-card" style="cursor: default;">
-                    <div class="school-card-header" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-                        <div class="school-icon">🔧</div>
-                    </div>
-                    <div class="school-card-body">
-                        <h3>Construcció</h3>
-                        <p>Els alumnes han muntat les estacions meteorològiques utilitzant kits micro:bit, aprenent electrònica bàsica i programació.</p>
-                    </div>
-                </div>
-                
-                <div class="school-card" style="cursor: default;">
-                    <div class="school-card-header" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);">
-                        <div class="school-icon">💻</div>
-                    </div>
-                    <div class="school-card-body">
-                        <h3>Programació</h3>
-                        <p>Amb MakeCode i Python, els estudiants han programat els sensors per enviar dades automàticament a la plataforma ThingSpeak.</p>
-                    </div>
-                </div>
-                
-                <div class="school-card" style="cursor: default;">
-                    <div class="school-card-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
-                        <div class="school-icon">📊</div>
-                    </div>
-                    <div class="school-card-body">
-                        <h3>Anàlisi de Dades</h3>
-                        <p>Les dades recollides permeten als alumnes analitzar patrons meteorològics i comparar resultats entre escoles.</p>
-                    </div>
-                </div>
+            <div style="text-align:center;">
+                <a href="alta.html" class="btn btn-primary" style="text-decoration:none;display:inline-block;">Donar d'alta una estació →</a>
             </div>
         </div>
     </section>
-
-    <!-- Sensors Section -->
-    <section class="schools-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>🛠️ Els Nostres Sensors</h2>
-                <p>Què mesurem a cada estació</p>
-            </div>
-            
-            <div class="current-weather" style="max-width: 1200px; margin: 0 auto;">
-                <div class="weather-card">
-                    <div class="weather-card-icon" style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);">🫧</div>
-                    <div class="weather-card-content">
-                        <h3>Pols</h3>
-                        <p style="color: var(--gray-500); font-size: 0.9rem;">Micrograms/m³</p>
-                    </div>
-                </div>
-                <div class="weather-card">
-                    <div class="weather-card-icon temp">🌡️</div>
-                    <div class="weather-card-content">
-                        <h3>Temperatura</h3>
-                        <p style="color: var(--gray-500); font-size: 0.9rem;">Graus Celsius</p>
-                    </div>
-                </div>
-                <div class="weather-card">
-                    <div class="weather-card-icon humidity">💧</div>
-                    <div class="weather-card-content">
-                        <h3>Humitat</h3>
-                        <p style="color: var(--gray-500); font-size: 0.9rem;">Percentatge</p>
-                    </div>
-                </div>
-                <div class="weather-card">
-                    <div class="weather-card-icon pressure">📊</div>
-                    <div class="weather-card-content">
-                        <h3>Pressió</h3>
-                        <p style="color: var(--gray-500); font-size: 0.9rem;">Hectopascals</p>
-                    </div>
-                </div>
-                <div class="weather-card">
-                    <div class="weather-card-icon" style="background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);">⛰️</div>
-                    <div class="weather-card-content">
-                        <h3>Altura</h3>
-                        <p style="color: var(--gray-500); font-size: 0.9rem;">Metres</p>
-                    </div>
-                </div>
-                <div class="weather-card">
-                    <div class="weather-card-icon" style="background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);">☀️</div>
-                    <div class="weather-card-content">
-                        <h3>Lluminositat</h3>
-                        <p style="color: var(--gray-500); font-size: 0.9rem;">Percentatge</p>
-                    </div>
-                </div>
-                <div class="weather-card">
-                    <div class="weather-card-icon wind">💨</div>
-                    <div class="weather-card-content">
-                        <h3>Vent</h3>
-                        <p style="color: var(--gray-500); font-size: 0.9rem;">Kilòmetres/hora</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div style="text-align: center; padding: 2rem 0;">
-                <img src="Logos 4.0.png" alt="Código Escuela 4.0 - Programa finançat pel Ministeri d'Educació amb suport de la Generalitat de Catalunya" style="max-width: 100%; height: auto;">
-            </div>
-            <div id="contacte" style="text-align: center; padding-bottom: 2rem;">
-                <span>Autor: <a href="mailto:anin1@xtec.cat" style="color:#60a5fa;font-weight:600;">Anton Nin Nin</a></span>
-                <br>
-                <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="display:inline-block;margin-top:0.5rem;">
-                    <img alt="Llicència de Creative Commons" style="border-width:0;vertical-align:middle;height:32px;" src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png" />
-                </a>
-                <br>
-                <span style="font-size:0.9em; color:var(--gray-500);">Aquesta obra està subjecta a una <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener" style="color:#60a5fa;">llicència CC BY-NC-ND 4.0</a>. Cal permís exprés per copiar o reutilitzar el material.</span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Demo Mode Toggle -->
-    <button class="demo-toggle" id="demoToggle" onclick="toggleDemoMode()" title="Activa/Desactiva Mode Demo">
-        <span class="demo-toggle-icon">🔬</span>
-        <span class="demo-toggle-text">Demo</span>
-    </button>
+    <div id="site-footer"></div>
 
     <!-- Scripts -->
-    <script src="js/config.js?v=20260516b"></script>
-    <script src="js/demo-data.js?v=20260516b"></script>
-    <script src="js/thingspeak-service.js?v=20260516b"></script>
-    <script src="js/catalonia-map.js?v=20260516b"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/boards.js"></script>
+    <script src="js/stations.js"></script>
+    <script src="js/thingspeak-service.js"></script>
+    <script src="js/demo-data.js"></script>
+    <script src="js/catalonia-map.js"></script>
     <script>
-                        // Fold/unfold logic for Estat de les escoles
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const header = document.getElementById('school-list-header');
-                            const list = document.getElementById('school-list');
-                            const toggle = document.getElementById('school-list-toggle');
-                            if (header && list && toggle) {
-                                header.addEventListener('click', () => {
-                                    const isOpen = list.style.display !== 'none';
-                                    if (isOpen) {
-                                        list.style.display = 'none';
-                                        toggle.textContent = '▲';
-                                    } else {
-                                        list.style.display = 'block';
-                                        toggle.textContent = '▼';
-                                    }
-                                });
-                            }
-                        });
-        // Mobile menu toggle
-        function toggleMenu() {
-            document.getElementById('mainNav').classList.toggle('open');
-        }
-
-        // Generate school cards dynamically
-        function generateSchoolCards() {
-            const grid = document.getElementById('schoolsGrid');
-            const schools = CONFIG.schools;
-            let html = '';
-            let index = 1;
-            for (const [schoolId, school] of Object.entries(schools)) {
-                // Generate friendly URL based on school name
-                let schoolUrl = '';
-                switch (schoolId) {
-                    case 'escola1': schoolUrl = 'escola-el-castellot.html'; break;
-                    case 'escola2': schoolUrl = 'escola-jaume-balmes.html'; break;
-                    case 'escola3': schoolUrl = 'escola-santa-coloma.html'; break;
-                    case 'escola4': schoolUrl = 'escola-mar-i-cel.html'; break;
-                    case 'escola5': schoolUrl = 'zer-moianes.html'; break;
-                    case 'escola6': schoolUrl = 'escola-mas-i-perera.html'; break;
-                    case 'escola7': schoolUrl = 'citilab.html'; break;
-                    default: schoolUrl = 'escola.html?id=' + schoolId;
-                }
-                html += `
-                    <div class="school-card" data-school="${index}">
-                        <div class="school-card-body">
-                            <a href="${school.website}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
-                                <h3 style="cursor: pointer; transition: color 0.3s; margin-bottom: 0.5rem; color: #1f2937;">${school.name}</h3>
-                            </a>
-                            <div style="color: var(--gray-500); font-size: 0.95rem; margin-bottom: 0.5rem;">${school.location}</div>
-                            <div class="school-card-footer">
-                                <div class="school-status" id="school-status-${schoolId}">
-                                    <span class="status-dot"></span>
-                                    <span class="status-text"></span>
-                                </div>
-                                <a href="${schoolUrl}" class="view-data-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s;">
-                                    Veure Dades →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                index++;
-            }
-            grid.innerHTML = html;
-            // After rendering, update status indicators
-            updateSchoolStatusIndicators();
-        }
-
-        // Update all school status indicators - only fetch data for escola1
-        async function updateSchoolStatusIndicators() {
-            if (CONFIG.demoMode) {
-                for (const schoolId of Object.keys(CONFIG.schools)) {
-                    const statusElem = document.getElementById(`school-status-${schoolId}`);
-                    if (!statusElem) continue;
-                    const dot = statusElem.querySelector('.status-dot');
-                    const text = statusElem.querySelector('.status-text');
-                    dot.style.background = '#facc15';
-                    text.textContent = 'Mode demo';
-                    text.style.color = '#facc15';
-                }
-                return;
-            }
-
-            // Create service instance if needed
-            if (typeof window.thingSpeakService === 'undefined') {
-                window.thingSpeakService = new ThingSpeakService();
-            }
-
-            // Fetch data for connected schools (escola1, escola4, and escola6)
-            for (const schoolId of Object.keys(CONFIG.schools)) {
-                const statusElem = document.getElementById(`school-status-${schoolId}`);
-                if (!statusElem) continue;
-                const dot = statusElem.querySelector('.status-dot');
-                const text = statusElem.querySelector('.status-text');
-
-                if (schoolId === 'escola1' || schoolId === 'escola4' || schoolId === 'escola6' || schoolId === 'escola7') {
-                    // Fetch live data from ThingSpeak for connected schools
-                    try {
-                        const entry = await window.thingSpeakService.fetchLastEntry(schoolId);
-                        
-                        if (entry && entry.created_at) {
-                            const lastUpdate = new Date(entry.created_at);
-                            const now = new Date();
-                            const minutesOld = (now - lastUpdate) / 60000;
-                            
-                            if (minutesOld < 60) {
-                                dot.style.background = '#22c55e';
-                                text.textContent = 'En línia';
-                                text.style.color = '#22c55e';
-                            } else {
-                                dot.style.background = '#ef4444';
-                                text.textContent = 'Fora de servei';
-                                text.style.color = '#ef4444';
-                            }
-                        } else {
-                            throw new Error('No data');
-                        }
-                    } catch (e) {
-                        // If API call fails, mark as offline
-                        dot.style.background = '#ef4444';
-                        text.textContent = 'Fora de servei';
-                        text.style.color = '#ef4444';
-                    }
-                } else {
-                    // Schools 2-3, 5 are not connected yet
-                    // (escola7=Citilab is connected above)
-                    dot.style.background = '#ef4444';
-                    text.textContent = 'No connectat';
-                    text.style.color = '#ef4444';
-                }
-            }
-        }
-
-        // Initialize
+        // Plegar/desplegar el llistat d'estacions
         document.addEventListener('DOMContentLoaded', () => {
-            generateSchoolCards();
+            const header = document.getElementById('school-list-header');
+            const list = document.getElementById('school-list');
+            const toggle = document.getElementById('school-list-toggle');
+            if (header && list && toggle) {
+                header.addEventListener('click', () => {
+                    const open = list.style.display !== 'none';
+                    list.style.display = open ? 'none' : 'block';
+                    toggle.textContent = open ? '▲' : '▼';
+                });
+            }
+        });
+
+        // Comptadors de la portada (surten del mateix registre que el mapa i el llistat)
+        function updateHeroStats() {
+            const total = Stations.list().length;
+            const online = cataloniaMap ? Object.values(cataloniaMap.stationData || {}).filter(d => d.feeds && d.feeds.length).length : 0;
+            document.getElementById('statStations').textContent = total;
+            document.getElementById('statOnline').textContent = online;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await Stations.load();
             initCataloniaMap();
             initDemoToggle();
-            
-            // Update status indicators every 2 minutes
-            setInterval(() => {
-                updateSchoolStatusIndicators();
-            }, 120000); // 120000ms = 2 minutes
-            
-            // Smooth scroll for anchor links
+            // El mapa carrega les dades quan l'SVG està llest; actualitzem comptadors quan acabi
+            const wait = setInterval(() => {
+                if (cataloniaMap && cataloniaMap.stationData && Object.keys(cataloniaMap.stationData).length) {
+                    updateHeroStats(); clearInterval(wait);
+                }
+            }, 500);
+            document.addEventListener('stations-rendered', () => updateHeroStats());
+            setTimeout(() => { clearInterval(wait); updateHeroStats(); }, 8000);
+
+            // Refresc de les últimes lectures cada 2 minuts
+            setInterval(() => { if (cataloniaMap && !document.hidden) cataloniaMap.loadData().then(updateHeroStats); }, 120000);
+
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
+                anchor.addEventListener('click', function (e) {
                     const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                    // Close mobile menu
-                    document.getElementById('mainNav').classList.remove('open');
+                    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
                 });
             });
         });
-        
-        // Demo mode functions
-        function initDemoToggle() {
-            const toggle = document.getElementById('demoToggle');
-            if (toggle) {
-                updateDemoToggleState();
-            }
-        }
-        
+
         function toggleDemoMode() {
             CONFIG.demoMode = !CONFIG.demoMode;
-            updateDemoToggleState();
-            
-            // Update URL with demo parameter
             const url = new URL(window.location.href);
-            if (CONFIG.demoMode) {
-                url.searchParams.set('demo', 'true');
-            } else {
-                url.searchParams.delete('demo');
-            }
-            window.history.replaceState({}, '', url);
-            
-            updateSchoolStatusIndicators();
-            
-            // Reload map data
-            if (typeof cataloniaMap !== 'undefined' && cataloniaMap) {
-                cataloniaMap.loadData();
-            }
+            if (CONFIG.demoMode) url.searchParams.set('demo', 'true'); else url.searchParams.delete('demo');
+            window.location.href = url.toString();
         }
-        
-        function updateDemoToggleState() {
-            const toggle = document.getElementById('demoToggle');
-            if (toggle) {
-                if (CONFIG.demoMode) {
-                    toggle.classList.add('active');
-                    toggle.title = 'Mode Demo activat - Fes clic per desactivar';
-                } else {
-                    toggle.classList.remove('active');
-                    toggle.title = 'Mode Demo desactivat - Fes clic per activar';
-                }
-            }
+        function initDemoToggle() {
+            const t = document.getElementById('demoToggle');
+            if (t && DemoDataGenerator.isEnabled()) t.classList.add('active');
         }
     </script>
 </body>

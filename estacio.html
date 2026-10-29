@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Dades meteorològiques en temps real d'una estació de la xarxa Estacions Meteorològiques en Xarxa">
+    <title>Estació | Estacions Meteorològiques en Xarxa</title>
+    
+    <!-- Fonts: DM Serif Display for headings, Source Sans 3 for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌦️</text></svg>">
+</head>
+<body data-page="">
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+    <div id="site-header"></div>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard">
+        <div class="container">
+            <!-- Back Link -->
+            <a href="index.html" class="back-link">
+                ← Tornar a l'inici
+            </a>
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <div class="school-badge" id="schoolBadge"></div>
+                    <h1>
+                        <span id="schoolName">Carregant...</span>
+                        <span id="schoolLocation"></span>
+                    </h1>
+                </div>
+                
+                <!-- Date Controls -->
+                <div class="date-controls">
+                    <div class="date-input-group">
+                        <label for="startDate">📅 Data d'inici</label>
+                        <input type="datetime-local" id="startDate">
+                    </div>
+                    <div class="date-input-group">
+                        <label for="endDate">📅 Data de fi</label>
+                        <input type="datetime-local" id="endDate">
+                    </div>
+                    <button class="btn btn-primary" onclick="updateData()">
+                        🔄 Actualitzar
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData('csv')">
+                        📥 Exportar CSV
+                    </button>
+                </div>
+                
+                <!-- Quick Date Buttons -->
+                <div class="quick-dates">
+                    <button class="quick-date-btn active" data-period="today" onclick="setQuickDate('today', this)">Avui</button>
+                    <button class="quick-date-btn" data-period="yesterday" onclick="setQuickDate('yesterday', this)">Ahir</button>
+                    <button class="quick-date-btn" data-period="7days" onclick="setQuickDate('7days', this)">Últims 7 dies</button>
+                    <button class="quick-date-btn" data-period="30days" onclick="setQuickDate('30days', this)">Últims 30 dies</button>
+                    <button class="quick-date-btn" data-period="month" onclick="setQuickDate('month', this)">Aquest mes</button>
+                </div>
+                
+                <!-- Last Update -->
+                <div class="last-update" id="lastUpdate">
+                    <span>Última actualització:</span>
+                    <span class="update-time" id="updateTime">--</span>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading" id="loadingState">
+                <div class="loading-spinner"></div>
+                <p>Carregant dades...</p>
+            </div>
+
+            <!-- Error State -->
+            <div class="error-message" id="errorState" style="display: none;">
+                <span>⚠️</span>
+                <span id="errorMessage">Error en carregar les dades</span>
+            </div>
+
+            <!-- Weather Summary Hero -->
+            <div class="weather-summary-hero" id="weatherSummary" style="display: none;">
+                <div class="summary-main">
+                    <div class="summary-temp-section">
+                        <div class="summary-temp-display">
+                            <span class="temp-value" id="summaryTemp">--</span>
+                            <span class="temp-unit">°C</span>
+                        </div>
+                        <div class="summary-condition">
+                            <span class="condition-icon" id="conditionIcon">🌤️</span>
+                            <span class="condition-text" id="conditionText">Carregant...</span>
+                        </div>
+                        <div class="summary-location">
+                            <span id="summaryLocation">--</span>
+                        </div>
+                    </div>
+                    <div class="summary-chart-section">
+                        <h4>Temperatura (últimes 24h)</h4>
+                        <div class="mini-chart-container">
+                            <canvas id="miniTempChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Weather Cards -->
+            <div class="current-weather" id="currentWeather" style="display: none;">
+                <!-- Generated dynamically -->
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid" id="chartsGrid" style="display: none;">
+                <!-- Generated dynamically -->
+            </div>
+
+            <!-- No Data State -->
+            <div class="no-data" id="noDataState" style="display: none;">
+                <div class="no-data-icon">📭</div>
+                <h3>No hi ha dades disponibles</h3>
+                <p>No s'han trobat dades per al període seleccionat.</p>
+            </div>
+        </div>
+    </main>
+    <div id="site-footer"></div>
+
+    <!-- Scripts -->
+    <script src="js/layout.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/boards.js"></script>
+    <script src="js/stations.js"></script>
+    <script src="js/thingspeak-service.js"></script>
+    <script src="js/history-service.js"></script>
+    <script src="js/data-source.js"></script>
+    <script src="js/data-storage.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/demo-data.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

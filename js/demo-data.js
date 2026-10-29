@@ -2,179 +2,106 @@
  * ============================================
  * MODE DEMO - DADES SIMULADES
  * ============================================
- * 
- * Aquest mòdul genera dades simulades per provar
- * la interfície sense necessitat de claus ThingSpeak reals.
- * 
- * Per activar el mode demo:
- * - Canvia DEMO_MODE = true a config.js
- * - O afegeix ?demo=true a la URL
+ *
+ * Genera dades verosímils per a qualsevol estació, segons el TIPUS de cada
+ * camp (no la seva posició), per provar la interfície sense canals reals.
+ *
+ * Activació: afegeix ?demo=true a la URL o posa demoMode: true a config.js.
  */
 
 const DemoDataGenerator = {
-    /**
-     * Comprova si el mode demo està actiu
-     */
     isEnabled() {
-        // Comprovar URL
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('demo') === 'true') return true;
-        
-        // Comprovar config
-        if (typeof CONFIG !== 'undefined' && CONFIG.demoMode === true) return true;
-        
-        return false;
+        return typeof CONFIG !== 'undefined' && CONFIG.demoMode === true;
     },
 
-    /**
-     * Genera dades simulades per a una escola
-     * @param {string} schoolId - ID de l'escola
-     * @param {Date} startDate - Data d'inici
-     * @param {Date} endDate - Data de fi
-     * @returns {Object} - Dades simulades
-     */
-    generateSchoolData(schoolId, startDate, endDate) {
-        const school = CONFIG.schools[schoolId];
-        if (!school) return null;
+    generateSchoolData(stationId, startDate, endDate) {
+        const station = Stations.get(stationId);
+        if (!station || !station.fields) return null;
 
-        // Default: last 30 days
         const now = new Date();
-        const start = startDate || new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const start = startDate || new Date(now.getTime() - 24 * 3600 * 1000);
         const end = endDate || now;
 
-        // Generate data points every 15 minutes
+        // Un punt cada 15 minuts (cada hora si el rang és molt llarg, per no saturar)
+        const stepMin = (end - start) > 10 * 86400000 ? 60 : 15;
         const feeds = [];
-        const interval = 15 * 60 * 1000; // 15 minutes in ms
-        let currentTime = new Date(start);
-        let entryId = 1;
-
-        while (currentTime <= end) {
-            const feed = this.generateFeedEntry(currentTime, school, entryId);
-            feeds.push(feed);
-            currentTime = new Date(currentTime.getTime() + interval);
-            entryId++;
+        let id = 1;
+        for (let t = new Date(start); t <= end; t = new Date(t.getTime() + stepMin * 60000)) {
+            feeds.push(this.generateFeedEntry(t, station, id++));
         }
-
-        // Process data for all 7 fields
-        const fieldData = {};
-        Object.keys(school.fields).forEach(fieldKey => {
-            fieldData[fieldKey] = {
-                ...school.fields[fieldKey],
-                data: feeds.map(feed => ({
-                    timestamp: feed.timestamp,
-                    value: feed[fieldKey]
-                })).filter(item => item.value !== null && item.value !== undefined)
-            };
-        });
-
-        return {
-            channel: {
-                id: `demo_${schoolId}`,
-                name: school.name,
-                description: school.description,
-                created_at: start.toISOString(),
-                updated_at: end.toISOString()
-            },
-            school: school,
-            feeds: feeds,
-            fieldData: fieldData,
-            stats: this.calculateStats(feeds, school)
-        };
+        return thingSpeakService.buildDataset(station, feeds, { id: `demo_${stationId}`, name: station.name });
     },
 
-    /**
-     * Generate demo data for all schools for the last 30 days
-     * Returns: { [schoolId]: { feeds, fieldData, ... } }
-     */
-    generateAllSchoolsLastMonth() {
-        const result = {};
-        const now = new Date();
-        const start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        Object.keys(CONFIG.schools).forEach(schoolId => {
-            if (CONFIG.schools[schoolId].active) {
-                result[schoolId] = this.generateSchoolData(schoolId, start, now);
-            }
-        });
-        return result;
+    /** Última lectura simulada (per al mapa i els indicadors d'estat) */
+    generateLastEntry(stationId) {
+        const station = Stations.get(stationId);
+        if (!station || !station.fields) return null;
+        return this.generateFeedEntry(new Date(), station, 1);
     },
 
-    /**
-     * Genera una entrada individual de dades
-     */
-    generateFeedEntry(timestamp, school, entryId) {
-        const hour = timestamp.getHours();
+    generateFeedEntry(timestamp, station, entryId) {
+        const hour = timestamp.getHours() + timestamp.getMinutes() / 60;
         const isDay = hour >= 7 && hour <= 20;
-        
-        // Variació sinusoïdal per simular cicle diürn
-        const dayProgress = (hour - 6) / 12; // 0 a 1 durant el dia
-        const tempVariation = Math.sin(dayProgress * Math.PI) * 8;
-        
-        const entry = {
-            entry_id: entryId,
-            timestamp: new Date(timestamp),
-            created_at: timestamp.toISOString()
-        };
+        const dayProgress = Math.min(1, Math.max(0, (hour - 6) / 12));
+        const sun = Math.sin(dayProgress * Math.PI);          // 0..1
+        const tempVariation = sun * 8;
+        const r = (n) => this.randomVariation(n);
+        const round = (v, d = 1) => Math.round(v * 10 ** d) / 10 ** d;
 
-        // Generar cada camp amb valors realistes (ordre: field1=Temp, field2=Humitat, field3=Llum, field4=Pressió, field5=Vent)
-        const baseTemp = 15 + tempVariation + this.randomVariation(2);
-        
-        entry.field1 = Math.round((baseTemp) * 10) / 10; // Temperatura °C
-        entry.field2 = Math.round(Math.min(100, Math.max(0, 60 - tempVariation * 2 + this.randomVariation(10))) * 10) / 10; // Humitat %
-        entry.field3 = isDay ? Math.round(Math.min(100, Math.max(0, 50 + Math.sin(dayProgress * Math.PI) * 45 + this.randomVariation(10)))) : Math.round(Math.max(0, this.randomVariation(5))); // Lluminositat %
-        entry.field4 = Math.round((1013 + this.randomVariation(10)) * 10) / 10; // Pressió hPa
-        entry.field5 = Math.round(Math.max(0, 5 + this.randomVariation(8)) * 10) / 10; // Vent km/h
-
+        const entry = { entry_id: entryId, timestamp: new Date(timestamp), created_at: timestamp.toISOString() };
+        for (const [key, f] of Object.entries(station.fields)) {
+            let v;
+            switch (f.type) {
+                case 'temperature': v = round(15 + tempVariation + r(1.5)); break;
+                case 'humidity':    v = round(Math.min(100, Math.max(0, 60 - tempVariation * 2 + r(8)))); break;
+                case 'light': {
+                    const pct = isDay ? 50 + sun * 45 + r(8) : Math.max(0, r(3));
+                    v = f.unit === 'lux' ? round(Math.max(0, pct) * 600, 0) : round(Math.min(100, Math.max(0, pct)), 0);
+                    break;
+                }
+                case 'pressure': v = round(1013 + r(8)); break;
+                case 'wind':     v = round(Math.max(0, 5 + r(7))); break;
+                case 'rain':     v = Math.random() < 0.05 ? round(Math.random() * 2) : 0; break;
+                case 'dust':     v = round(Math.max(0, 12 + r(6)), 0); break;
+                case 'battery':  v = round(3.9 + r(0.1), 2); break;
+                case 'signal':   v = round(-62 + r(8), 0); break;
+                default:         v = round(50 + r(10));
+            }
+            entry[key] = v;
+        }
         return entry;
     },
 
-    /**
-     * Genera variació aleatòria
-     */
     randomVariation(max) {
         return (Math.random() - 0.5) * 2 * max;
     },
-
-    /**
-     * Calcula estadístiques
-     */
-    calculateStats(feeds, school) {
-        const stats = {};
-        
-        Object.keys(school.fields).forEach(fieldKey => {
-            const values = feeds
-                .map(f => f[fieldKey])
-                .filter(v => v !== null && v !== undefined && !isNaN(v));
-            
-            if (values.length > 0) {
-                stats[fieldKey] = {
-                    min: Math.min(...values),
-                    max: Math.max(...values),
-                    avg: values.reduce((a, b) => a + b, 0) / values.length,
-                    count: values.length,
-                    current: values[values.length - 1]
-                };
-            }
-        });
-
-        return stats;
-    }
 };
 
-// Interceptar el servei de ThingSpeak si mode demo actiu
+// Interceptar el servei de ThingSpeak si el mode demo està actiu
 if (typeof ThingSpeakService !== 'undefined') {
     const originalFetch = ThingSpeakService.prototype.fetchChannelData;
-    
-    ThingSpeakService.prototype.fetchChannelData = async function(schoolId, startDate, endDate) {
+    const originalLast = ThingSpeakService.prototype.fetchLastEntry;
+
+    ThingSpeakService.prototype.fetchChannelData = async function (stationId, startDate, endDate) {
         if (DemoDataGenerator.isEnabled()) {
-            console.log('🎭 Mode Demo actiu - Generant dades simulades...');
-            await new Promise(resolve => setTimeout(resolve, 500)); // Simular latència
-            return DemoDataGenerator.generateSchoolData(schoolId, startDate, endDate);
+            await Stations.ensureFields(Stations.get(stationId)).catch(() => {});
+            await new Promise(resolve => setTimeout(resolve, 300)); // simular latència
+            return DemoDataGenerator.generateSchoolData(stationId, startDate, endDate);
         }
-        return originalFetch.call(this, schoolId, startDate, endDate);
+        return originalFetch.call(this, stationId, startDate, endDate);
+    };
+
+    ThingSpeakService.prototype.fetchLastEntry = async function (stationId) {
+        if (DemoDataGenerator.isEnabled()) {
+            await Stations.ensureFields(Stations.get(stationId)).catch(() => {});
+            return DemoDataGenerator.generateLastEntry(stationId);
+        }
+        return originalLast.call(this, stationId);
     };
 }
 
-// Exportar per ús directe
 if (typeof window !== 'undefined') {
     window.DemoDataGenerator = DemoDataGenerator;
 }

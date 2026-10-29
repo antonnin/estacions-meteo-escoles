@@ -1,229 +1,127 @@
-# 🌤️ Meteo:bit - Estacions Meteorològiques Escolars
+# 🌤️ Estacions Meteorològiques en Xarxa
 
-Dashboard interactiu per visualitzar dades d'estacions meteorològiques construïdes per alumnes de primària utilitzant kits micro:bit i ThingSpeak.
+Web per veure en **temps real** les dades d'estacions meteorològiques construïdes per l'alumnat (micro:bit amb extensió IoT, ESP32, altres plaques) i per **donar-ne d'alta de noves directament des de la pròpia web**. Projecte mentoria 4.0.
 
-## 📋 Característiques
+- 🗺️ Mapa de Catalunya amb una magnitud a escollir (temperatura, humitat, llum, pressió, vent, pluja, pols).
+- 📈 Pàgina d'estació amb gràfics, rangs de dates i exportació a CSV.
+- ➕ Alta d'estacions amb formulari + comprovador de canal (`alta.html`).
+- 📚 Recursos didàctics (`recursos.html`) i formulari de contacte (`contacte.html`).
+- 🗄️ **Històric al full de càlcul de Google**: cada hora s'hi desa la mitjana de cada estació.
+- 🔌 Compatible amb qualsevol placa que enviï a **ThingSpeak** (perfils de placa a `js/boards.js`).
 
-- 🏫 Suport per a 6 escoles diferents
-- 📊 Gràfics interactius amb Chart.js
-- 📅 Filtratge per rang de dates
-- 🌡️ Visualització de 4 sensors (temperatura, humitat, pressió, vent)
-- 📱 Disseny responsive per a mòbils i tauletes
-- 🎨 Interfície atractiva en català
-- 💾 Emmagatzematge de dades a GitHub
-- 🔄 Actualització automàtica via GitHub Actions
+## Com funciona
 
----
-
-## 🚀 Guia Ràpida de Desplegament a GitHub Pages
-
-### Pas 1: Crear un repositori nou a GitHub
-
-1. Ves a [github.com/new](https://github.com/new)
-2. Nom del repositori: `estacions-meteo-escoles` (o el nom que vulguis)
-3. Descripció: `Dashboard d'estacions meteorològiques escolars`
-4. Marca **Public** (necessari per GitHub Pages gratuït)
-5. **NO** marquis "Add a README file" (ja el tenim)
-6. Clica **Create repository**
-
-### Pas 2: Pujar el projecte
-
-Obre una terminal a la carpeta `weather-station-dashboard` i executa:
-
-```bash
-# Inicialitza git (si no està fet)
-git init
-
-# Afegeix tots els arxius
-git add .
-
-# Fes el primer commit
-git commit -m "🚀 Primera versió del dashboard meteorològic"
-
-# Afegeix el teu repositori remot (canvia per la teva URL!)
-git remote add origin https://github.com/EL_TEU_USUARI/estacions-meteo-escoles.git
-
-# Puja els arxius
-git branch -M main
-git push -u origin main
+```
+Placa (micro:bit / ESP32 / …) ──► ThingSpeak ──► Web (temps real, directe des del navegador)
+                                      │
+                       Apps Script (cada hora, mitjana horària)
+                                      ▼
+                         Full de càlcul de Google ──► Web (històric)  +  gràfics propis
+                                      ▲
+         Google Form (alta) ──► fulla «estacions» ──► aprovació ──► mapa
 ```
 
-### Pas 3: Activar GitHub Pages
+- **Temps real** (fins a 36 h): el navegador llegeix ThingSpeak.
+- **Històric** (rangs més llargs): el navegador llegeix el full de càlcul via Apps Script i completa l'últim tram amb ThingSpeak. Si l'Apps Script no respon, usa ThingSpeak amb mitjanes.
+- **Sense backend propi**: web estàtica (GitHub Pages) + Google (Form, Fulls, Apps Script).
 
-1. Ves al teu repositori a GitHub
-2. Clica a **Settings** (engranatge)
-3. Al menú esquerre, clica a **Pages**
-4. A **Source**, selecciona:
-   - Branch: `main`
-   - Folder: `/ (root)`
-5. Clica **Save**
-6. Espera uns minuts i la teva pàgina estarà a:
-   ```
-   https://EL_TEU_USUARI.github.io/estacions-meteo-escoles/
-   ```
+## Estructura
 
-### Pas 4: Configurar el projecte
+```
+index.html              Portada: mapa + llistat únic d'estacions
+estacio.html            Pàgina única d'estació (?id=<id>)
+alta.html               Alta d'estacions: perfils, comprovador de canal i formulari
+recursos.html           Recursos didàctics: alta, muntatge de la placa i connexió a ThingSpeak
+contacte.html           Formulari de contacte (arriba a la fulla «contactes» del full de càlcul)
+js/layout.js            Capçalera, menú i peu de pàgina compartits (s'edita en un sol lloc)
+js/config.js            Paràmetres globals (URL de l'API, ThingSpeak, mitjanes, gràfiques)
+js/boards.js            Tipus de magnitud i perfils de placa (capa de compatibilitat)
+js/stations.js          Registre d'estacions (API → còpia local → data/stations.json)
+js/thingspeak-service.js  Lectura de ThingSpeak (paginació, mitjanes, escales)
+js/history-service.js   Lectura de l'històric (Apps Script)
+js/data-source.js       Decideix temps real o històric segons el rang
+js/dashboard.js, charts.js, catalonia-map.js, alta.js, demo-data.js, data-storage.js
+apps-script/            Backend de Google (Code.gs + guia d'instal·lació)
+data/stations.json      Estacions locals (mode local; buit per defecte)
+data/recursos.json      Llista de recursos addicionals de la pàgina de recursos
+assets/logos/           Logos del peu de pàgina
+data/catalunya-map.svg  Mapa base
+docs/VALORACIO_ESP32.md Valoració de plaques ESP32
+tools/mapa/             Eines per generar el mapa (no es fan servir en execució)
+```
 
-Edita el fitxer `js/config.js`:
+## Posada en marxa
+
+### 1. Web (GitHub Pages)
+1. Puja aquest repositori a GitHub.
+2. **Settings → Pages → Branch: `main`, carpeta `/ (root)`**.
+3. La web queda a `https://<usuari>.github.io/<repositori>/`.
+
+Sense res més, funciona en **mode local**: llegeix `data/stations.json` i ThingSpeak, sense històric ni altes.
+
+### 2. Backend de Google (altes + històric)
+Segueix [`apps-script/README.md`](apps-script/README.md) (≈ 15 min). Al final enganxes dues URL a `js/config.js`:
 
 ```javascript
-github: {
-    username: 'EL_TEU_USUARI',           // ← El teu usuari de GitHub
-    repository: 'estacions-meteo-escoles', // ← El nom del repositori
-    branch: 'main'
+api: {
+    url: 'https://script.google.com/macros/s/…/exec',   // aplicació web d'Apps Script
+    formUrl: 'https://docs.google.com/forms/d/e/…/viewform?embedded=true',
 },
 ```
 
-Fes commit i push dels canvis:
-
+### 3. Desenvolupament local
 ```bash
-git add js/config.js
-git commit -m "🔧 Configuració GitHub"
-git push
+npm run serve        # http://localhost:8000
+npm run check        # comprova la sintaxi dels JS
 ```
+Afegeix `?demo=true` a qualsevol URL per veure dades simulades (no cal cap canal).
 
----
+## Donar d'alta una placa (per a l'usuari)
 
-## ⚙️ Configuració de ThingSpeak
+1. Obre **`alta.html`** i tria el tipus de placa.
+2. Fes el canal de ThingSpeak **públic** i posa nom als camps.
+3. Comprova'l amb el **comprovador** de la mateixa pàgina.
+4. Omple el **formulari**. Una persona responsable aprova l'alta i l'estació surt al mapa.
 
-### Obtenir les claus API
+### Perfils de placa
 
-Per a cada escola, necessites el **Channel ID** i la **Read API Key** de ThingSpeak:
+| Perfil | Camps | Notes |
+|---|---|---|
+| `microbit-iot` | field1 temperatura, 2 humitat, 3 llum (%), 4 pressió, 5 vent | El kit envia el vent en **cm/h**; el web el passa a km/h (`scale: 0.01`). |
+| `esp32` | field1–8: temperatura, humitat, llum (lux), pressió, vent (km/h), pluja, pols, senyal Wi-Fi | Mapa estàndard proposat a `docs/VALORACIO_ESP32.md`. |
+| `personalitzat` | Es dedueixen dels **noms** dels camps de ThingSpeak | P. ex. «Temperatura», «Humitat», «Pluja». |
 
-1. Inicia sessió a [thingspeak.com](https://thingspeak.com)
-2. Ves al canal de l'estació
-3. A la pestanya **API Keys**, copia la **Read API Key**
-4. El **Channel ID** apareix a la URL i a la configuració del canal
+**Afegir un perfil nou** (Arduino, Pico W…): afegeix-lo a `PROFILES` a `js/boards.js` (i al desplegable del formulari). Una magnitud nova va a `FIELD_TYPES`.
 
-### Configurar les escoles
+## Administració (aprovar i mantenir)
 
-Edita `js/config.js` i actualitza cada escola:
+- Les altes arriben a la fulla **`estacions`** del full de càlcul amb estat `pendent`. Per publicar-les: canvia `estat` a `aprovada` o fes servir el menú **Estacions Meteorològiques en Xarxa → Aprovar les files seleccionades**.
+- Per donar-ne de baixa: posa `rebutjada` (les dades arxivades es conserven).
+- Les fulles `d_<id>` contenen l'històric (mitjana horària) i es poden graficar directament amb Fulls de càlcul.
+- El correu de contacte **no** surt mai per l'API.
 
-```javascript
-escola1: {
-    id: 'escola1',
-    name: 'El Nom de la Teva Escola',
-    description: 'Descripció de l\'estació...',
-    location: 'Ciutat',
-    
-    thingspeak: {
-        channelId: '123456',              // ← El teu Channel ID
-        readApiKey: 'ABCDEFGHIJK12345',   // ← La teva Read API Key
-    },
-    // ...
-},
-```
+## Editar el contingut
 
----
+- **Menú, títol, subtítol i peu de pàgina:** `js/layout.js` (un sol lloc per a totes les pàgines).
+- **Afegir un recurs didàctic** (enllaç, PDF, vídeo): una entrada nova a `data/recursos.json`. Les guies de la pàgina de recursos són a `recursos.html`.
 
-## 🔄 Emmagatzematge de Dades amb GitHub Actions
+## Privadesa i seguretat
 
-El projecte inclou un workflow de GitHub Actions que recull dades de ThingSpeak automàticament i les guarda al repositori.
+- Les estacions **no recullen dades personals**.
+- Recomanat: canals de ThingSpeak **públics**; així no cal publicar cap clau. Les claus de **lectura** d'un canal privat són visibles per a qualsevol visitant. Les claus d'**escriptura** no han de passar mai per la web ni per aquest repositori.
+- No pugis a git cap fitxer amb credencials de les plaques (`secrets.h`, `secrets.py`: ja són a `.gitignore`).
 
-### Configurar els Secrets de GitHub
+## Mode local i demo
 
-1. Ves al teu repositori → **Settings** → **Secrets and variables** → **Actions**
-2. Clica **New repository secret** per a cada clau:
+`data/stations.json` està buit a propòsit: el registre real és el full de càlcul. Per desenvolupar sense backend, hi pots afegir estacions amb el mateix format que l'API (`id, name, location, lat, lng, profile, channelId…`). Amb `?demo=true` i sense estacions, la web crea dues estacions de prova.
 
-| Nom del Secret | Valor |
-|----------------|-------|
-| `ESCOLA1_CHANNEL_ID` | Channel ID de l'escola 1 |
-| `ESCOLA1_API_KEY` | Read API Key de l'escola 1 |
-| `ESCOLA2_CHANNEL_ID` | Channel ID de l'escola 2 |
-| `ESCOLA2_API_KEY` | Read API Key de l'escola 2 |
-| ... | (repetir per cada escola) |
+## Documentació relacionada
 
-### Activar GitHub Actions
+- [`apps-script/README.md`](apps-script/README.md) — instal·lació del backend de Google.
+- [`docs/VALORACIO_ESP32.md`](docs/VALORACIO_ESP32.md) — valoració de plaques ESP32 i pla de pilot.
 
-1. Ves a **Actions** al teu repositori
-2. Clica **I understand my workflows, go ahead and enable them**
-3. El workflow `Collect Weather Data` s'executarà cada hora automàticament
+## Llicència i crèdits
 
-### Executar Manualment
+Pendent d'unificar: el fitxer `LICENSE` diu MIT i el peu de pàgina indica CC BY-NC-ND 4.0. Cal decidir-ne una abans de la publicació.
 
-Pots executar la recollida de dades manualment:
-1. Ves a **Actions** → **Collect Weather Data**
-2. Clica **Run workflow**
-
----
-
-## 📁 Estructura del Projecte
-
-```
-weather-station-dashboard/
-├── index.html              # Pàgina principal (landing)
-├── escola.html             # Plantilla per a cada escola
-├── css/
-│   └── styles.css          # Estils del dashboard
-├── js/
-│   ├── config.js           # ⚠️ CONFIGURACIÓ PRINCIPAL
-│   ├── dashboard.js        # Lògica del dashboard
-│   ├── charts.js           # Gràfics amb Chart.js
-│   ├── thingspeak-service.js # Connexió amb ThingSpeak
-│   ├── data-storage.js     # Gestió de dades locals
-│   └── demo-data.js        # Dades de demostració
-├── data/
-│   ├── index.json          # Índex de dades disponibles
-│   └── escola1/            # Dades de cada escola
-│       └── ...
-└── .github/
-    └── workflows/
-        └── collect-data.yml # Workflow automàtic
-```
-
----
-
-## 🎨 Mode Demo
-
-Per provar el dashboard sense configurar ThingSpeak:
-
-1. A `js/config.js`, assegura't que:
-   ```javascript
-   demoMode: true,
-   ```
-   
-2. O afegeix `?demo=true` a la URL:
-   ```
-   https://el-teu-usuari.github.io/estacions-meteo-escoles/?demo=true
-   ```
-
----
-
-## 🛠️ Desenvolupament Local
-
-Per treballar localment, necessites un servidor web (per les restriccions CORS):
-
-### Opció 1: Python
-```bash
-cd weather-station-dashboard
-python -m http.server 8000
-```
-Obre http://localhost:8000
-
-### Opció 2: VS Code Live Server
-1. Instal·la l'extensió "Live Server"
-2. Fes clic dret a `index.html` → "Open with Live Server"
-
-### Opció 3: Node.js
-```bash
-npx serve
-```
-
----
-
-## 📄 Llicència
-
-MIT License - Lliure per a ús educatiu i personal.
-
----
-
-## 🙏 Agraïments
-
-- Als alumnes i mestres de les escoles participants
-- [micro:bit](https://microbit.org/) per la plataforma educativa
-- [ThingSpeak](https://thingspeak.com/) per la plataforma IoT
-- [Chart.js](https://www.chartjs.org/) per les gràfiques
-
----
-
-**Fet amb ❤️ per al Projecte mentoria 4.0 a Catalunya**
+Fet amb ❤️ per al Projecte mentoria 4.0 a Catalunya. Gràcies a l'alumnat i al professorat participant, a [micro:bit](https://microbit.org/), [ThingSpeak](https://thingspeak.com/) i [Chart.js](https://www.chartjs.org/).
