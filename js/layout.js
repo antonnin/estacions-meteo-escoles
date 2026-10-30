@@ -53,7 +53,7 @@ function toggleMenu() {
             <img class="footer-logo-mentories" src="assets/logos/Logo-Mentories-4.0-1.png" alt="Logo Mentories 4.0">
         </div>
         <p>${SITE.title} és un projecte de les Mentories 4.0. </p>
-        <p>Programat pels mentors/es Anton Nin Nin i Paula Pacho, publicada sota llicència
+        <p>Programat pels mentors/es <a href="https://github.com/antonnin/">Anton Nin Nin</a> i Paula Pacho, publicada sota llicència
         <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ca" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>.</p>
     </footer>`;
     }
