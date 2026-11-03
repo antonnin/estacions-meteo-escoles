@@ -26,7 +26,7 @@ var DATA_COLS = ['created_at', 'field1', 'field2', 'field3', 'field4', 'field5',
 var TS_BASE = 'https://api.thingspeak.com';
 var MAX_HISTORY_ROWS = 20000;
 var RUN_BUDGET_MS = 4.5 * 60 * 1000; // l'script té 6 min; parem abans i continuem la propera hora
-var STATUS = { PENDING: 'pendent', APPROVED: 'aprovada', REJECTED: 'rebutjada' };
+var STATUS = { PENDING: 'pendent', APPROVED: 'aprovada', REJECTED: 'rebutjada', INACTIVE: 'inactiva', ERROR: 'error' };
 
 // ============================================================
 // INSTAL·LACIÓ I MENÚ
@@ -36,6 +36,7 @@ function onOpen() {
   SpreadsheetApp.getUi().createMenu('Estacions en xarxa')
     .addItem('1. Configuració inicial', 'setup')
     .addItem('Aprovar les files seleccionades', 'approveSelected')
+    .addItem('Eliminar l\'estació seleccionada', 'deleteSelected')
     .addItem('Recollir dades ara', 'collectAll')
     .addItem('Buidar la memòria cau del web', 'clearCache_')
     .addToUi();
@@ -82,6 +83,49 @@ function approveSelected() {
   var last = range.getLastRow();
   for (var r = first; r <= last; r++) sh.getRange(r, col).setValue(STATUS.APPROVED);
   clearCache_();
+}
+
+/**
+ * Elimina del tot UNA estació: la fila de "estacions" i la seva fulla "d_<id>" (històric).
+ * Només si NO està aprovada (pendent, rebutjada, error o inactiva): una estació en servei
+ * s'ha de passar primer a "inactiva". Demana confirmació.
+ */
+function deleteSelected() {
+  var ui = SpreadsheetApp.getUi();
+  var sh = SpreadsheetApp.getActiveSheet();
+  if (sh.getName() !== SHEET_STATIONS) {
+    ui.alert('Selecciona una fila de la fulla "' + SHEET_STATIONS + '".');
+    return;
+  }
+  var range = sh.getActiveRange();
+  if (range.getNumRows() !== 1 || range.getRow() < 2) {
+    ui.alert('Selecciona exactament una fila d\'estació (no la capçalera).');
+    return;
+  }
+  var row = range.getRow();
+  var vals = sh.getRange(row, 1, 1, STATION_COLS.length).getValues()[0];
+  var id = String(vals[STATION_COLS.indexOf('id')]);
+  var name = String(vals[STATION_COLS.indexOf('name')]);
+  var estat = String(vals[STATION_COLS.indexOf('estat')]);
+  if (!id) {
+    ui.alert('La fila seleccionada no té identificador.');
+    return;
+  }
+  if (estat === STATUS.APPROVED) {
+    ui.alert('L\'estació "' + name + '" està aprovada (en servei).\n\nCanvia-li primer l\'estat a "inactiva" si realment vols eliminar-la.');
+    return;
+  }
+  var dataSh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(DATA_PREFIX + id);
+  var msg = 'Eliminar l\'estació "' + name + '" (' + id + ', estat: ' + estat + ')?\n\n' +
+    '- S\'esborrarà la fila de "' + SHEET_STATIONS + '".\n' +
+    (dataSh ? '- S\'esborrarà la fulla "' + DATA_PREFIX + id + '" amb tot el seu històric.\n' : '') +
+    '\nAquesta acció no es pot desfer des de l\'script.';
+  if (ui.alert('Eliminar estació', msg, ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+
+  if (dataSh) SpreadsheetApp.getActiveSpreadsheet().deleteSheet(dataSh);
+  sh.deleteRow(row);
+  clearCache_();
+  ui.alert('Estació eliminada.\n\nSi vols, esborra també la seva resposta a la fulla del formulari (conté el correu de contacte).');
 }
 
 function clearCache_() {

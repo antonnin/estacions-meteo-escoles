@@ -53,10 +53,31 @@ La web només **llegeix** d'aquí; les plaques continuen enviant a ThingSpeak (c
 
 `id, name, location, comarca, lat, lng, website, profile, channelId, readApiKey, fields, estat, contacte, dataAlta, ultimaRecollida, notes`
 
-- `estat`: `pendent` → `aprovada` (visible a la web) o `rebutjada`. `error` = canal no validat (mira `notes`).
+- `estat`: `pendent` → `aprovada` (visible a la web), `rebutjada` o `inactiva`. `error` = canal no validat (mira `notes`).
 - `profile`: `microbit-iot`, `esp32` o `personalitzat` (vegeu `js/boards.js`).
 - `fields`: només perfil personalitzat; JSON amb el tipus de cada camp detectat pels noms de ThingSpeak. Es pot editar a mà.
 - `contacte` i `notes` **no** surten mai per l'API.
+
+## Donar de baixa una estació inoperativa
+
+No s'esborra mai la fila. Només cal canviar `estat` a `inactiva` a la fulla `estacions`:
+
+- L'estació **desapareix del mapa i de la llista** de la web (l'API només publica les `aprovada`).
+- La recollida horària **deixa d'afegir dades** a la seva fulla `d_<id>`.
+- La fulla `d_<id>` **es conserva** amb tot l'històric ja arxivat, però la web ja no el mostra mentre l'estació sigui `inactiva`.
+- Per reactivar-la, torna a posar `estat` a `aprovada`. La recollida continuarà des de l'última hora arxivada.
+
+No cal tocar ni redesplegar l'script. Abans de donar-la de baixa, comprova que l'avaria no és temporal (p. ex. vacances escolars o una pila gastada).
+
+## Eliminar estacions de test
+
+Per esborrar del tot una estació (p. ex. una alta de prova): a la fulla `estacions`, selecciona-ne la fila i tria **Estacions en xarxa → Eliminar l'estació seleccionada**.
+
+- Demana confirmació i esborra la fila i la fulla `d_<id>` (l'històric).
+- Només funciona amb estacions que **no** són `aprovada`. Si és en servei, passa-la primer a `inactiva`.
+- Admet una sola fila cada cop.
+- Queda pendent, a mà, la resposta original a la fulla del formulari (conté el correu de contacte).
+- Cal tornar a copiar `Code.gs` a Apps Script i redesplegar com a nova versió perquè el menú nou aparegui.
 
 ## Dades i límits
 
